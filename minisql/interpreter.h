@@ -1,6 +1,6 @@
 /**
  * @file interpreter.h
- * @brief 解释器模块
+ * @brief 解释器模块头文件
  * @author tgmerge
  * 解释器。读取输入的SQL语句，检验输入正确性，转换输入语句为内部形式。
  * 对含有错误的语句，显示错误信息。
@@ -9,10 +9,39 @@
 #if !defined(_INTERPRETER_H_)
 #define _INTERPRETER_H_
 
-#include "Minisql.h"
+//#include "Minisql.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
+
+/**
+ * class SqlCommand
+ * @brief 内部格式sql命令
+ */
+
+class SqlCommand {
+public:
+	SqlCommand();
+
+private:
+	// 命令类型
+	int type;
+
+	// 命令数据
+	string tableName;
+	string databaseName;
+	string indexName;
+	string rowName;
+
+	// 插入/删除数据列表的 各属性类型
+	vector<int> attrListType;
+	// 插入/删除数据列表的 各属性名
+	vector<string> attrListName;
+	// 插入/删除数据列表的 各属性值
+	vector<string> attrListValue;
+};
 
 /**
  * classs Interpreter
@@ -24,69 +53,50 @@ public:
 	// 构造
 	Interpreter();
 	// 读取输入
-	read_input(string& input);
+	string readInput();
+	// 获取内部格式数据
+	SqlCommand& getExpression();
 
 private:
 	// 检查CREATE
-	CString create_clause();
+	SqlCommand createClause();
 	// 检查CREATE DATABASE databaseName
-	CString create_database();
+	SqlCommand createDatabase();
 	// 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))
-	CString create_table();
+	SqlCommand createTable();
 	// 检查CREATE INDEX indexName
-	CString create_index();
+	SqlCommand createIndex();
 	// 检查CREATE INDEX indexName ON tableName(rowName)
-	CString create_index_on();
+	SqlCommand createIndexOn();
 	
 	// 检查DROP
-	CString drop_clause();
+	SqlCommand dropClause();
 	// 检查DROP DATABASE databaseName
-	CString drop_database();
+	SqlCommand dropDatabase();
 	// 检查DROP TABLE tableName
-	CString drop_table();
+	SqlCommand dropTable();
 	// 检查DROP INDEX indexName
-	CString drop_index();
+	SqlCommand dropIndex();
 
 	// 检查SELECT rowName FROM tableName WHERE condRow condOp condValue
-	CString select_clause();
+	SqlCommand selectClause();
 
 	// 检查INSERT INTO tableName VALUES(insertValueList)
-	CString insert_clause();
-	CString insert_into_values();
+	SqlCommand insertClause();
+	SqlCommand insertIntoValues();
 	
 	// 检查DELETE
-	CString delete_clause();
+	SqlCommand deleteClause();
 	// 检查DELETE FROM tableName WHERE condRow condOp condValue
-	CString delete_from_where();
+	SqlCommand deleteFromWhere();
 
+	// 检查USE databaseName
+	SqlCommand useClause();
+	//
+	SqlCommand execfileClause();
 
-	CString use_clause();
-	CString execfile_clause();
-	CString quit_clause();
-
-	CString get_expression();
-	CString get_each();
-
-	CString get_attribute();
-	CString get_part();
-}
-
-/**
- * class SqlCommand
- * @brief 内部格式sql命令
- */
-class SqlCommand {
-public:
-	
-private:
-	// 命令类型
-	enum type;
-	string tableName;
-	string databaseName;
-	string indexName;
-	string rowName;
-	// SELECT条件使用
-	enum condition;
-	string 
+	// 检查QUIT
+	SqlCommand quitClause();
+};
 
 #endif
