@@ -23,7 +23,63 @@ using namespace std;
 
 class SqlCommand {
 public:
+	//设置命令类型
+	void setType(int t){
+		type = t;
+	}
+	//设置数据库名
+	void setDatabaseName(string& str){
+		databaseName = str;
+	}
+	//设置表名
+	void setTableName(string& str){
+		tableName = str;
+	}
+	//设置索引名
+	void setIndexName(string& str){
+		indexName = str;
+	}
+	//设置列名
+	void setRowName(string& str){
+		rowName = str;
+	}
 
+	//vector<int> attrListType;
+	//vector<string> attrListName;
+	//vector<string> attrListValue;
+	//push记录类型
+	void pushType(int t){
+		attrListType.push_back(t);
+	}
+	//push记录名
+	void pushName(string& str){
+		attrListName.push_back(str);
+	}
+	//push记录值
+	void pushValue(string& str){
+		attrListValue.push_back(str);
+	}
+	//输出命令信息
+	void print(){
+		cout<<"type: "<<type<<endl;
+		cout<<"tableName: "<<tableName<<endl;
+		cout<<"databaseName: "<<databaseName<<endl;
+		cout<<"indexName: "<<indexName<<endl;
+		cout<<"rowName: "<<rowName<<endl;
+
+		cout<<"attrListType:  ";
+		for (int i=0; i<attrListType.size(); i++)
+			cout<<attrListType[i]<<" ";
+		cout<<endl;
+		cout<<"attrListName:  ";
+		for (int i=0; i<attrListName.size(); i++)
+			cout<<attrListName[i]<<" ";
+		cout<<endl;
+		cout<<"attrListValue: ";
+		for (int i=0; i<attrListValue.size(); i++)
+			cout<<attrListValue[i]<<" ";
+		cout<<endl;
+	}
 private:
 	// 命令类型
 	int type;
@@ -62,33 +118,33 @@ public:
 
 
 
-private:
+public:
 	// 获取字符串的第一个单词（分隔符自定义）
 	string firstWord(string& str, string& split);
 	// 删除字符串的第一个单词（分隔符自定义）
 	string delFirstWord(string& str, string& split);
 
-	// 检查CREATE
+	// 检查CREATE	type = 1
 	SqlCommand createClause();
-	// 检查CREATE DATABASE databaseName
+	// 检查CREATE DATABASE databaseName	type = 2
 	SqlCommand createDatabase();
-	// 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))
+	// 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))	type = 3
 	SqlCommand createTable();
-	// 检查CREATE INDEX indexName
+	// 检查CREATE INDEX indexName	type = 4
 	SqlCommand createIndex();
-	// 检查CREATE INDEX indexName ON tableName(rowName)
+	// 检查CREATE INDEX indexName ON tableName(rowName)	type = 5
 	SqlCommand createIndexOn();
 	
-	// 检查DROP
+	// 检查DROP	type = 6
 	SqlCommand dropClause();
-	// 检查DROP DATABASE databaseName
-	SqlCommand dropDatabase();
-	// 检查DROP TABLE tableName
-	SqlCommand dropTable();
-	// 检查DROP INDEX indexName
+	// 检查DROP DATABASE databaseName	type = 7
+	SqlCommand dropDatabase(string& str);
+	// 检查DROP TABLE tableName	type = 8
+	SqlCommand dropTable(string& str);
+	// 检查DROP INDEX indexName	type = 9
 	SqlCommand dropIndex();
 
-	// 检查SELECT rowName FROM tableName WHERE condRow condOp condValue
+	// 检查SELECT rowName FROM tableName WHERE condRow condOp condValue	type = 10
 	SqlCommand selectClause();
 
 	// 检查INSERT INTO tableName VALUES(insertValueList)
