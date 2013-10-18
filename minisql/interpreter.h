@@ -12,9 +12,9 @@
 //#include "Minisql.h"
 #include <string>
 #include <vector>
+#include <iostream>
 
-using std::string;
-using std::vector;
+using namespace std;
 
 /**
  * class SqlCommand
@@ -55,7 +55,7 @@ public:
 	// 读取输入
 	string readInput();
 	// 获取内部格式数据
-	SqlCommand& getExpression();
+	SqlCommand getExpression(string input);
 
 private:
 	// 检查CREATE
