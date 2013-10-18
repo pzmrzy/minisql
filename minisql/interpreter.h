@@ -23,7 +23,6 @@ using namespace std;
 
 class SqlCommand {
 public:
-	SqlCommand();
 
 private:
 	// 命令类型
@@ -56,8 +55,19 @@ public:
 	string readInput();
 	// 获取内部格式数据
 	SqlCommand getExpression(string input);
+	// 获取字符串的第一个单词（分隔符自定义）
+	string firstWord(string& str, string split);
+	// 删除字符串的第一个单词（分隔符自定义）
+	string delFirstWord(string& str, string split);
+
+
 
 private:
+	// 获取字符串的第一个单词（分隔符自定义）
+	string firstWord(string& str, string& split);
+	// 删除字符串的第一个单词（分隔符自定义）
+	string delFirstWord(string& str, string& split);
+
 	// 检查CREATE
 	SqlCommand createClause();
 	// 检查CREATE DATABASE databaseName

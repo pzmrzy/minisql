@@ -11,12 +11,10 @@ void main() {
 	//cout << "Hello";
 	
 	Interpreter test;
-	string testOutput;
+	string testOutput(" This() is me");
 
-	testOutput = test.readInput();
-	
-	cout << "\n\n" + testOutput;
+	cout << test.firstWord(testOutput, " )(") << "|" << endl;
+	cout << test.delFirstWord(testOutput, " ()") << "|" << endl;
 
 	system("pause");
-	
 }
