@@ -9,6 +9,20 @@
 #if !defined(_INTERPRETER_H_)
 #define _INTERPRETER_H_
 
+#define SQL_CREATE_DATABASE 10
+#define SQL_CREATE_TABLE    11
+#define SQL_CREATE_INDEX    12
+#define SQL_CREATE_INDEX_ON 13
+#define SQL_DROP_DATABASE   20
+#define SQL_DROP_TABLE      21
+#define SQL_DROP_INDEX      22
+#define SQL_SELECT          30
+#define SQL_INSERT_INTO     40
+#define SQL_DELETE          50
+#define SQL_USE             60
+#define SQL_QUIT            70
+#define SQL_ERROR           90
+
 //#include "Minisql.h"
 #include <string>
 #include <vector>
@@ -20,7 +34,6 @@ using namespace std;
  * class SqlCommand
  * @brief 内部格式sql命令
  */
-
 class SqlCommand {
 public:
 	//设置命令类型
@@ -90,12 +103,9 @@ private:
 	string indexName;
 	string rowName;
 
-	// 插入/删除数据列表的 各属性类型
-	vector<int> attrListType;
-	// 插入/删除数据列表的 各属性名
-	vector<string> attrListName;
-	// 插入/删除数据列表的 各属性值
-	vector<string> attrListValue;
+	vector<int> attrListType;       // 插入/删除数据列表的 各属性类型
+	vector<string> attrListName;    // 插入/删除数据列表的 各属性名
+	vector<string> attrListValue;  	// 插入/删除数据列表的 各属性值
 };
 
 /**
@@ -105,64 +115,34 @@ private:
 class Interpreter {
 
 public:
-	// 构造
-	Interpreter();
-	// 读取输入
-	string readInput();
-	// 获取内部格式数据
-	SqlCommand getExpression(string input);
-	// 获取字符串的第一个单词（分隔符自定义）
-	string firstWord(string& str, string split);
-	// 删除字符串的第一个单词（分隔符自定义）
-	string delFirstWord(string& str, string split);
 
+public: // 命令处理
+	string readInput();                     // 读取输入
+	SqlCommand getExpression(string input); // 获取内部格式数据
 
+public: // 字符串处理
+	string firstWord(string& str, string split);    // 获取字符串的第一个单词（分隔符自定义）
+	string delFirstWord(string& str, string split); // 删除字符串的第一个单词（分隔符自定义）
 
-public:
-	// 获取字符串的第一个单词（分隔符自定义）
-	string firstWord(string& str, string& split);
-	// 删除字符串的第一个单词（分隔符自定义）
-	string delFirstWord(string& str, string& split);
+public: // 检查语句
+	SqlCommand createClause();             // 检查CREATE
+	SqlCommand createDatabase();           // 检查CREATE DATABASE databaseName
+	SqlCommand createTable();              // 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))
+	SqlCommand createIndex();              // 检查CREATE INDEX indexName
+	SqlCommand createIndexOn();            // 检查CREATE INDEX indexName ON tableName(rowName)
 
-	// 检查CREATE	type = 1
-	SqlCommand createClause();
-	// 检查CREATE DATABASE databaseName	type = 2
-	SqlCommand createDatabase();
-	// 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))	type = 3
-	SqlCommand createTable();
-	// 检查CREATE INDEX indexName	type = 4
-	SqlCommand createIndex();
-	// 检查CREATE INDEX indexName ON tableName(rowName)	type = 5
-	SqlCommand createIndexOn();
-	
-	// 检查DROP	type = 6
-	SqlCommand dropClause();
-	// 检查DROP DATABASE databaseName	type = 7
-	SqlCommand dropDatabase(string& str);
-	// 检查DROP TABLE tableName	type = 8
-	SqlCommand dropTable(string& str);
-	// 检查DROP INDEX indexName	type = 9
-	SqlCommand dropIndex();
+	SqlCommand dropDatabase(string& str);  // 检查DROP DATABASE databaseName
+	SqlCommand dropTable(string& str);     // 检查DROP TABLE tableName
+	SqlCommand dropIndex(string& str);     // 检查DROP INDEX indexName
 
-	// 检查SELECT rowName FROM tableName WHERE condRow condOp condValue	type = 10
-	SqlCommand selectClause();
+	SqlCommand selectClause();             // 检查SELECT rowName FROM tableName WHERE condRow condOp condValue
 
-	// 检查INSERT INTO tableName VALUES(insertValueList)
-	SqlCommand insertClause();
-	SqlCommand insertIntoValues();
-	
-	// 检查DELETE
-	SqlCommand deleteClause();
-	// 检查DELETE FROM tableName WHERE condRow condOp condValue
-	SqlCommand deleteFromWhere();
+	SqlCommand insertIntoValues();         // 检查INSERT INTO tableName VALUES(insertValueList)
 
-	// 检查USE databaseName
-	SqlCommand useClause();
-	//
-	SqlCommand execfileClause();
+	SqlCommand deleteFromWhere();          // 检查DELETE FROM tableName WHERE condRow condOp condValue
 
-	// 检查QUIT
-	SqlCommand quitClause();
+	SqlCommand useClause(string& str);     // 检查USE databaseName
+	SqlCommand quitClause();               // 检查QUIT
 };
 
 #endif
