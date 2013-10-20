@@ -287,6 +287,10 @@ SqlCommand Interpreter::getExpression(string input) {
 			sql.setType(SQL_ERROR);
 		}
 	}
+	// 第一个是select
+	else if( firstStr == "select" ) {
+		sql = selectClause(input);
+	}
 	// 无法匹配
 	else {
 		sql.setType(SQL_ERROR);
@@ -323,11 +327,15 @@ SqlCommand Interpreter::selectClause(string& str) {
 	// 处理tableName
 	str = delFirstWord(str, " ");	// 删除from
 	tableName = firstWord(str, " ");
+	str = delFirstWord(str, " ");   // 删除tablename
 
 	// 处理条件, 如果有where...
 	if( firstWord(str, " ") == "where" ) {
 		str = delFirstWord(str, " "); // 删除where
-		for( temp = firstWord(str, " "); !(temp == ";") && !(temp == "and"); temp = firstWord(str, " ") ) {
+		for( temp = firstWord(str, " "); !(temp == ";"); temp = firstWord(str, " ") ) {
+			if(temp == "and") {
+				str = delFirstWord(str, " ");
+			}
 			sql.pushCondLeftVector(firstWord(str, " ")); // 比较的属性名
 			str = delFirstWord(str, " ");
 			sql.pushCondOpVector(firstWord(str, " "));   // 比较的操作符
@@ -339,4 +347,7 @@ SqlCommand Interpreter::selectClause(string& str) {
 
 	sql.setType(SQL_SELECT);
 	sql.setTableName(tableName);
+
+	return sql;
 }
+

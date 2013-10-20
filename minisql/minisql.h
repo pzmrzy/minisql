@@ -1,8 +1,6 @@
 #ifndef _MINISQL_H_
 #define _MINISQL_H_
 
-#include "catalog.h"
-#include "interpreter.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -130,5 +128,5 @@ class attribute{
 	bool PK;		//Ö÷¼ü
 	bool UNIQUE;	//Î¨Ò»
 	bool NN;		//·Ç¿Õ
-}
+};
 #endif
