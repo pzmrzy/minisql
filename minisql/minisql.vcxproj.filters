@@ -21,9 +21,18 @@
     <ClCompile Include="test_interpreter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="catalog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="interpreter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="catalog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="minisql.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

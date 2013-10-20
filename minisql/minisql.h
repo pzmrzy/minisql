@@ -1,10 +1,12 @@
 #ifndef _MINISQL_H_
 #define _MINISQL_H_
+
 #include "catalog.h"
 #include "interpreter.h"
 #include <string>
 #include <iostream>
 #include <vector>
+
 using namespace std;
 
 #define SQL_CREATE_DATABASE 10
@@ -50,44 +52,58 @@ public:
 		indexName = str;
 	}
 	//设置列名
-	void setRowName(string& str){
-		rowName = str;
+	void setcolName(string& str){
+		colName = str;
 	}
 
-	//vector<int> attrListType;
-	//vector<string> attrListName;
-	//vector<string> attrListValue;
-	//push记录类型
-	void pushType(int t){
-		attrListType.push_back(t);
+	//push列名(select使用)
+	void pushColNameVector(string& t){
+		colNameVector.push_back(t);
 	}
-	//push记录名
-	void pushName(string& str){
-		attrListName.push_back(str);
+	//push列值(insert使用)
+	void pushColValueVector(string& str){
+		colValueVector.push_back(str);
 	}
-	//push记录值
-	void pushValue(string& str){
-		attrListValue.push_back(str);
+	//push条件左值(select,delete)
+	void pushCondLeftVector(string& str){
+		condLeftVector.push_back(str);
+	}
+	//push条件操作符(select,delete)
+	void pushCondOpVector(string& str){
+		condOpVector.push_back(str);
+	}
+	//push条件右值(select,delete)
+	void pushCondRightVector(string& str){
+		condRightVector.push_back(str);
 	}
 	//输出命令信息
 	void print(){
+
 		cout<<"type: "<<type<<endl;
 		cout<<"tableName: "<<tableName<<endl;
 		cout<<"databaseName: "<<databaseName<<endl;
 		cout<<"indexName: "<<indexName<<endl;
-		cout<<"rowName: "<<rowName<<endl;
+		cout<<"colName: "<<colName<<endl;
 
-		cout<<"attrListType:  ";
-		for (int i=0; i<attrListType.size(); i++)
-			cout<<attrListType[i]<<" ";
+		cout<<"colNameVector:  ";
+		for (int i=0; i<colNameVector.size(); i++)
+			cout<<colNameVector[i]<<" ";
 		cout<<endl;
-		cout<<"attrListName:  ";
-		for (int i=0; i<attrListName.size(); i++)
-			cout<<attrListName[i]<<" ";
+		cout<<"colValueVector:  ";
+		for (int i=0; i<colValueVector.size(); i++)
+			cout<<colValueVector[i]<<" ";
 		cout<<endl;
-		cout<<"attrListValue: ";
-		for (int i=0; i<attrListValue.size(); i++)
-			cout<<attrListValue[i]<<" ";
+		cout<<"condLeftVector: ";
+		for (int i=0; i<condLeftVector.size(); i++)
+			cout<<condLeftVector[i]<<" ";
+		cout<<endl;
+		cout<<"condOpVector: ";
+		for (int i=0; i<condOpVector.size(); i++)
+			cout<<condOpVector[i]<<" ";
+		cout<<endl;
+		cout<<"condRightVector: ";
+		for (int i=0; i<condRightVector.size(); i++)
+			cout<<condRightVector[i]<<" ";
 		cout<<endl;
 	}
 private:
@@ -98,11 +114,14 @@ private:
 	string tableName;
 	string databaseName;
 	string indexName;
-	string rowName;
+	string colName;
 
-	vector<int> attrListType;       // 插入/删除数据列表的 各属性类型
-	vector<string> attrListName;    // 插入/删除数据列表的 各属性名
-	vector<string> attrListValue;  	// 插入/删除数据列表的 各属性值
+	vector<string> colNameVector;	// where/insert条件中的属性名
+	vector<string> colValueVector;  // where/insert条件中的属性值
+	vector<string> condLeftVector;	// where条件中的属性名 e.g. colA
+	vector<string> condOpVector;	// where条件中的符号   e.g. >=
+	vector<string> condRightVector;	// where条件中的值     e.g. 10
+
 };
 //属性信息
 class attribute{

@@ -52,8 +52,8 @@ public:
 		indexName = str;
 	}
 	//设置列名
-	void setRowName(string& str){
-		rowName = str;
+	void setcolName(string& str){
+		colName = str;
 	}
 
 	//vector<int> attrListType;
@@ -77,7 +77,7 @@ public:
 		cout<<"tableName: "<<tableName<<endl;
 		cout<<"databaseName: "<<databaseName<<endl;
 		cout<<"indexName: "<<indexName<<endl;
-		cout<<"rowName: "<<rowName<<endl;
+		cout<<"colName: "<<colName<<endl;
 
 		cout<<"attrListType:  ";
 		for (int i=0; i<attrListType.size(); i++)
@@ -100,7 +100,7 @@ private:
 	string tableName;
 	string databaseName;
 	string indexName;
-	string rowName;
+	string colName;
 
 	vector<int> attrListType;       // 插入/删除数据列表的 各属性类型
 	vector<string> attrListName;    // 插入/删除数据列表的 各属性名
@@ -125,18 +125,18 @@ public: // 字符串处理
 
 public: // 检查语句
 	SqlCommand createDatabase(string& str);// 检查CREATE DATABASE databaseName
-	SqlCommand createTable(string& str);   // 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))
-	SqlCommand createIndex(string& str);   // 检查CREATE INDEX indexName ON tableName(rowName)
+	SqlCommand createTable(string& str);   // 检查CREATE TABLE tableName(colName type, ..., PRIMARY KEY(primarycolName))
+	SqlCommand createIndex(string& str);   // 检查CREATE INDEX indexName ON tableName(colName)
 
 	SqlCommand dropDatabase(string& str);  // 检查DROP DATABASE databaseName
 	SqlCommand dropTable(string& str);     // 检查DROP TABLE tableName
 	SqlCommand dropIndex(string& str);     // 检查DROP INDEX indexName
 
-	SqlCommand selectClause();             // 检查SELECT rowName FROM tableName WHERE condRow condOp condValue
+	SqlCommand selectClause();             // 检查SELECT colName FROM tableName WHERE condcol condOp condValue
 
 	SqlCommand insertIntoValues();         // 检查INSERT INTO tableName VALUES(insertValueList)
 
-	SqlCommand deleteFromWhere();          // 检查DELETE FROM tableName WHERE condRow condOp condValue
+	SqlCommand deleteFromWhere();          // 检查DELETE FROM tableName WHERE condcol condOp condValue
 
 	SqlCommand useClause(string& str);     // 检查USE databaseName
 

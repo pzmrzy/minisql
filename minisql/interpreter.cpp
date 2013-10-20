@@ -204,7 +204,7 @@ SqlCommand Interpreter::createIndex(string& str) {
 	SqlCommand sql;
 	string indexName;
 	string tableName;
-	string rowName;
+	string colName;
 
 	// 删除"create index"
 	str = delFirstWord(str, " ");
@@ -219,12 +219,12 @@ SqlCommand Interpreter::createIndex(string& str) {
 	str = delFirstWord(str, " ");
 	tableName = firstWord(str, " ()");
 	str = delFirstWord(str, " ()");
-	rowName = firstWord(str, " ()");
+	colName = firstWord(str, " ()");
 
 	sql.setType(SQL_CREATE_INDEX);
 	sql.setIndexName(indexName);
 	sql.setTableName(tableName);
-	sql.setRowName(rowName);
+	sql.setcolName(colName);
 
 	return sql;
 }
@@ -303,24 +303,20 @@ SqlCommand Interpreter::getExpression(string input) {
  * select a, b from xxx
  * select * from xxx
  * where a > 10 and b < 10 ;
- * TODO: 在SqlCommand中加入rowNameVector, condVector;
+ * TODO: 在SqlCommand中加入colNameVector, condVector;
  */
 SqlCommand Interpreter::selectClause(string& str) {
-	// 现在的语句示例 select rowName, rowName from tableName where condrow condOp condValue and condrow condop condvalue, etc
+	// 现在的语句示例 select colName, colName from tableName where condcol condOp condValue and condcol condop condvalue, etc
 	SqlCommand sql;
 	string tableName;
 	string temp;
-	vector<string> rowNameVector;
-	vector<string> condLeftVector;	// where条件中的属性名 e.g. rowA
-	vector<string> condOpVector;	// where条件中的符号   e.g. >=
-	vector<string> condRightVector;	// where条件中的数值   e.g. 20
-	
+
 	str = delFirstWord(str, " ");	// 删除"select"
 
-	// 处理rowName
+	// 处理colName
 	for( temp = firstWord(str, " ,"); !(temp == "from"); temp = firstWord(str, " ,") ) {
-		// TODO: 验证row的存在性？
-		rowNameVector.push_back( temp );
+		// TODO: 验证col的存在性？
+		sql.pushColNameVector( temp );
 		str = delFirstWord(str, " ,");
 	}
 
@@ -332,18 +328,15 @@ SqlCommand Interpreter::selectClause(string& str) {
 	if( firstWord(str, " ") == "where" ) {
 		str = delFirstWord(str, " "); // 删除where
 		for( temp = firstWord(str, " "); !(temp == ";") && !(temp == "and"); temp = firstWord(str, " ") ) {
-			condLeftVector.push_back(firstWord(str, " ")); // 比较的属性名
+			sql.pushCondLeftVector(firstWord(str, " ")); // 比较的属性名
 			str = delFirstWord(str, " ");
-			condOpVector.push_back(firstWord(str, " "));   // 比较的操作符
+			sql.pushCondOpVector(firstWord(str, " "));   // 比较的操作符
 			str = delFirstWord(str, " ");
-			condRightVector.push_back(firstWord(str, " "));// 比较的数值
+			sql.pushCondRightVector(firstWord(str, " "));// 比较的数值
 			str = delFirstWord(str, " ");
 		}
 	}
 
 	sql.setType(SQL_SELECT);
 	sql.setTableName(tableName);
-	sql.setRowNameVector(rowNameVector);
-	sql.setCondLeftVector(condLeftVector);
-	sql.setCondRightVector(condRightVector);
 }
