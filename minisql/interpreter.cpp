@@ -179,6 +179,7 @@ SqlCommand Interpreter::createDatabase(string& str) {
 /**
  * @brief  检验create table语句合法性
  * @author tgmerge
+ * TODO: 未完成
  */
 SqlCommand Interpreter::createTable(string& str) {
 	// 现在的str: create table table1 ;
