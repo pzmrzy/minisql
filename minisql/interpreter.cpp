@@ -67,6 +67,8 @@ string Interpreter::readInput() {
 	string temp("");
 	bool fin = false;
 
+	
+
 	while( !fin ) {
 		cin >> temp;
 		sql += temp + " ";
@@ -295,6 +297,10 @@ SqlCommand Interpreter::getExpression(string input) {
 	else if( firstStr == "delete" ) {
 		sql = deleteFromWhere(input);
 	}
+	// 第一个是insert
+	else if( firstStr == "insert" ) {
+		sql = insertIntoValues(input);
+	}
 	// 无法匹配
 	else {
 		sql.setType(SQL_ERROR);
@@ -394,6 +400,40 @@ SqlCommand Interpreter::deleteFromWhere(string& str) {
 	}
 
 	sql.setType(SQL_DELETE);
+	sql.setTableName(tableName);
+
+	return sql;
+}
+
+/**
+ * @brief  测试insert语句
+ * @author tgmerge
+ * 要支持的语句
+ * insert into tableA values( 10, '100' );
+ * TODO: 验证tableX存在性, 验证各列类型
+ */
+SqlCommand Interpreter::insertIntoValues(string& str) {
+	SqlCommand sql;
+	string tableName;
+	string temp;
+
+	str = delFirstWord(str, " ");
+	str = delFirstWord(str, " ");	// 删除"insert into"
+	// TODO: insert后面不是into
+
+	// 处理tableName;
+	tableName = firstWord(str, " ");
+	str = delFirstWord(str, " ");
+
+	str = delFirstWord(str, " (");	// 删除"values ("
+
+	// 处理值
+	while( !(firstWord(str, " )") == ";") ) {
+		sql.pushColValueVector( firstWord(str, " ),") );
+		str = delFirstWord(str, " ),");
+	}
+
+	sql.setType(SQL_INSERT_INTO);
 	sql.setTableName(tableName);
 
 	return sql;

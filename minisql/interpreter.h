@@ -32,23 +32,23 @@ public: // 字符串处理
 	string delFirstWord(string& str, string split); // 删除字符串的第一个单词（分隔符自定义）
 
 public: // 检查语句
-	SqlCommand createDatabase(string& str);// 检查CREATE DATABASE databaseName
-	SqlCommand createTable(string& str);   // 检查CREATE TABLE tableName(colName type, ..., PRIMARY KEY(primarycolName))
-	SqlCommand createIndex(string& str);   // 检查CREATE INDEX indexName ON tableName(colName)
+	SqlCommand createDatabase(string& str);  // 检查CREATE DATABASE databaseName
+	SqlCommand createTable(string& str);     // 检查CREATE TABLE tableName(colName type, ..., PRIMARY KEY(primarycolName))
+	SqlCommand createIndex(string& str);     // 检查CREATE INDEX indexName ON tableName(colName)
+										     
+	SqlCommand dropDatabase(string& str);    // 检查DROP DATABASE databaseName
+	SqlCommand dropTable(string& str);       // 检查DROP TABLE tableName
+	SqlCommand dropIndex(string& str);       // 检查DROP INDEX indexName
+										     
+	SqlCommand selectClause(string& str);    // 检查SELECT colName FROM tableName WHERE condcol condOp condValue
 
-	SqlCommand dropDatabase(string& str);  // 检查DROP DATABASE databaseName
-	SqlCommand dropTable(string& str);     // 检查DROP TABLE tableName
-	SqlCommand dropIndex(string& str);     // 检查DROP INDEX indexName
+	SqlCommand insertIntoValues(string& str);// 检查INSERT INTO tableName VALUES(insertValueList)
 
-	SqlCommand selectClause(string& str);  // 检查SELECT colName FROM tableName WHERE condcol condOp condValue
+	SqlCommand deleteFromWhere(string& str); // 检查DELETE FROM tableName WHERE condcol condOp condValue
 
-	SqlCommand insertIntoValues();         // 检查INSERT INTO tableName VALUES(insertValueList)
+	SqlCommand useClause(string& str);       // 检查USE databaseName
 
-	SqlCommand deleteFromWhere(string& str);// 检查DELETE FROM tableName WHERE condcol condOp condValue
-
-	SqlCommand useClause(string& str);     // 检查USE databaseName
-
-	SqlCommand quitClause();               // 检查QUIT
+	SqlCommand quitClause();                 // 检查QUIT
 };
 
 #endif
