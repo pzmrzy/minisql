@@ -106,7 +106,25 @@ SqlCommand Interpreter::dropTable(string& str) {
  * @param  string&    SQL指令
  * @return SqlCommand 类型为SQL_DROP_INDEX的内部命令
  */
-SqlCommand Interpreter::dropIndex(string& str)
+SqlCommand Interpreter::dropIndex(string& str){
+	// 现在的str示例  drop index indexA ;
+	SqlCommand sql;
+	string name;
+
+	// 删除"drop index"
+	str = delFirstWord(str, " ");
+	str = delFirstWord(str, " ");
+
+	// 取索引名
+	name = firstWord(str, " ");
+
+	// TODO: 检验索引存在性
+
+	sql.setType(SQL_USE);
+	sql.setIndexName(name);
+
+	return sql;
+}
 
 /**
  * @brief  检验use语句合法性
@@ -132,13 +150,88 @@ SqlCommand Interpreter::useClause(string& str){
 	return sql;
 }
 
-SqlCommand Interpreter::
+/**
+ * @brief  检验create database语句合法性
+ * @author tgmerge
+ */
+SqlCommand Interpreter::createDatabase(string& str) {
+	// 现在的str: create database database1 ;
+	SqlCommand sql;
+	string name;
+
+	// 删除"create database"
+	str = delFirstWord(str, " ");
+	str = delFirstWord(str, " ");
+
+	// 取数据库名称
+	name = firstWord(str, " ");
+
+	sql.setType(SQL_CREATE_DATABASE);
+	sql.setDatabaseName(name);
+
+	return sql;
+}
+
+/**
+ * @brief  检验create table语句合法性
+ * @author tgmerge
+ */
+SqlCommand Interpreter::createTable(string& str) {
+	// 现在的str: create table table1 ;
+	SqlCommand sql;
+	string name;
+
+	// 删除"create table"
+	str = delFirstWord(str, " ");
+	str = delFirstWord(str, " ");
+
+	// 取表名
+	name = firstWord(str, " ");
+
+	sql.setType(SQL_CREATE_TABLE);
+	sql.setTableName(name);
+
+	return sql;
+}
+
+/**
+ * @brief  检验create index语句合法性
+ * @author tgmerge
+ */
+SqlCommand createIndex(string& str) {
+	SqlCommand sql;
+	string indexName;
+	string tableName;
+	string rowName;
+
+	// 删除"create index"
+	str = delFirstWord(str, " ");
+	str = delFirstWord(str, " ");
+
+	// 取索引名
+	indexName = firstWord(str, " ");
+
+	// 删除"on"
+	// TODO: 判断是否是ON
+	str = delFirstWord(str, " ");
+	tableName = firstWord(str, " ()");
+	str = delFirstWord(str, " ()");
+	rowName = firstWord(str, " ()");
+
+	sql.setType(SQL_CREATE_INDEX);
+	sql.setIndexName(indexName);
+	sql.setTableName(tableName);
+	sql.setRowName(rowName);
+
+	return sql;
+}
 
 /**
  * @brief  解析命令，调用各检测方法，返回一个SqlCommand对象供API使用
  * @author tgmerge
  * @param  string     要解析的字符串
  * @return SqlCommand 解析完成的命令对象
+ * TODO: 未完成
  */
 SqlCommand Interpreter::getExpression(string input) {
 

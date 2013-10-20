@@ -12,7 +12,6 @@
 #define SQL_CREATE_DATABASE 10
 #define SQL_CREATE_TABLE    11
 #define SQL_CREATE_INDEX    12
-#define SQL_CREATE_INDEX_ON 13
 #define SQL_DROP_DATABASE   20
 #define SQL_DROP_TABLE      21
 #define SQL_DROP_INDEX      22
@@ -125,11 +124,9 @@ public: // 字符串处理
 	string delFirstWord(string& str, string split); // 删除字符串的第一个单词（分隔符自定义）
 
 public: // 检查语句
-	SqlCommand createClause();             // 检查CREATE
-	SqlCommand createDatabase();           // 检查CREATE DATABASE databaseName
-	SqlCommand createTable();              // 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))
-	SqlCommand createIndex();              // 检查CREATE INDEX indexName
-	SqlCommand createIndexOn();            // 检查CREATE INDEX indexName ON tableName(rowName)
+	SqlCommand createDatabase(string& str);// 检查CREATE DATABASE databaseName
+	SqlCommand createTable(string& str);   // 检查CREATE TABLE tableName(rowName type, ..., PRIMARY KEY(primaryRowName))
+	SqlCommand createIndex(string& str);   // 检查CREATE INDEX indexName ON tableName(rowName)
 
 	SqlCommand dropDatabase(string& str);  // 检查DROP DATABASE databaseName
 	SqlCommand dropTable(string& str);     // 检查DROP TABLE tableName
