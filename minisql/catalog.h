@@ -1,6 +1,8 @@
 #ifndef _CATALOG_H_
 #define _CATALOG_H_
+
 #include"minisql.h"
+#include"sqlcommand.h"
 
 class catalog
 {

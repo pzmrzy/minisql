@@ -6,18 +6,16 @@
  * 对含有错误的语句，显示错误信息。
  */
 
-#if !defined(_INTERPRETER_H_)
+#ifndef _INTERPRETER_H_
 #define _INTERPRETER_H_
 
-#include "minisql.h"
+#include "sqlcommand.h"
 
 #include <string>
 #include <iostream>
 #include <vector>
 
-using std::iostream;
-using std::string;
-using std::vector;
+using namespace std;
 
 /**
  * classs Interpreter

@@ -62,12 +62,14 @@
   <ItemGroup>
     <ClCompile Include="catalog.cpp" />
     <ClCompile Include="interpreter.cpp" />
+    <ClCompile Include="sqlcommand.cpp" />
     <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catalog.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="minisql.h" />
+    <ClInclude Include="sqlcommand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

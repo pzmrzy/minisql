@@ -15,13 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="interpreter.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="test_interpreter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="catalog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="interpreter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,6 +36,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="minisql.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlcommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
