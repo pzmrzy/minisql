@@ -139,6 +139,7 @@ public: // 检查语句
 	SqlCommand deleteFromWhere();          // 检查DELETE FROM tableName WHERE condRow condOp condValue
 
 	SqlCommand useClause(string& str);     // 检查USE databaseName
+
 	SqlCommand quitClause();               // 检查QUIT
 };
 

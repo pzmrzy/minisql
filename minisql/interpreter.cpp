@@ -198,7 +198,7 @@ SqlCommand Interpreter::createTable(string& str) {
  * @brief  检验create index语句合法性
  * @author tgmerge
  */
-SqlCommand createIndex(string& str) {
+SqlCommand Interpreter::createIndex(string& str) {
 	SqlCommand sql;
 	string indexName;
 	string tableName;
@@ -211,8 +211,9 @@ SqlCommand createIndex(string& str) {
 	// 取索引名
 	indexName = firstWord(str, " ");
 
-	// 删除"on"
+	// 删除"索引名 on"
 	// TODO: 判断是否是ON
+	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
 	tableName = firstWord(str, " ()");
 	str = delFirstWord(str, " ()");
@@ -257,11 +258,34 @@ SqlCommand Interpreter::getExpression(string input) {
 		else if( secondStr == "table" ) {
 			sql = dropTable(input);
 		}
+		else if( secondStr == "index" ) {
+			sql = dropIndex(input);
+		}
 		// 无法匹配
 		else {
 			sql.setType(SQL_ERROR);
 		}
 	}
+	// 第一个是create
+	else if( firstStr == "create" ) {
+		// 根据第二个单词判断
+		string secondStr = delFirstWord(input, " ");
+			   secondStr = firstWord(secondStr, " ");
+		if( secondStr == "database" ) {
+			sql = createDatabase(input);
+		}
+		else if( secondStr == "table" ) {
+			sql = createTable(input);
+		}
+		else if( secondStr == "index" ) {
+			sql = createIndex(input);
+		}
+		// 无法匹配
+		else {
+			sql.setType(SQL_ERROR);
+		}
+	}
+	// 无法匹配
 	else {
 		sql.setType(SQL_ERROR);
 	}
