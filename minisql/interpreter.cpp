@@ -14,6 +14,8 @@
  */
 #include "interpreter.h"
 #include <cstring>
+#include <vector>
+
 using namespace std;
 
 string delFirstWord(string& str, string split) {
@@ -293,3 +295,55 @@ SqlCommand Interpreter::getExpression(string input) {
 	return sql;
 }
 
+/**
+ * @brief  测试select语句
+ * @author tgmerge
+ * 要支持的语句
+ * select a from xxx
+ * select a, b from xxx
+ * select * from xxx
+ * where a > 10 and b < 10 ;
+ * TODO: 在SqlCommand中加入rowNameVector, condVector;
+ */
+SqlCommand Interpreter::selectClause(string& str) {
+	// 现在的语句示例 select rowName, rowName from tableName where condrow condOp condValue and condrow condop condvalue, etc
+	SqlCommand sql;
+	string tableName;
+	string temp;
+	vector<string> rowNameVector;
+	vector<string> condLeftVector;	// where条件中的属性名 e.g. rowA
+	vector<string> condOpVector;	// where条件中的符号   e.g. >=
+	vector<string> condRightVector;	// where条件中的数值   e.g. 20
+	
+	str = delFirstWord(str, " ");	// 删除"select"
+
+	// 处理rowName
+	for( temp = firstWord(str, " ,"); !(temp == "from"); temp = firstWord(str, " ,") ) {
+		// TODO: 验证row的存在性？
+		rowNameVector.push_back( temp );
+		str = delFirstWord(str, " ,");
+	}
+
+	// 处理tableName
+	str = delFirstWord(str, " ");	// 删除from
+	tableName = firstWord(str, " ");
+
+	// 处理条件, 如果有where...
+	if( firstWord(str, " ") == "where" ) {
+		str = delFirstWord(str, " "); // 删除where
+		for( temp = firstWord(str, " "); !(temp == ";") && !(temp == "and"); temp = firstWord(str, " ") ) {
+			condLeftVector.push_back(firstWord(str, " ")); // 比较的属性名
+			str = delFirstWord(str, " ");
+			condOpVector.push_back(firstWord(str, " "));   // 比较的操作符
+			str = delFirstWord(str, " ");
+			condRightVector.push_back(firstWord(str, " "));// 比较的数值
+			str = delFirstWord(str, " ");
+		}
+	}
+
+	sql.setType(SQL_SELECT);
+	sql.setTableName(tableName);
+	sql.setRowNameVector(rowNameVector);
+	sql.setCondLeftVector(condLeftVector);
+	sql.setCondRightVector(condRightVector);
+}
