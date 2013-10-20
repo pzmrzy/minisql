@@ -44,7 +44,7 @@ public: // 检查语句
 
 	SqlCommand insertIntoValues();         // 检查INSERT INTO tableName VALUES(insertValueList)
 
-	SqlCommand deleteFromWhere();          // 检查DELETE FROM tableName WHERE condcol condOp condValue
+	SqlCommand deleteFromWhere(string& str);// 检查DELETE FROM tableName WHERE condcol condOp condValue
 
 	SqlCommand useClause(string& str);     // 检查USE databaseName
 

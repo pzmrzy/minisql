@@ -291,6 +291,10 @@ SqlCommand Interpreter::getExpression(string input) {
 	else if( firstStr == "select" ) {
 		sql = selectClause(input);
 	}
+	// 第一个是delete
+	else if( firstStr == "delete" ) {
+		sql = deleteFromWhere(input);
+	}
 	// 无法匹配
 	else {
 		sql.setType(SQL_ERROR);
@@ -307,7 +311,6 @@ SqlCommand Interpreter::getExpression(string input) {
  * select a, b from xxx
  * select * from xxx
  * where a > 10 and b < 10 ;
- * TODO: 在SqlCommand中加入colNameVector, condVector;
  */
 SqlCommand Interpreter::selectClause(string& str) {
 	// 现在的语句示例 select colName, colName from tableName where condcol condOp condValue and condcol condop condvalue, etc
@@ -351,3 +354,47 @@ SqlCommand Interpreter::selectClause(string& str) {
 	return sql;
 }
 
+/**
+ * @brief  测试delete from语句
+ * @author tgmerge
+ * 要支持的语句
+ * delete from tableX
+ * delete from tableX where a > 10 and b < 10 ;
+ * TODO: 验证tableX存在性
+ */
+SqlCommand Interpreter::deleteFromWhere(string& str) {
+	// 现在的语句示例 delete from X where a > 10 and b < 10 ;
+	SqlCommand sql;
+	string tableName;
+	string temp;
+
+	str = delFirstWord(str, " ");
+	str = delFirstWord(str, " ");	// 删除"delete from"
+	// TODO: delete后面不是from的情况
+
+	// 处理tableName
+	tableName = firstWord(str, " ");
+	str = delFirstWord(str, " ");
+	// TODO: 验证tableName的存在性
+
+	// 如果后面有where
+	if( firstWord(str, " ") == "where" ) {
+		str = delFirstWord(str, " "); // 删除where
+		for( temp = firstWord(str, " "); !(temp == ";"); temp = firstWord(str, " ") ) {
+			if(temp == "and") {
+				str = delFirstWord(str, " ");
+			}
+			sql.pushCondLeftVector(firstWord(str, " ")); // 比较的属性名
+			str = delFirstWord(str, " ");
+			sql.pushCondOpVector(firstWord(str, " "));   // 比较的操作符
+			str = delFirstWord(str, " ");
+			sql.pushCondRightVector(firstWord(str, " "));// 比较的数值
+			str = delFirstWord(str, " ");
+		}
+	}
+
+	sql.setType(SQL_DELETE);
+	sql.setTableName(tableName);
+
+	return sql;
+}
