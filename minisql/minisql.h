@@ -7,6 +7,7 @@
 #include <fstream>
 using namespace std;
 
+#define MAX_CHAR_LENGTH 32
 //catalog返回的信息
 class catainfo{
 public:
@@ -34,6 +35,7 @@ class attribute{
 public:
 	string name;	//名称
 	int datatype;	//数据类型
+	int length;		//数据长度
 	bool PK;		//主键
 	bool UN;		//唯一
 	bool NN;		//非空
@@ -45,18 +47,14 @@ public:
 	int attrNum;					//属性数
 	int recLength;					//记录长度
 	vector<attribute> attrList;		//属性列表
-}
+};
 
 class tableNum{
 public:
+	tableNum(){}
 	tableNum(int n){
 		num = n;
 	}
-
-	int getnum(){
-		return num;
-	}
-private:
 	int num;
-}
+};
 #endif

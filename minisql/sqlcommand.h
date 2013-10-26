@@ -41,13 +41,25 @@ public:
 	void setDatabaseName(string& str){
 		databaseName = str;
 	}
+	//获取数据库名
+	string getDatabaseName(){
+		return databaseName;
+	}
 	//设置表名
 	void setTableName(string& str){
 		tableName = str;
 	}
+	//获取表明
+	string getTableName(){
+		return tableName;
+	}
 	//设置索引名
 	void setIndexName(string& str){
 		indexName = str;
+	}
+	//获取索引名
+	string getIndexName(){
+		return indexName;
 	}
 	//设置列名
 	void setcolName(string& str){

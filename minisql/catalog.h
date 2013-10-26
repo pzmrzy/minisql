@@ -3,7 +3,7 @@
 
 #include"minisql.h"
 #include"sqlcommand.h"
-
+#define CATA "catalog.list"
 class catalog
 {
 public:
@@ -29,15 +29,22 @@ public:
 	catainfo drop_Database(SqlCommand& sqlcmd);
 	//使用数据库
 	catainfo use_Database(SqlCommand& sqlcmd);
+	//初始化 第一次建表时调用
+	void init(string& dbname);
 private:
 	//判断数据库是否存在
-	bool exist_Database(string dbname);
+	bool exist_Database(string& dbname);
 	//判断表是否存在
-	bool exist_Table(string dbname, string tbname);
+	bool exist_Table(string& dbname, string& tbname);
 	//判断索引是否存在
-	bool exist_Index(string dbname, string tbname, string indname);
-	//获取属性信息
-	attribute get_Attr(string dbname, string tbname, string attrname);
-
+	bool exist_Index(string& dbname, string& tbname, string& indname);
+	//写表数
+	void writeHead(fstream& f, tableNum& t);
+	//读表数
+	void readTableNum(fstream& f, tableNum& t);
+	//读表
+	void readTable(fstream& f, table& t);
+	//读属性
+	void readAttr(fstream& f, attribute& attr);
 };
 #endif
