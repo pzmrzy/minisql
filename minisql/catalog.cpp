@@ -137,6 +137,36 @@ catainfo catalog::drop_Table(SqlCommand& cmd){
     return catainfo(true, "");
 }
 
+catainfo catalog::creat_Database(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (existdb)
+		return catainfo(false, "Database " + dbname + " Has Already Exist!");
+	else{
+		init(dbname);
+		return catainfo(true, "");
+	}
+}
+
+catainfo catalog::drop_Database(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+
+	system("del " + dbname + ".list");
+	return catainfo(true, "");
+}
+
+catainfo catalog::use_Database(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+	else
+		return catainfo(true, "");
+}
+
 bool catalog::exist_Table(string& dbname, string& tname){
 	bool flag = false;
 	fstream f;
@@ -158,3 +188,13 @@ bool catalog::exist_Table(string& dbname, string& tname){
 	return flag;
 }
 
+bool catalog::exist_Database(string& dbname){
+	fstream f;
+	f.open(dbname+".list",ios::in);
+	if(!f)
+		return false;
+	else{
+		f.close();
+		return true;
+	}
+}
