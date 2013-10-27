@@ -1,5 +1,25 @@
 #include "catalog.h"
 
+bool catalog::check(int t, string& str){
+	bool isint = true;
+	bool isfloat = true;
+	if (!(str.find('.') < str.length() && str.find_first_of('.') == str.find_last_of('.')))
+		isfloat = false;
+	for (int i=0; i<str.length(); i++)
+		if (str[i] < '0' && str[i] > '9'){
+			isint = false;
+			if (str[i] != '.')
+				isfloat = false;
+		}
+	if (t == 0 && isint)
+		return true;
+	if (t == -1 && isfloat)
+		return true;
+	if (t >= 1)
+		return true;
+	return false;
+}
+
 catalog::catalog(void)
 {
 }
@@ -42,7 +62,7 @@ void catalog::writeTable(fstream& f, table& t){
 	f.write((char *)&(t.recLength), sizeof(int));
 	for (int i = 0; i < t.attrNum; i++)
 		writeAttr(f, t.attrList[i]);
-	fout.flush();
+	f.flush();
 }
 
 void catalog::readAttr(fstream& f, attribute& attr){
@@ -56,7 +76,7 @@ void catalog::readAttr(fstream& f, attribute& attr){
 	attr.name = buf;
 }
 
-void catalog::writeArrt(fstream& f, attribute& attr){
+void catalog::writeAttr(fstream& f, attribute& attr){
 	f.write((char *)attr.name.c_str(), MAX_CHAR_LENGTH);
 	f.write((char *)&(attr.datatype), sizeof(int));
 	f.write((char *)&(attr.length), sizeof(int));
@@ -153,8 +173,48 @@ catainfo catalog::drop_Database(SqlCommand& cmd){
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
 		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+	string del = dbname + ".list";
 
-	system("del " + dbname + ".list");
+	if (!DeleteFile(del.c_str()))
+		return catainfo(false, "Can't Delete File " + dbname + ".list!");
+	return catainfo(true, "");
+}
+
+catainfo catalog::insert_Rec(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+
+	string tname = cmd.getTableName();
+	bool existt = exist_Table(dbname, tname);
+	if (!existt)
+		return catainfo(false, "Table " + tname + " Do Not Exist!");
+	
+	fstream f;
+	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
+	tableNum tnum;
+	//读出表头数据
+	f.seekg(0, ios::beg);
+	readHead(f, tnum);
+	int TN = tnum.num;
+	table tmptable;
+	for (int i = 0; i < TN; i++){
+        readTable(f, tmptable);
+		if (tmptable.name == tname)
+			break;
+    }
+	//vector<string> tmpCNV = cmd.getcolNameVector();
+	vector<string> tmpCVV = cmd.getcolValueVector();
+	if (tmptable.attrNum != tmpCVV.size())
+		return catainfo(false, "The number of Attribute is Wrong!");
+
+	for (int i=0; i<tmptable.attrNum; i++){
+		if (!check(tmptable.attrList[i].datatype, tmpCVV[i]))
+			return catainfo(false, "The Type of Arrtibute " + tmptable.attrList[i].name + 
+			" Should Be" + tmptable.attrList[i].typeName() + "!");
+	}
+	f.close();
 	return catainfo(true, "");
 }
 

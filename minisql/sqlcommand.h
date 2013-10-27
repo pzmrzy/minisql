@@ -70,9 +70,15 @@ public:
 	void pushColNameVector(string& t){
 		colNameVector.push_back(t);
 	}
+	vector<string> getcolNameVector(){
+		return colNameVector;
+	}
 	//push列值(insert使用)
 	void pushColValueVector(string& str){
 		colValueVector.push_back(str);
+	}
+	vector<string> getcolValueVector(){
+		return colValueVector;
 	}
 	//push条件左值(select,delete)
 	void pushCondLeftVector(string& str){

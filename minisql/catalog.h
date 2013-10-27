@@ -49,6 +49,8 @@ private:
 	//读属性
 	void readAttr(fstream& f, attribute& attr);
 	//写属性
-	void writeArrt(fstream& f, attribute& attr);
+	void writeAttr(fstream& f, attribute& attr);
+	//判断类型是否相符
+	bool check(int t, string& str);
 };
 #endif

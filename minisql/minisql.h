@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <sstream>
+#include <windows.h>
 using namespace std;
 
 #define MAX_FILENAME_LENGTH 256     /* 最长文件名长度 */
@@ -53,6 +55,15 @@ public:
 	bool PK;		//主键
 	bool UN;		//唯一
 	bool NN;		//非空
+	string typeName(){
+		if (datatype == 0)
+			return "Integer";
+		if (datatype == -1)
+			return "Float";
+		stringstream ss;
+		ss<<datatype;
+		return "Char(" + ss.str() + ")";
+	}
 };
 
 class table{
