@@ -41,10 +41,14 @@ private:
 	//写表数
 	void writeHead(fstream& f, tableNum& t);
 	//读表数
-	void readTableNum(fstream& f, tableNum& t);
+	void readHead(fstream& f, tableNum& t);
 	//读表
 	void readTable(fstream& f, table& t);
+	//写表
+	void writeTable(fstream& f, table& t);
 	//读属性
 	void readAttr(fstream& f, attribute& attr);
+	//写属性
+	void writeArrt(fstream& f, attribute& attr);
 };
 #endif

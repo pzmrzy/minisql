@@ -22,7 +22,7 @@ void catalog::writeHead(fstream& f, tableNum& t)
     f.flush();
 }
 
-void catalog::readTableNum(fstream& f, tableNum& t){
+void catalog::readHead(fstream& f, tableNum& t){
 	f.read((char *)&(t.num), sizeof(int));
 }
 
@@ -36,7 +36,16 @@ void catalog::readTable(fstream& f, table& t){
 		readAttr(f, t.attrList[i]);
 }
 
-void catalog::readAttr(fstream&f, attribute& attr){
+void catalog::writeTable(fstream& f, table& t){
+	f.write((char *)t.name.c_str(), MAX_CHAR_LENGTH);
+	f.write((char *)&(t.attrNum), sizeof(int));
+	f.write((char *)&(t.recLength), sizeof(int));
+	for (int i = 0; i < t.attrNum; i++)
+		writeAttr(f, t.attrList[i]);
+	fout.flush();
+}
+
+void catalog::readAttr(fstream& f, attribute& attr){
 	char buf[MAX_CHAR_LENGTH];
 	f.read((char *)buf, MAX_CHAR_LENGTH);
 	f.read((char *)&(attr.datatype), sizeof(int));
@@ -45,6 +54,16 @@ void catalog::readAttr(fstream&f, attribute& attr){
 	f.read((char *)&(attr.UN), sizeof(bool));
 	f.read((char *)&(attr.NN), sizeof(bool));
 	attr.name = buf;
+}
+
+void catalog::writeArrt(fstream& f, attribute& attr){
+	f.write((char *)attr.name.c_str(), MAX_CHAR_LENGTH);
+	f.write((char *)&(attr.datatype), sizeof(int));
+	f.write((char *)&(attr.length), sizeof(int));
+	f.write((char *)&(attr.PK), sizeof(bool));
+	f.write((char *)&(attr.UN), sizeof(bool));
+	f.write((char *)&(attr.NN), sizeof(bool));
+	f.flush();
 }
 
 catainfo catalog::creat_Table(SqlCommand& cmd){
@@ -62,10 +81,60 @@ catainfo catalog::creat_Table(SqlCommand& cmd){
 	f.open(dbname + ".list", ios::in | ios::out | ios::beg);
 	tableNum tnum;
 	f.seekg(0, ios::beg);
-	readTableNum(f, tnum);
+	readHead(f, tnum);
 	tnum.num++;
 	f.seekp(0, ios::beg);
 	writeHead(f, tnum);
+	return catainfo(true, "");
+}
+
+catainfo catalog::drop_Table(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+
+	string tname = cmd.getTableName();
+	bool existt = exist_Table(dbname, tname);
+	if (!existt)
+		return catainfo(false, "Table " + tname + " Do Not Exist!");
+	
+	fstream f;
+	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
+	tableNum tnum;
+	//读出表头数据
+	f.seekg(0, ios::beg);
+	readHead(f, tnum);
+
+	int readPos = f.tellg();
+	int TN = tnum.num;
+	tnum.num--;
+	f.seekp(0, ios::beg);
+	writeHead(f, tnum);
+	// 读出所有表项找到要删除的表的位置
+	int n = 0;      //第n个表项是要删除的表项
+	int pos = 0;    //删除的表项的起始地址
+
+	f.seekg(readPos);
+	// 开辟空间存放所有表项
+	vector <table> tables;
+	table tmptable;
+	for (int i = 0; i < TN; i++){
+        readTable(f, tmptable);
+		tables.push_back(tmptable);
+		if (tmptable.name == tname){
+            n = i;
+            pos = (int)f.tellg() - (int)TABLENODE_SIZE_IN_FILE;
+        }
+    }
+	
+    // 从地址 pos 处开始写入第 n + 1 及其后面的表信息项
+    f.seekp(pos);
+    for (int i = n + 1; i < TN; i++)
+        writeTable(f, tables[i]);
+
+    f.close();
+    return catainfo(true, "");
 }
 
 bool catalog::exist_Table(string& dbname, string& tname){
@@ -75,7 +144,7 @@ bool catalog::exist_Table(string& dbname, string& tname){
 
 	tableNum tnum;
 	table t;
-	readTableNum(f, tnum);
+	readHead(f, tnum);
 	int Maxn = tnum.num;
 
 	for (int i=0; i<Maxn; i++){
