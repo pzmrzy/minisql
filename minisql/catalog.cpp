@@ -218,6 +218,96 @@ catainfo catalog::insert_Rec(SqlCommand& cmd){
 	return catainfo(true, "");
 }
 
+catainfo catalog::select_Rec(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+
+	string tname = cmd.getTableName();
+	bool existt = exist_Table(dbname, tname);
+	if (!existt)
+		return catainfo(false, "Table " + tname + " Do Not Exist!");
+	
+	fstream f;
+	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
+	tableNum tnum;
+	//读出表头数据
+	f.seekg(0, ios::beg);
+	readHead(f, tnum);
+	int TN = tnum.num;
+	table tmptable;
+	for (int i = 0; i < TN; i++){
+        readTable(f, tmptable);
+		if (tmptable.name == tname)
+			break;
+    }
+	vector<string> CLV = cmd.getCondLeftVector();
+	vector<string> COV = cmd.getCondOpVector();
+	vector<string> CRV = cmd.getCondRightVevtor();
+
+	bool flag;
+	for (int j=0; j<CLV.size(); j++){
+		flag = false;
+		for(int i=0; i<tmptable.attrNum; i++){
+			if (tmptable.attrList[i].name == CLV[j]){
+				flag = true;
+				if (!check(tmptable.attrList[i].datatype, CRV[j]))
+					return catainfo(false, "The Type of Arrtibute " + tmptable.attrList[i].name + 
+					" Should Be" + tmptable.attrList[i].typeName() + "!");
+			}
+		}
+		if (!flag) 
+			return catainfo(false, "Don't Have Attribute " + CLV[j]);
+	}
+	return catainfo(true, "");
+}
+
+catainfo catalog::delete_Rec(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+
+	string tname = cmd.getTableName();
+	bool existt = exist_Table(dbname, tname);
+	if (!existt)
+		return catainfo(false, "Table " + tname + " Do Not Exist!");
+	
+	fstream f;
+	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
+	tableNum tnum;
+	//读出表头数据
+	f.seekg(0, ios::beg);
+	readHead(f, tnum);
+	int TN = tnum.num;
+	table tmptable;
+	for (int i = 0; i < TN; i++){
+        readTable(f, tmptable);
+		if (tmptable.name == tname)
+			break;
+    }
+	vector<string> CLV = cmd.getCondLeftVector();
+	vector<string> COV = cmd.getCondOpVector();
+	vector<string> CRV = cmd.getCondRightVevtor();
+
+	bool flag;
+	for (int j=0; j<CLV.size(); j++){
+		flag = false;
+		for(int i=0; i<tmptable.attrNum; i++){
+			if (tmptable.attrList[i].name == CLV[j]){
+				flag = true;
+				if (!check(tmptable.attrList[i].datatype, CRV[j]))
+					return catainfo(false, "The Type of Arrtibute " + tmptable.attrList[i].name + 
+					" Should Be" + tmptable.attrList[i].typeName() + "!");
+			}
+		}
+		if (!flag) 
+			return catainfo(false, "Don't Have Attribute " + CLV[j]);
+	}
+	return catainfo(true, "");
+}
+
 catainfo catalog::use_Database(SqlCommand& cmd){
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);

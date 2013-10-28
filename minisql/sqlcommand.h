@@ -84,13 +84,22 @@ public:
 	void pushCondLeftVector(string& str){
 		condLeftVector.push_back(str);
 	}
+	vector<string> getCondLeftVector(){
+		return condLeftVector;
+	}
 	//push条件操作符(select,delete)
 	void pushCondOpVector(string& str){
 		condOpVector.push_back(str);
 	}
+	vector<string> getCondOpVector(){
+		return condOpVector;
+	}
 	//push条件右值(select,delete)
 	void pushCondRightVector(string& str){
 		condRightVector.push_back(str);
+	}
+	vector<string> getCondRightVevtor(){
+		return condRightVector;
 	}
 	//输出命令信息
 	void print(){
