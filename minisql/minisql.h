@@ -25,27 +25,6 @@ using namespace std;
 #define TABLEHEAD_SIZE_IN_FILE (sizeof(int))/* 一个表信息头在文件中所占的大小 */
 #define TABLENODE_SIZE_IN_FILE (2 * sizeof(int) + MAX_CHAR_LENGTH * sizeof(char) + MAX_ATTR_NUM * ATTR_SIZE_IN_FILE)/* 一个表信息项在文件中所占的大小 */
 //catalog返回的信息
-class catainfo{
-public:
-	//Ctor
-	catainfo(bool f, string mes){
-		succ = f;
-		message = mes;
-	}
-	//获取指令是否成功
-	bool getsucc(){
-		return succ;	
-	}
-	//输出错误信息
-	void print(){
-		cout<<message<<endl;
-	}
-private:
-	bool succ;
-	string message;
-
-};
-
 //属性信息
 class attribute{
 public:
@@ -65,14 +44,46 @@ public:
 		return "Char(" + ss.str() + ")";
 	}
 };
-
 class table{
 public:
+	table (const table& T){
+		name = T.name;
+		attrNum = T.attrNum;
+		recLength = T.recLength;
+		attrList = T.attrList;
+	}
+	table (){}
 	string name;					//名称
 	int attrNum;					//属性数
 	int recLength;					//记录长度
 	vector<attribute> attrList;		//属性列表
 };
+class catainfo{
+public:
+	//Ctor
+	catainfo(bool f, string mes, table tab){
+		succ = f;
+		message = mes;
+		T = tab;
+	}
+	//获取指令是否成功
+	bool getsucc(){
+		return succ;	
+	}
+	//输出错误信息
+	void print(){
+		cout<<message<<endl;
+	}
+private:
+	bool succ;
+	string message;
+	table T;
+
+};
+
+
+
+
 
 class tableNum{
 public:

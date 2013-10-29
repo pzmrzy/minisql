@@ -88,14 +88,17 @@ void catalog::writeAttr(fstream& f, attribute& attr){
 
 catainfo catalog::creat_Table(SqlCommand& cmd){
 	string dbname = cmd.getDatabaseName();
+	table tmptable;
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 
 	string tname = cmd.getTableName();
 	bool existt = exist_Table(dbname, tname);
 	if (existt)
-		return catainfo(false, "Table " + tname + " Has Already Exist!");
+		return catainfo(false, "Table " + tname + " Has Already Exist!", tmptable);
+
+	
 
 	fstream f;
 	f.open(dbname + ".list", ios::in | ios::out | ios::beg);
@@ -105,19 +108,23 @@ catainfo catalog::creat_Table(SqlCommand& cmd){
 	tnum.num++;
 	f.seekp(0, ios::beg);
 	writeHead(f, tnum);
-	return catainfo(true, "");
+	f.seekp(0, ios::end);
+	writeTable(f, tmptable);
+	f.close();
+	return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::drop_Table(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 
 	string tname = cmd.getTableName();
 	bool existt = exist_Table(dbname, tname);
 	if (!existt)
-		return catainfo(false, "Table " + tname + " Do Not Exist!");
+		return catainfo(false, "Table " + tname + " Do Not Exist!", tmptable);
 	
 	fstream f;
 	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
@@ -138,7 +145,6 @@ catainfo catalog::drop_Table(SqlCommand& cmd){
 	f.seekg(readPos);
 	// 开辟空间存放所有表项
 	vector <table> tables;
-	table tmptable;
 	for (int i = 0; i < TN; i++){
         readTable(f, tmptable);
 		tables.push_back(tmptable);
@@ -154,51 +160,53 @@ catainfo catalog::drop_Table(SqlCommand& cmd){
         writeTable(f, tables[i]);
 
     f.close();
-    return catainfo(true, "");
+    return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::creat_Database(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
-	if (existdb)
-		return catainfo(false, "Database " + dbname + " Has Already Exist!");
-	else{
+	if (existdb){
+		return catainfo(false, "Database " + dbname + " Has Already Exist!", tmptable);
+	}else{
 		init(dbname);
-		return catainfo(true, "");
+		return catainfo(true, "", tmptable);
 	}
 }
 
 catainfo catalog::drop_Database(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 	string del = dbname + ".list";
 
 	if (!DeleteFile(del.c_str()))
-		return catainfo(false, "Can't Delete File " + dbname + ".list!");
-	return catainfo(true, "");
+		return catainfo(false, "Can't Delete File " + dbname + ".list!", tmptable);
+	return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::insert_Rec(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 
 	string tname = cmd.getTableName();
 	bool existt = exist_Table(dbname, tname);
 	if (!existt)
-		return catainfo(false, "Table " + tname + " Do Not Exist!");
-	
+		return catainfo(false, "Table " + tname + " Do Not Exist!", tmptable);
+	tableNum tnum;
 	fstream f;
 	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
-	tableNum tnum;
 	//读出表头数据
 	f.seekg(0, ios::beg);
 	readHead(f, tnum);
 	int TN = tnum.num;
-	table tmptable;
+
 	for (int i = 0; i < TN; i++){
         readTable(f, tmptable);
 		if (tmptable.name == tname)
@@ -207,27 +215,28 @@ catainfo catalog::insert_Rec(SqlCommand& cmd){
 	//vector<string> tmpCNV = cmd.getcolNameVector();
 	vector<string> tmpCVV = cmd.getcolValueVector();
 	if (tmptable.attrNum != tmpCVV.size())
-		return catainfo(false, "The number of Attribute is Wrong!");
+		return catainfo(false, "The number of Attribute is Wrong!", tmptable);
 
 	for (int i=0; i<tmptable.attrNum; i++){
 		if (!check(tmptable.attrList[i].datatype, tmpCVV[i]))
 			return catainfo(false, "The Type of Arrtibute " + tmptable.attrList[i].name + 
-			" Should Be" + tmptable.attrList[i].typeName() + "!");
+			" Should Be" + tmptable.attrList[i].typeName() + "!", tmptable);
 	}
 	f.close();
-	return catainfo(true, "");
+	return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::select_Rec(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 
 	string tname = cmd.getTableName();
 	bool existt = exist_Table(dbname, tname);
 	if (!existt)
-		return catainfo(false, "Table " + tname + " Do Not Exist!");
+		return catainfo(false, "Table " + tname + " Do Not Exist!", tmptable);
 	
 	fstream f;
 	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
@@ -236,7 +245,7 @@ catainfo catalog::select_Rec(SqlCommand& cmd){
 	f.seekg(0, ios::beg);
 	readHead(f, tnum);
 	int TN = tnum.num;
-	table tmptable;
+	
 	for (int i = 0; i < TN; i++){
         readTable(f, tmptable);
 		if (tmptable.name == tname)
@@ -254,25 +263,26 @@ catainfo catalog::select_Rec(SqlCommand& cmd){
 				flag = true;
 				if (!check(tmptable.attrList[i].datatype, CRV[j]))
 					return catainfo(false, "The Type of Arrtibute " + tmptable.attrList[i].name + 
-					" Should Be" + tmptable.attrList[i].typeName() + "!");
+					" Should Be" + tmptable.attrList[i].typeName() + "!", tmptable);
 			}
 		}
 		if (!flag) 
-			return catainfo(false, "Don't Have Attribute " + CLV[j]);
+			return catainfo(false, "Don't Have Attribute " + CLV[j], tmptable);
 	}
-	return catainfo(true, "");
+	return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::delete_Rec(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 
 	string tname = cmd.getTableName();
 	bool existt = exist_Table(dbname, tname);
 	if (!existt)
-		return catainfo(false, "Table " + tname + " Do Not Exist!");
+		return catainfo(false, "Table " + tname + " Do Not Exist!", tmptable);
 	
 	fstream f;
 	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
@@ -281,7 +291,7 @@ catainfo catalog::delete_Rec(SqlCommand& cmd){
 	f.seekg(0, ios::beg);
 	readHead(f, tnum);
 	int TN = tnum.num;
-	table tmptable;
+
 	for (int i = 0; i < TN; i++){
         readTable(f, tmptable);
 		if (tmptable.name == tname)
@@ -299,22 +309,23 @@ catainfo catalog::delete_Rec(SqlCommand& cmd){
 				flag = true;
 				if (!check(tmptable.attrList[i].datatype, CRV[j]))
 					return catainfo(false, "The Type of Arrtibute " + tmptable.attrList[i].name + 
-					" Should Be" + tmptable.attrList[i].typeName() + "!");
+					" Should Be" + tmptable.attrList[i].typeName() + "!", tmptable);
 			}
 		}
 		if (!flag) 
-			return catainfo(false, "Don't Have Attribute " + CLV[j]);
+			return catainfo(false, "Don't Have Attribute " + CLV[j], tmptable);
 	}
-	return catainfo(true, "");
+	return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::use_Database(SqlCommand& cmd){
+	table tmptable;
 	string dbname = cmd.getDatabaseName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
-		return catainfo(false, "Database " + dbname + " Do Not Exist!");
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
 	else
-		return catainfo(true, "");
+		return catainfo(true, "", tmptable);
 }
 
 bool catalog::exist_Table(string& dbname, string& tname){
