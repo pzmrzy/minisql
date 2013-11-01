@@ -1,7 +1,7 @@
 /**
  * @file  sqlcommand.h
- * @brief ÄÚ²¿ÃüÁîÀàÍ·ÎÄ¼ş
- * TODO: ¾ö¶¨ÄÚ²¿ÃüÁîµÄÏ¸½Ú
+ * @brief å†…éƒ¨å‘½ä»¤ç±»å¤´æ–‡ä»¶
+ * TODO: å†³å®šå†…éƒ¨å‘½ä»¤çš„ç»†èŠ‚
  */
 
 #ifndef _SQLCOMMAND_H_
@@ -29,72 +29,72 @@ using namespace std;
 
 /**
  * class SqlCommand
- * @brief ÄÚ²¿¸ñÊ½sqlÃüÁî
+ * @brief å†…éƒ¨æ ¼å¼sqlå‘½ä»¤
  */
 class SqlCommand {
 public:
-	//ÉèÖÃÃüÁîÀàĞÍ
+	//è®¾ç½®å‘½ä»¤ç±»å‹
 	void setType(int t){
 		type = t;
 	}
-	//ÉèÖÃÊı¾İ¿âÃû
+	//è®¾ç½®æ•°æ®åº“å
 	void setDatabaseName(string& str){
 		databaseName = str;
 	}
-	//»ñÈ¡Êı¾İ¿âÃû
+	//è·å–æ•°æ®åº“å
 	string getDatabaseName(){
 		return databaseName;
 	}
-	//ÉèÖÃ±íÃû
+	//è®¾ç½®è¡¨å
 	void setTableName(string& str){
 		tableName = str;
 	}
-	//»ñÈ¡±íÃ÷
+	//è·å–è¡¨æ˜
 	string getTableName(){
 		return tableName;
 	}
-	//ÉèÖÃË÷ÒıÃû
+	//è®¾ç½®ç´¢å¼•å
 	void setIndexName(string& str){
 		indexName = str;
 	}
-	//»ñÈ¡Ë÷ÒıÃû
+	//è·å–ç´¢å¼•å
 	string getIndexName(){
 		return indexName;
 	}
-	//ÉèÖÃÁĞÃû
+	//è®¾ç½®åˆ—å
 	void setcolName(string& str){
 		colName = str;
 	}
 
-	//pushÁĞÃû(selectÊ¹ÓÃ)
+	//pushåˆ—å(selectä½¿ç”¨)
 	void pushColNameVector(string& t){
 		colNameVector.push_back(t);
 	}
 	vector<string> getcolNameVector(){
 		return colNameVector;
 	}
-	//pushÁĞÖµ(insertÊ¹ÓÃ)
+	//pushåˆ—å€¼(insertä½¿ç”¨)
 	void pushColValueVector(string& str){
 		colValueVector.push_back(str);
 	}
 	vector<string> getcolValueVector(){
 		return colValueVector;
 	}
-	//pushÌõ¼ş×óÖµ(select,delete)
+	//pushæ¡ä»¶å·¦å€¼(select,delete)
 	void pushCondLeftVector(string& str){
 		condLeftVector.push_back(str);
 	}
 	vector<string> getCondLeftVector(){
 		return condLeftVector;
 	}
-	//pushÌõ¼ş²Ù×÷·û(select,delete)
+	//pushæ¡ä»¶æ“ä½œç¬¦(select,delete)
 	void pushCondOpVector(string& str){
 		condOpVector.push_back(str);
 	}
 	vector<string> getCondOpVector(){
 		return condOpVector;
 	}
-	//pushÌõ¼şÓÒÖµ(select,delete)
+	//pushæ¡ä»¶å³å€¼(select,delete)
 	void pushCondRightVector(string& str){
 		condRightVector.push_back(str);
 	}
@@ -104,7 +104,7 @@ public:
 	int gettype(){
 		return type;
 	}
-	//Êä³öÃüÁîĞÅÏ¢
+	//è¾“å‡ºå‘½ä»¤ä¿¡æ¯
 	void print(){
 
 		cout<<"type: "<<type<<endl;
@@ -135,20 +135,23 @@ public:
 		cout<<endl;
 	}
 private:
-	// ÃüÁîÀàĞÍ
+	// å‘½ä»¤ç±»å‹
 	int type;
 
-	// ÃüÁîÊı¾İ
+	// å‘½ä»¤æ•°æ®
 	string tableName;
 	string databaseName;
 	string indexName;
 	string colName;
+public:
+	vector<string> colNameVector;	// where/insert/CREATE TABLEæ¡ä»¶ä¸­çš„å±æ€§å
+	vector<string> colValueVector;  // where/insertæ¡ä»¶ä¸­çš„å±æ€§å€¼, CREATE TABLEä¸­çš„å„å±æ€§æ•°æ®ç±»å‹
+	vector<string> condLeftVector;	// whereæ¡ä»¶ä¸­çš„å±æ€§å e.g. colA
+	vector<string> condOpVector;	// whereæ¡ä»¶ä¸­çš„ç¬¦å·   e.g. >=
+	vector<string> condRightVector;	// whereæ¡ä»¶ä¸­çš„å€¼     e.g. 10
 
-	vector<string> colNameVector;	// where/insertÌõ¼şÖĞµÄÊôĞÔÃû
-	vector<string> colValueVector;  // where/insertÌõ¼şÖĞµÄÊôĞÔÖµ
-	vector<string> condLeftVector;	// whereÌõ¼şÖĞµÄÊôĞÔÃû e.g. colA
-	vector<string> condOpVector;	// whereÌõ¼şÖĞµÄ·ûºÅ   e.g. >=
-	vector<string> condRightVector;	// whereÌõ¼şÖĞµÄÖµ     e.g. 10
+public:
+	vector<string> colSpecialVector;// create tableä¸­å„åˆ—æ˜¯å¦ä¸ºä¸»é”®('primary')æˆ–unique('unique')
 
 };
 

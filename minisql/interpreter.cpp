@@ -1,15 +1,15 @@
 /**
  * @file  interpreter.cpp
- * @brief ½âÊÍÆ÷µÄÊµÏÖ
+ * @brief è§£é‡Šå™¨çš„å®ç°
  *
-   ´ó¸ÅÁ÷³Ì
+   å¤§æ¦‚æµç¨‹
    cin:    "drop table    tableA;"
-   |  readInput();  µ¥´ÊµÈ¸ñÊ½ÕûÀí
+   |  readInput();  å•è¯ç­‰æ ¼å¼æ•´ç†
    v
    string: "drop table tableA ;"
-   |  getExpression();  »ñÈ¡SqlCommand£¬ÖĞ¼ä»áµ÷ÓÃdropTable();
+   |  getExpression();  è·å–SqlCommandï¼Œä¸­é—´ä¼šè°ƒç”¨dropTable();
    v
-   SqlCommand °üº¬¸÷ÖÖĞÅÏ¢£¬·¢¸øAPI
+   SqlCommand åŒ…å«å„ç§ä¿¡æ¯ï¼Œå‘ç»™API
    
  */
 #include "interpreter.h"
@@ -31,11 +31,11 @@ string firstWord(string& str, string split) {
 }
 
 /**
- * @brief  È¡×Ö·û´®µÄµÚÒ»¸öµ¥´Ê
+ * @brief  å–å­—ç¬¦ä¸²çš„ç¬¬ä¸€ä¸ªå•è¯
  * @author tgmerge
- * @param  string& Òª´¦ÀíµÄ´®
- *         string  ·Ö¸ô·û
- * @return string  µÚÒ»¸öµ¥´Ê
+ * @param  string& è¦å¤„ç†çš„ä¸²
+ *         string  åˆ†éš”ç¬¦
+ * @return string  ç¬¬ä¸€ä¸ªå•è¯
  */
 string Interpreter::firstWord(string& str, string split) {
 	int start   = str.find_first_not_of(split);
@@ -44,11 +44,11 @@ string Interpreter::firstWord(string& str, string split) {
 }
 
 /**
- * @brief  É¾³ı×Ö·û´®µÄµÚÒ»¸öµ¥´Ê
+ * @brief  åˆ é™¤å­—ç¬¦ä¸²çš„ç¬¬ä¸€ä¸ªå•è¯
  * @author tgmerge
- * @param  string& Òª´¦ÀíµÄ´®
- *         string  ·Ö¸ô·û
- * @return string  Ê£ÏÂµÄ×Ö·û´®
+ * @param  string& è¦å¤„ç†çš„ä¸²
+ *         string  åˆ†éš”ç¬¦
+ * @return string  å‰©ä¸‹çš„å­—ç¬¦ä¸²
  */
 string Interpreter::delFirstWord(string& str, string split) {
 	int start   = str.find_first_not_of(split);
@@ -58,9 +58,9 @@ string Interpreter::delFirstWord(string& str, string split) {
 }
 
 /**
- * @brief  ´ÓÓÃ»§¶ÁÈ¡ÊäÈë£¬É¾³ı¶àÓà¿Õ¸ñ
+ * @brief  ä»ç”¨æˆ·è¯»å–è¾“å…¥ï¼Œåˆ é™¤å¤šä½™ç©ºæ ¼
  * @author tgmerge
- * @return ÕûÀíºóµÄ×Ö·û´®
+ * @return æ•´ç†åçš„å­—ç¬¦ä¸²
  */
 string Interpreter::readInput() {
 	string sql("");
@@ -99,30 +99,30 @@ SqlCommand Interpreter::dropTable(string& str) {
 	sql.setType(SQL_DROP_TABLE);
 	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
-	name = firstWord(str, " ;"); // ¡ûreadInput()ÄÇÀïÓ¦¸ÃÒÑ¾­´¦Àí¹ı";"ÈÃËü±ä³É" ;"ÁË by tgmerge
+	name = firstWord(str, " ;"); // â†readInput()é‚£é‡Œåº”è¯¥å·²ç»å¤„ç†è¿‡";"è®©å®ƒå˜æˆ" ;"äº† by tgmerge
 	sql.setTableName(name);
 	return sql;
 }
 
 /**
- * @brief  ¼ìÑédrop indexÓï¾äºÏ·¨ĞÔ
+ * @brief  æ£€éªŒdrop indexè¯­å¥åˆæ³•æ€§
  * @author tgmerge
- * @param  string&    SQLÖ¸Áî
- * @return SqlCommand ÀàĞÍÎªSQL_DROP_INDEXµÄÄÚ²¿ÃüÁî
+ * @param  string&    SQLæŒ‡ä»¤
+ * @return SqlCommand ç±»å‹ä¸ºSQL_DROP_INDEXçš„å†…éƒ¨å‘½ä»¤
  */
 SqlCommand Interpreter::dropIndex(string& str){
-	// ÏÖÔÚµÄstrÊ¾Àı  drop index indexA ;
+	// ç°åœ¨çš„strç¤ºä¾‹  drop index indexA ;
 	SqlCommand sql;
 	string name;
 
-	// É¾³ı"drop index"
+	// åˆ é™¤"drop index"
 	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
 
-	// È¡Ë÷ÒıÃû
+	// å–ç´¢å¼•å
 	name = firstWord(str, " ");
 
-	// TODO: ¼ìÑéË÷Òı´æÔÚĞÔ
+	// TODO: æ£€éªŒç´¢å¼•å­˜åœ¨æ€§
 
 	sql.setType(SQL_USE);
 	sql.setIndexName(name);
@@ -131,23 +131,23 @@ SqlCommand Interpreter::dropIndex(string& str){
 }
 
 /**
- * @brief  ¼ìÑéuseÓï¾äºÏ·¨ĞÔ
+ * @brief  æ£€éªŒuseè¯­å¥åˆæ³•æ€§
  * @author tgmerge
- * @param  string&    SQLÖ¸Áî
- * @return SqlCommand ÀàĞÍÎªSQL_USEµÄÄÚ²¿ÃüÁî
+ * @param  string&    SQLæŒ‡ä»¤
+ * @return SqlCommand ç±»å‹ä¸ºSQL_USEçš„å†…éƒ¨å‘½ä»¤
  */
 SqlCommand Interpreter::useClause(string& str){
-	// ÏÖÔÚµÄstrÊ¾Àı  use database1 ;
+	// ç°åœ¨çš„strç¤ºä¾‹  use database1 ;
 	SqlCommand sql;
 	string name;
 
-	//É¾³ı"use"
+	//åˆ é™¤"use"
 	str = delFirstWord(str, " ");
 	
-	//È¡Êı¾İ¿âÃû³Æ
+	//å–æ•°æ®åº“åç§°
 	name = firstWord(str, " ");
 
-	// TODO: ¼ìÑéÊı¾İ¿âÃû³Æ´æÔÚĞÔ
+	// TODO: æ£€éªŒæ•°æ®åº“åç§°å­˜åœ¨æ€§
 	sql.setType(SQL_USE);
 	sql.setDatabaseName(name);
 
@@ -155,19 +155,19 @@ SqlCommand Interpreter::useClause(string& str){
 }
 
 /**
- * @brief  ¼ìÑécreate databaseÓï¾äºÏ·¨ĞÔ
+ * @brief  æ£€éªŒcreate databaseè¯­å¥åˆæ³•æ€§
  * @author tgmerge
  */
 SqlCommand Interpreter::createDatabase(string& str) {
-	// ÏÖÔÚµÄstr: create database database1 ;
+	// ç°åœ¨çš„str: create database database1 ;
 	SqlCommand sql;
 	string name;
 
-	// É¾³ı"create database"
+	// åˆ é™¤"create database"
 	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
 
-	// È¡Êı¾İ¿âÃû³Æ
+	// å–æ•°æ®åº“åç§°
 	name = firstWord(str, " ");
 
 	sql.setType(SQL_CREATE_DATABASE);
@@ -177,30 +177,43 @@ SqlCommand Interpreter::createDatabase(string& str) {
 }
 
 /**
- * @brief  ¼ìÑécreate tableÓï¾äºÏ·¨ĞÔ
+ * @brief  æ£€éªŒcreate tableè¯­å¥åˆæ³•æ€§
  * @author tgmerge
- * TODO: Î´Íê³É
  */
 SqlCommand Interpreter::createTable(string& str) {
-	// ÏÖÔÚµÄstr: create table table1 ;
+	// ç°åœ¨çš„str: create table table1 ;
 	SqlCommand sql;
 	string name;
 
-	// É¾³ı"create table"
+	// åˆ é™¤"create table"
 	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
 
-	// È¡±íÃû
+	// å–è¡¨å
 	name = firstWord(str, " ");
 
 	sql.setType(SQL_CREATE_TABLE);
 	sql.setTableName(name);
 
+	// ---
+
+	string attr, type, temp, special;
+	for( temp=firstWord(str, " (),"); temp == ""; temp=firstWord(str, " (),")) {
+		attr = firstWord(str, " ");
+		delFirstWord(str, " ");
+		type = firstWord(str, " ");
+		delFirstWord(str, " ");
+		special = firstWord(str, ",");
+		sql.colNameVector.push_back(attr);
+		sql.colValueVector.push_back(type);
+		sql.colSpecialVector.push_back(special);
+	}
+
 	return sql;
 }
 
 /**
- * @brief  ¼ìÑécreate indexÓï¾äºÏ·¨ĞÔ
+ * @brief  æ£€éªŒcreate indexè¯­å¥åˆæ³•æ€§
  * @author tgmerge
  */
 SqlCommand Interpreter::createIndex(string& str) {
@@ -209,15 +222,15 @@ SqlCommand Interpreter::createIndex(string& str) {
 	string tableName;
 	string colName;
 
-	// É¾³ı"create index"
+	// åˆ é™¤"create index"
 	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
 
-	// È¡Ë÷ÒıÃû
+	// å–ç´¢å¼•å
 	indexName = firstWord(str, " ");
 
-	// É¾³ı"Ë÷ÒıÃû on"
-	// TODO: ÅĞ¶ÏÊÇ·ñÊÇON
+	// åˆ é™¤"ç´¢å¼•å on"
+	// TODO: åˆ¤æ–­æ˜¯å¦æ˜¯ON
 	str = delFirstWord(str, " ");
 	str = delFirstWord(str, " ");
 	tableName = firstWord(str, " ()");
@@ -233,28 +246,28 @@ SqlCommand Interpreter::createIndex(string& str) {
 }
 
 /**
- * @brief  ½âÎöÃüÁî£¬µ÷ÓÃ¸÷¼ì²â·½·¨£¬·µ»ØÒ»¸öSqlCommand¶ÔÏó¹©APIÊ¹ÓÃ
+ * @brief  è§£æå‘½ä»¤ï¼Œè°ƒç”¨å„æ£€æµ‹æ–¹æ³•ï¼Œè¿”å›ä¸€ä¸ªSqlCommandå¯¹è±¡ä¾›APIä½¿ç”¨
  * @author tgmerge
- * @param  string     Òª½âÎöµÄ×Ö·û´®
- * @return SqlCommand ½âÎöÍê³ÉµÄÃüÁî¶ÔÏó
- * TODO: Î´Íê³É
+ * @param  string     è¦è§£æçš„å­—ç¬¦ä¸²
+ * @return SqlCommand è§£æå®Œæˆçš„å‘½ä»¤å¯¹è±¡
+ * TODO: æœªå®Œæˆ
  */
 SqlCommand Interpreter::getExpression(string input) {
 
-	// Òª·µ»ØµÄ¶ÔÏó
+	// è¦è¿”å›çš„å¯¹è±¡
 	SqlCommand sql;
 	
-	// È¡³öµÄµÚÒ»¸öµ¥´Ê
+	// å–å‡ºçš„ç¬¬ä¸€ä¸ªå•è¯
 	string firstStr = firstWord(input, " ");
 	
-	// ¸ù¾İµÚÒ»¸öµ¥´ÊÅĞ¶Ï
-	// µÚÒ»¸öÊÇuse
+	// æ ¹æ®ç¬¬ä¸€ä¸ªå•è¯åˆ¤æ–­
+	// ç¬¬ä¸€ä¸ªæ˜¯use
 	if( firstStr == "use" ) {
 		sql = useClause(input);
 	}
-	// µÚÒ»¸öÊÇdrop
+	// ç¬¬ä¸€ä¸ªæ˜¯drop
 	else if( firstStr == "drop" ) {
-		// ¸ù¾İµÚ¶ş¸öµ¥´ÊÅĞ¶Ï
+		// æ ¹æ®ç¬¬äºŒä¸ªå•è¯åˆ¤æ–­
 		string secondStr = delFirstWord(input, " ");
 		       secondStr = firstWord(secondStr, " ");
 		if( secondStr == "database" ) {
@@ -266,14 +279,14 @@ SqlCommand Interpreter::getExpression(string input) {
 		else if( secondStr == "index" ) {
 			sql = dropIndex(input);
 		}
-		// ÎŞ·¨Æ¥Åä
+		// æ— æ³•åŒ¹é…
 		else {
 			sql.setType(SQL_ERROR);
 		}
 	}
-	// µÚÒ»¸öÊÇcreate
+	// ç¬¬ä¸€ä¸ªæ˜¯create
 	else if( firstStr == "create" ) {
-		// ¸ù¾İµÚ¶ş¸öµ¥´ÊÅĞ¶Ï
+		// æ ¹æ®ç¬¬äºŒä¸ªå•è¯åˆ¤æ–­
 		string secondStr = delFirstWord(input, " ");
 			   secondStr = firstWord(secondStr, " ");
 		if( secondStr == "database" ) {
@@ -285,24 +298,24 @@ SqlCommand Interpreter::getExpression(string input) {
 		else if( secondStr == "index" ) {
 			sql = createIndex(input);
 		}
-		// ÎŞ·¨Æ¥Åä
+		// æ— æ³•åŒ¹é…
 		else {
 			sql.setType(SQL_ERROR);
 		}
 	}
-	// µÚÒ»¸öÊÇselect
+	// ç¬¬ä¸€ä¸ªæ˜¯select
 	else if( firstStr == "select" ) {
 		sql = selectClause(input);
 	}
-	// µÚÒ»¸öÊÇdelete
+	// ç¬¬ä¸€ä¸ªæ˜¯delete
 	else if( firstStr == "delete" ) {
 		sql = deleteFromWhere(input);
 	}
-	// µÚÒ»¸öÊÇinsert
+	// ç¬¬ä¸€ä¸ªæ˜¯insert
 	else if( firstStr == "insert" ) {
 		sql = insertIntoValues(input);
 	}
-	// ÎŞ·¨Æ¥Åä
+	// æ— æ³•åŒ¹é…
 	else {
 		sql.setType(SQL_ERROR);
 	}
@@ -311,46 +324,46 @@ SqlCommand Interpreter::getExpression(string input) {
 }
 
 /**
- * @brief  ²âÊÔselectÓï¾ä
+ * @brief  æµ‹è¯•selectè¯­å¥
  * @author tgmerge
- * ÒªÖ§³ÖµÄÓï¾ä
+ * è¦æ”¯æŒçš„è¯­å¥
  * select a from xxx
  * select a, b from xxx
  * select * from xxx
  * where a > 10 and b < 10 ;
  */
 SqlCommand Interpreter::selectClause(string& str) {
-	// ÏÖÔÚµÄÓï¾äÊ¾Àı select colName, colName from tableName where condcol condOp condValue and condcol condop condvalue, etc
+	// ç°åœ¨çš„è¯­å¥ç¤ºä¾‹ select colName, colName from tableName where condcol condOp condValue and condcol condop condvalue, etc
 	SqlCommand sql;
 	string tableName;
 	string temp;
 
-	str = delFirstWord(str, " ");	// É¾³ı"select"
+	str = delFirstWord(str, " ");	// åˆ é™¤"select"
 
-	// ´¦ÀícolName
+	// å¤„ç†colName
 	for( temp = firstWord(str, " ,"); !(temp == "from"); temp = firstWord(str, " ,") ) {
-		// TODO: ÑéÖ¤colµÄ´æÔÚĞÔ£¿
+		// TODO: éªŒè¯colçš„å­˜åœ¨æ€§ï¼Ÿ
 		sql.pushColNameVector( temp );
 		str = delFirstWord(str, " ,");
 	}
 
-	// ´¦ÀítableName
-	str = delFirstWord(str, " ");	// É¾³ıfrom
+	// å¤„ç†tableName
+	str = delFirstWord(str, " ");	// åˆ é™¤from
 	tableName = firstWord(str, " ");
-	str = delFirstWord(str, " ");   // É¾³ıtablename
+	str = delFirstWord(str, " ");   // åˆ é™¤tablename
 
-	// ´¦ÀíÌõ¼ş, Èç¹ûÓĞwhere...
+	// å¤„ç†æ¡ä»¶, å¦‚æœæœ‰where...
 	if( firstWord(str, " ") == "where" ) {
-		str = delFirstWord(str, " "); // É¾³ıwhere
+		str = delFirstWord(str, " "); // åˆ é™¤where
 		for( temp = firstWord(str, " "); !(temp == ";"); temp = firstWord(str, " ") ) {
 			if(temp == "and") {
 				str = delFirstWord(str, " ");
 			}
-			sql.pushCondLeftVector(firstWord(str, " ")); // ±È½ÏµÄÊôĞÔÃû
+			sql.pushCondLeftVector(firstWord(str, " ")); // æ¯”è¾ƒçš„å±æ€§å
 			str = delFirstWord(str, " ");
-			sql.pushCondOpVector(firstWord(str, " "));   // ±È½ÏµÄ²Ù×÷·û
+			sql.pushCondOpVector(firstWord(str, " "));   // æ¯”è¾ƒçš„æ“ä½œç¬¦
 			str = delFirstWord(str, " ");
-			sql.pushCondRightVector(firstWord(str, " "));// ±È½ÏµÄÊıÖµ
+			sql.pushCondRightVector(firstWord(str, " "));// æ¯”è¾ƒçš„æ•°å€¼
 			str = delFirstWord(str, " ");
 		}
 	}
@@ -362,40 +375,40 @@ SqlCommand Interpreter::selectClause(string& str) {
 }
 
 /**
- * @brief  ²âÊÔdelete fromÓï¾ä
+ * @brief  æµ‹è¯•delete fromè¯­å¥
  * @author tgmerge
- * ÒªÖ§³ÖµÄÓï¾ä
+ * è¦æ”¯æŒçš„è¯­å¥
  * delete from tableX
  * delete from tableX where a > 10 and b < 10 ;
- * TODO: ÑéÖ¤tableX´æÔÚĞÔ
+ * TODO: éªŒè¯tableXå­˜åœ¨æ€§
  */
 SqlCommand Interpreter::deleteFromWhere(string& str) {
-	// ÏÖÔÚµÄÓï¾äÊ¾Àı delete from X where a > 10 and b < 10 ;
+	// ç°åœ¨çš„è¯­å¥ç¤ºä¾‹ delete from X where a > 10 and b < 10 ;
 	SqlCommand sql;
 	string tableName;
 	string temp;
 
 	str = delFirstWord(str, " ");
-	str = delFirstWord(str, " ");	// É¾³ı"delete from"
-	// TODO: deleteºóÃæ²»ÊÇfromµÄÇé¿ö
+	str = delFirstWord(str, " ");	// åˆ é™¤"delete from"
+	// TODO: deleteåé¢ä¸æ˜¯fromçš„æƒ…å†µ
 
-	// ´¦ÀítableName
+	// å¤„ç†tableName
 	tableName = firstWord(str, " ");
 	str = delFirstWord(str, " ");
-	// TODO: ÑéÖ¤tableNameµÄ´æÔÚĞÔ
+	// TODO: éªŒè¯tableNameçš„å­˜åœ¨æ€§
 
-	// Èç¹ûºóÃæÓĞwhere
+	// å¦‚æœåé¢æœ‰where
 	if( firstWord(str, " ") == "where" ) {
-		str = delFirstWord(str, " "); // É¾³ıwhere
+		str = delFirstWord(str, " "); // åˆ é™¤where
 		for( temp = firstWord(str, " "); !(temp == ";"); temp = firstWord(str, " ") ) {
 			if(temp == "and") {
 				str = delFirstWord(str, " ");
 			}
-			sql.pushCondLeftVector(firstWord(str, " ")); // ±È½ÏµÄÊôĞÔÃû
+			sql.pushCondLeftVector(firstWord(str, " ")); // æ¯”è¾ƒçš„å±æ€§å
 			str = delFirstWord(str, " ");
-			sql.pushCondOpVector(firstWord(str, " "));   // ±È½ÏµÄ²Ù×÷·û
+			sql.pushCondOpVector(firstWord(str, " "));   // æ¯”è¾ƒçš„æ“ä½œç¬¦
 			str = delFirstWord(str, " ");
-			sql.pushCondRightVector(firstWord(str, " "));// ±È½ÏµÄÊıÖµ
+			sql.pushCondRightVector(firstWord(str, " "));// æ¯”è¾ƒçš„æ•°å€¼
 			str = delFirstWord(str, " ");
 		}
 	}
@@ -407,11 +420,11 @@ SqlCommand Interpreter::deleteFromWhere(string& str) {
 }
 
 /**
- * @brief  ²âÊÔinsertÓï¾ä
+ * @brief  æµ‹è¯•insertè¯­å¥
  * @author tgmerge
- * ÒªÖ§³ÖµÄÓï¾ä
+ * è¦æ”¯æŒçš„è¯­å¥
  * insert into tableA values( 10, '100' );
- * TODO: ÑéÖ¤tableX´æÔÚĞÔ, ÑéÖ¤¸÷ÁĞÀàĞÍ
+ * TODO: éªŒè¯tableXå­˜åœ¨æ€§, éªŒè¯å„åˆ—ç±»å‹
  */
 SqlCommand Interpreter::insertIntoValues(string& str) {
 	SqlCommand sql;
@@ -419,16 +432,16 @@ SqlCommand Interpreter::insertIntoValues(string& str) {
 	string temp;
 
 	str = delFirstWord(str, " ");
-	str = delFirstWord(str, " ");	// É¾³ı"insert into"
-	// TODO: insertºóÃæ²»ÊÇinto
+	str = delFirstWord(str, " ");	// åˆ é™¤"insert into"
+	// TODO: insertåé¢ä¸æ˜¯into
 
-	// ´¦ÀítableName;
+	// å¤„ç†tableName;
 	tableName = firstWord(str, " ");
 	str = delFirstWord(str, " ");
 
-	str = delFirstWord(str, " (");	// É¾³ı"values ("
+	str = delFirstWord(str, " (");	// åˆ é™¤"values ("
 
-	// ´¦ÀíÖµ
+	// å¤„ç†å€¼
 	while( !(firstWord(str, " )") == ";") ) {
 		sql.pushColValueVector( firstWord(str, " ),") );
 		str = delFirstWord(str, " ),");
