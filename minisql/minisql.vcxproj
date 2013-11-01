@@ -66,6 +66,7 @@
     <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="buffer.h" />
     <ClInclude Include="catalog.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="minisql.h" />

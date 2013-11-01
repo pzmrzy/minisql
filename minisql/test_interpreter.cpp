@@ -4,17 +4,24 @@
  */
 
 #include "interpreter.h"
+#include "catalog.h"
 #include <iostream>
 #include <atltrace.h>
 #include <stdlib.h>
-
+#include <string>
+using namespace std;
 #define TRACE ATLTRACE
 
 using namespace std;
 
 void main() {
+	string str = "test";
+	catalog C;
+	C.init(str);
+	
 
-	Interpreter test;
+
+	//Interpreter test;
 	/*
 	string testout1("drop database stu;");
 	string testout2("drop table stu;");
@@ -28,10 +35,10 @@ void main() {
 	//cout << test.delFirstWord(testOutput, " ()") << "|" << endl;
 	
 	
-	string     readInputResult = test.readInput();
-	SqlCommand sql             = test.getExpression(readInputResult);
+	//string     readInputResult = test.readInput();
+	//SqlCommand sql             = test.getExpression(readInputResult);
 	
-	sql.print();
+	//sql.print();
 	
 
 	system("pause");

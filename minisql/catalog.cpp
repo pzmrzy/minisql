@@ -1,5 +1,6 @@
 #include "catalog.h"
-
+#include <strstream>
+using namespace std;
 bool catalog::check(int t, string& str){
 	bool isint = true;
 	bool isfloat = true;
@@ -38,7 +39,7 @@ void catalog::init(string& dbname){
 
 void catalog::writeHead(fstream& f, tableNum& t)
 {
-	f.write((char *)(t.num), sizeof(int));
+	f.write((char *)(&t.num), sizeof(int));
     f.flush();
 }
 
@@ -73,6 +74,7 @@ void catalog::readAttr(fstream& f, attribute& attr){
 	f.read((char *)&(attr.PK), sizeof(bool));
 	f.read((char *)&(attr.UN), sizeof(bool));
 	f.read((char *)&(attr.NN), sizeof(bool));
+	f.read((char *)&(attr.ID), sizeof(bool));
 	attr.name = buf;
 }
 
@@ -83,6 +85,7 @@ void catalog::writeAttr(fstream& f, attribute& attr){
 	f.write((char *)&(attr.PK), sizeof(bool));
 	f.write((char *)&(attr.UN), sizeof(bool));
 	f.write((char *)&(attr.NN), sizeof(bool));
+	f.write((char *)&(attr.ID), sizeof(bool));
 	f.flush();
 }
 

@@ -101,6 +101,9 @@ public:
 	vector<string> getCondRightVevtor(){
 		return condRightVector;
 	}
+	int gettype(){
+		return type;
+	}
 	//Êä³öÃüÁîĞÅÏ¢
 	void print(){
 

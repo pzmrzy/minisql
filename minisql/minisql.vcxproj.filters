@@ -41,6 +41,9 @@
     <ClInclude Include="sqlcommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="buffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt">
