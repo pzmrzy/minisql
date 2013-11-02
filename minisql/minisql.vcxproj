@@ -60,6 +60,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="api.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="catalog.cpp" />
     <ClCompile Include="interpreter.cpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="api.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="buffermanager.h" />
     <ClInclude Include="catalog.h" />
