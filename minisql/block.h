@@ -29,27 +29,8 @@ public:
 public:							// 构造，析构
 	// 初始化一个新块, fileName, tableName, offset均需设置
 	Block();
-
 	// 如果dirty，先写回文件再销毁
 	~Block();
-
-private:						// 自用方法，读写
-	// 从某文件读一个block
-	Block read(string fileName, int offset);
-
-	// 将block写到文件
-	bool write();
-	
-public:							// RecordManager使用
-	// 返回tableName的所有块
-	static vector<Block> getTableBlocks(string tableName);
-
-	// 返回tableName的某个块（offset从IndexManager取得？）
-	static Block getTableBlock(string tableName, int offset);
-
-public:							// IndexManager使用
-	// 返回indexName的所有块
-	vector<Block> getIndexBlocks(string IndexName);
-};
+}
 
 #endif

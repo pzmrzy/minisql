@@ -27,6 +27,9 @@
     <ClCompile Include="sqlcommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="interpreter.h">
@@ -41,7 +44,10 @@
     <ClInclude Include="sqlcommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="buffer.h">
+    <ClInclude Include="block.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="buffermanager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

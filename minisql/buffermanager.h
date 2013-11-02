@@ -1,8 +1,9 @@
 /**
- * @file  buffer.h
- * @brief ç¼“å†²åŒºç®¡ç†å¤´æ–‡ä»¶
+ * @file  buffermanager.h
+ * @brief »º³åÇø¹ÜÀíÍ·ÎÄ¼ş
  * @author tgmerge
- * ç¼“å†²åŒºç®¡ç†å™¨ã€‚æ£€æŸ¥ç¼“å†²åŒºä¸­æ˜¯å¦æœ‰è¦æ±‚çš„å—ï¼Œå¦‚æœ‰åˆ™è¿”å›ï¼Œå¦åˆ™ä»ç£ç›˜è¯»å–ã€‚
+ * »º³åÇø¹ÜÀíÆ÷¡£¼ì²é»º³åÇøÖĞÊÇ·ñÓĞÒªÇóµÄ¿é£¬ÈçÓĞÔò·µ»Ø£¬·ñÔò´Ó´ÅÅÌ¶ÁÈ¡¡£
+ * ÎªIndexºÍRecordÌá¹©ËùĞèµÄ¿é
  */
 
 #ifndef _BUFFER_H_
@@ -16,86 +17,66 @@
 
 using namespace std;
 
-// æ•°æ®å—å°ºå¯¸
-#define BLOCK_LEN        4096
-// ç¼“å†²åŒºä¸­æœ€å¤§æ–‡ä»¶ä¸ªæ•°
+// »º³åÇøÖĞ×î´óÎÄ¼ş¸öÊı
 #define MAX_FILE_ACTIVE  5
-// ç¼“å†²åŒºä¸­æœ€å¤§å—æ•°
+// »º³åÇøÖĞ×î´ó¿éÊı
 #define MAX_BLOCK_ACTIVE 40
 
-
-// æ–‡ä»¶å¤´ç»“æ„
+/* ÆúÓÃ
+// ÎÄ¼şÍ·½á¹¹
 struct fileInfo {
-	// 0=æ•°æ®ï¼Œ1=ç´¢å¼•
+	// 0=Êı¾İ£¬1=Ë÷Òı
 	int type;
-	// æ–‡ä»¶å
+	// ÎÄ¼şÃû
 	string fileName;
-	// è®°å½•æ•°ç›®
+	// ¼ÇÂ¼ÊıÄ¿
 	int recordAmount;
-	// å¯ç”¨å—æ•°
+	// ¿ÉÓÃ¿éÊı
 	int freeNum;
-	// è®°å½•é•¿åº¦
+	// ¼ÇÂ¼³¤¶È
 	int recordLength;
-	// ä¸‹ä¸€ä¸ªæ–‡ä»¶çš„æŒ‡é’ˆ
+	// ÏÂÒ»¸öÎÄ¼şµÄÖ¸Õë
 	fileInfo *next;
-	// ç¬¬ä¸€ä¸ªå—æŒ‡é’ˆ
+	// µÚÒ»¸ö¿éÖ¸Õë
 	blockInfo *firstBlock;
-};
-
-/*
-class BufferManager {
-
-public:
-	// å‡½æ•°åŠŸèƒ½å’Œæ–‡æ¡£é‡Œé¢ä¸€æ¨¡ä¸€æ ·w
-	blockInfo *findBlock(string dbName);
-
-	void replace(fileInfo *m_fileInfo, blockInfo *m_blockInfo);
-
-	blockInfo *get_file_block(string dbName, string tableName, int fileType, int blockNum);
-
-	void closeDataBase(string dbName, bool mFlag);
-
-	void closeFile(string dbName, string m_fileName, int m_fileType, bool mFlag);
-
-	void writeBlock(string dbName, blockInfo *block);
-
-	fileInfo *get_file_info(string dbName, string fileName, int m_fileType);
-
-	blockInfo* readBlock(string dbName,Cstring m_fileName, int m_blockNum, int m_fileType);
-
-	void quitProg(string dbName);
-
-	void Get_Table_Info(string dbName, string tableName, int recordCount, int recordLen, int free);
-
-	void Get_Index_Info(string dbName, string indexName, int recordCount, int recordLen, int free);
-
-	void Write_Table_Info(Cstring dbName,Cstring tableName,int recordCount,int recordLen,int free);
-
-	void Write_ Index_Info(Cstring dbName,Cstring indexName,int recordCount,int recordLen,int free);
-}*/
+};*/
 
 class BufferManager {
 public:
-	// å†…å­˜ä¸­çš„ç¼“å†²åŒº
+	// ÄÚ´æÖĞµÄ»º³åÇø
 	Block buffer[MAX_BLOCK_ACTIVE];
 
-public:
-	// åˆå§‹åŒ–
-	BufferManager();
-	// é”€æ¯å…¨éƒ¨ä¸´æ—¶æ•°æ®
+public:							// ¹¹Ôì£¬Îö¹¹
+	// ÓÃÊı¾İ¿âÃû³õÊ¼»¯buffermanager
+	BufferManager(string dbName);
+	// Ğ´»ØËùÓĞÔà¿é£¬Ïú»Ùbuffermanager
 	~BufferManager();
 
-private:
-	// å†™å—åˆ°æ–‡ä»¶
-	void writeBlock(int index);
-	// ä»æ–‡ä»¶è¯»å—
-	void readBlock(string fileName, int offset, int num);
+private:						// ×ÔÓÃ·½·¨£¬¶ÁĞ´
+	// ´ÓÄ³ÎÄ¼ş¶ÁÒ»¸öblock
+	Block readBlock(string fileName, int offset);
+	// ´ÓÄ³ÎÄ¼ş¶Án¸öÁ¬Ğø´æ·ÅµÄblock
+	vector<Block> readBlocks(string fileName, int offset, int n);
+	// ½«blockĞ´µ½ÎÄ¼ş
+	bool writeBlock();
+	// Ğ´»ØËùÓĞ»º³åÇøÖĞµÄblockµ½ÎÄ¼ş
+	bool writeAllBlocks();
 
-private:
-	// æ›´æ–°LRUå€¼
-	void updateLRU();
+private:						// ×ÔÓÃ·½·¨£¬LRUÏà¹Ø
+	// ¸üĞÂÄ³¿éµÄLRU
+	void updateLru(Block& b);
+	// ¸üĞÂ»º³åÖĞËùÓĞ¿éµÄLRU
+	void updateAllLru();
 
-public:
-	// éœ€è¦çš„åŠŸèƒ½
+public:							// RecordManagerÊ¹ÓÃ
+	// ·µ»ØtableNameµÄËùÓĞ¿é
+	static vector<Block> getTableBlocks(string tableName);
+	// ·µ»ØtableNameµÄÄ³¸ö¿é£¨offset´ÓIndexManagerÈ¡µÃ£¿£©
+	static Block getTableBlock(string tableName, int offset);
+
+public:							// IndexManagerÊ¹ÓÃ
+	// ·µ»ØindexNameµÄËùÓĞ¿é
+	vector<Block> getIndexBlocks(string IndexName);
+};
 
 #endif

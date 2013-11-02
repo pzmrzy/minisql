@@ -60,13 +60,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="block.cpp" />
     <ClCompile Include="catalog.cpp" />
     <ClCompile Include="interpreter.cpp" />
     <ClCompile Include="sqlcommand.cpp" />
     <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="buffer.h" />
+    <ClInclude Include="block.h" />
+    <ClInclude Include="buffermanager.h" />
     <ClInclude Include="catalog.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="minisql.h" />
