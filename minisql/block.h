@@ -12,7 +12,8 @@
 
 using namespace std;
 
-#define BLOCK_LEN        4096
+//块内数据最大尺寸
+#define BLOCK_LEN 4096
 
 class Block {
 public:
