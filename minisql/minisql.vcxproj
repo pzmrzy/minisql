@@ -64,6 +64,7 @@
     <ClCompile Include="block.cpp" />
     <ClCompile Include="catalog.cpp" />
     <ClCompile Include="interpreter.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="sqlcommand.cpp" />
     <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
