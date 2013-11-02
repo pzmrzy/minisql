@@ -22,6 +22,7 @@ public:
 	string tableName;			// 表名
 	int offset;					// block在文件中的偏移量
 	char content[BLOCK_LEN];	// 数据
+	int contentSize;			// 数据长度
 	bool dirty;					// 是否需要写回文件
 	bool active;				// for lru
 	int value;					// for lru
@@ -38,6 +39,9 @@ public:							// 建议用下列方法读写属性
 
 	// 读取这个块内部的数据
 	char& getContent();
+
+	// 读取这个块内部的数据长度
+	int getSize();
 
 }
 
