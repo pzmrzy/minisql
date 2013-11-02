@@ -31,6 +31,14 @@ public:							// 构造，析构
 	Block();
 	// 如果dirty，先写回文件再销毁
 	~Block();
+
+public:							// 建议用下列方法读写属性
+	// 设置这个块是脏的，以便写回文件
+	void dirty();
+
+	// 读取这个块内部的数据
+	char& getContent();
+
 }
 
 #endif
