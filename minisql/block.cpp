@@ -1,12 +1,13 @@
 #include "block.h"
 
 Block::Block() {
-	fileName = "";
-	tableName = "";
-	offset = 0;
+	tableName[32];
+	nextOffset = 0;
 	contentSize = 0;
+	isAlive = false;
+	offset = 0;
 	isDirty = true;
-	active = false;
+	isActive = true;
     value = 0;
 }
 
@@ -20,12 +21,4 @@ char* Block::getContent() {
 
 int Block::getSize() {
 	return contentSize;
-}
-
-void Block::write() {
-  fstream fs;
-  fs.open(fileName, std::fstream::out );
-  fs.seekp(offset);
-  fs.write(content, BLOCK_LEN);
-  fs.close();
 }

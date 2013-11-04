@@ -10,6 +10,17 @@
  * 使用BufferManager时不需要申请写块到文件，只需要在块发生改变时调用块的dirty()方法把它设置成脏的
  * BufferManager会在脏块被替换出缓存，或自身被销毁之前将它们写回文件。
  */
+
+/**
+表的块索引dbName.blk
+记录每个table第一个块的偏移量
+是二进制文件
+tableName[MAX_TABLE_NAME]  offset[4]
+tableName[MAX_TABLE_NAME]  offset[4]
+...
+*/
+
+
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
@@ -17,48 +28,31 @@
 
 #include <string>
 #include <iostream>
-#include <vector>
+#include <list>
+#include <hash_map>
 #include <fstream>
 
 using namespace std;
 
-// 缓冲区中最大文件个数
-#define MAX_FILE_ACTIVE  5
 // 缓冲区中最大块数
 #define MAX_BLOCK_ACTIVE 40
-
-/* 弃用
-// 文件头结构
-struct fileInfo {
-	// 0=数据，1=索引
-	int type;
-	// 文件名
-	string fileName;
-	// 记录数目
-	int recordAmount;
-	// 可用块数
-	int freeNum;
-	// 记录长度
-	int recordLength;
-	// 下一个文件的指针
-	fileInfo *next;
-	// 第一个块指针
-	blockInfo *firstBlock;
-};*/
+#define MAX_TABLE_NAME   32
 
 class BufferManager {
 
 private:
-	// 数据库名
 	string dbName;
-	// 数据库文件名
 	string dbFileName;
-	// 数据库文件
+	string infoFileName;
 	fstream dbFile;
+	fstream infoFile;
+private:
+	// 各表第一块的偏移string:tableName, int:offset
+	hash_map<char[MAX_TABLE_NAME], int> firstBlock;
 
 public:
 	// 内存中的缓冲区
-	Block buffer[MAX_BLOCK_ACTIVE];
+	list<Block> buffer;
 
 public:							// 构造，析构
 	// 用数据库名初始化buffermanager
@@ -69,18 +63,20 @@ public:							// 构造，析构
 private:						// 自用方法，读写
 	// 从某文件读一个block
 	Block readBlock(int offset);
-	// 从某文件读n个连续存放的block
-	vector<Block> readBlocks(string fileName, int offset, int n);
 	// 将block写到文件（若是干净的就不写了）
-	bool writeBlock();
+	void writeBlock(Block &block);
 	// 写回所有缓冲区中的脏block到文件
-	bool writeAllBlocks();
+	void writeAllBlocks();
 
-private:						// 自用方法，LRU相关
-	// 更新某块的LRU
-	void updateLru(Block& b);
-	// 更新缓冲中所有块的LRU
-	void updateAllLru();
+private:						// 自用方法，查找块相关，LRU
+	// 按offset在缓存和文件中查找块，并存入缓存
+	Block findBlock(int offset);
+
+private:						// 自用，更新表索引.blk
+	// 读取dbFile的表块索引文件, 若失败则新建一个
+	void readDbInfo();
+	// 写索引文件
+	void writeDbInfo();
 
 public:							// RecordManager使用
 	// 返回tableName的所有块
