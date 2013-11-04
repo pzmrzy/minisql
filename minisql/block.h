@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ public:
 	int offset;					// block在文件中的偏移量
 	char content[BLOCK_LEN];	// 数据
 	int contentSize;			// 数据长度
-	bool dirty;					// 是否需要写回文件
+	bool isDirty;					// 是否需要写回文件
 	bool active;				// for lru
 	int value;					// for lru
 
@@ -33,12 +34,15 @@ public:							// 构造，析构
 	// 如果dirty，先写回文件再销毁
 	~Block();
 
+private:						// 读写文件
+	void write();
+
 public:							// 建议用下列方法读写属性
 	// 设置这个块是脏的，以便写回文件
 	void dirty();
 
 	// 读取这个块内部的数据
-	char& getContent();
+	char* getContent();
 
 	// 读取这个块内部的数据长度
 	int getSize();
