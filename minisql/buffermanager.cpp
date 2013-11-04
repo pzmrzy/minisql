@@ -25,6 +25,6 @@ BufferManager::~BufferManager() {
 /**
  * @brief  从数据库文件读取一个block，指定偏移量
  */
-BufferManager::readBlock(string fileName, int offset) {
+BufferManager::readBlock(int offset) {
 	// TODO 说明fileName已经弃用了
-	
+	dbFile.seekp(BLOCK_LEN

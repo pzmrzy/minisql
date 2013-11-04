@@ -62,6 +62,7 @@
   <ItemGroup>
     <ClCompile Include="api.cpp" />
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="buffermanager.cpp" />
     <ClCompile Include="catalog.cpp" />
     <ClCompile Include="interpreter.cpp" />
     <ClCompile Include="main.cpp" />

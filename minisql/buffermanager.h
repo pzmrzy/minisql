@@ -10,7 +10,6 @@
  * 使用BufferManager时不需要申请写块到文件，只需要在块发生改变时调用块的dirty()方法把它设置成脏的
  * BufferManager会在脏块被替换出缓存，或自身被销毁之前将它们写回文件。
  */
-
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
@@ -69,7 +68,7 @@ public:							// 构造，析构
 
 private:						// 自用方法，读写
 	// 从某文件读一个block
-	Block readBlock(string fileName, int offset);
+	Block readBlock(int offset);
 	// 从某文件读n个连续存放的block
 	vector<Block> readBlocks(string fileName, int offset, int n);
 	// 将block写到文件（若是干净的就不写了）

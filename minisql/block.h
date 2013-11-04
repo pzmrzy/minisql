@@ -8,6 +8,23 @@
  * 使用getSize方法得到内部数据的有效长度
  */
 
+/*
+文件中的块结构
+[   HEAD   ][          CONTENT          ]
+HEAD_LEN   64   HEAD的长度
+BLOCK_LEN  4096  CONTENT的长度
+
+HEAD结构
+TABLE_NAME      char*  32    该块的表名
+NEXT_OFFSET     int    4     下一块的偏移量
+CONTENT_SIZE    int    4     块内有效数据的长度
+IS_ALIVE        bool   1     该块是否已被删除
+
+CONTENT结构
+CONTENT         char*  4096  数据
+*/
+
+
 #ifndef _BLOCK_H_
 #define _BLOCK_H_
 
@@ -20,21 +37,26 @@ using namespace std;
 
 //块内数据最大尺寸
 #define BLOCK_LEN 4096
+//块头尺寸
+#define HEAD_LEN  64
 
 class Block {
 
-public:
-	string fileName;			// 文件名(数据库名)
+private:					// 块头数据
 	string tableName;			// 表名
-	int offset;					// block在文件中的偏移量
+	int nextOffset;             // 下一块在文件中的偏移量
+	int contentSize;			// 块内有效数据长度
+	bool isAlive;               // 该块是否已被删除
+public:						// 块数据
 	char content[BLOCK_LEN];	// 数据
-	int contentSize;			// 数据长度
-	bool isDirty;					// 是否需要写回文件
-	bool active;				// for lru
+private:					// 其他
+	int offset;					// 该block在文件中的偏移量
+	bool isDirty;				// 是否需要写回文件
+	bool isActive;				// for lru
 	int value;					// for lru
 
 public:							// 构造，析构
-	// 初始化一个新块, fileName, tableName, offset均需设置
+	// 初始化一个新块
 	Block();
 	// 如果dirty，先写回文件再销毁
 	~Block();
