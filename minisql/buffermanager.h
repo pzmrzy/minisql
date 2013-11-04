@@ -7,6 +7,8 @@
  *
  * 每个BufferManager对象只打开一个数据库（文件），文件名是"数据库名.db"。
  * 构造方法需要传入数据库名。
+ * 使用BufferManager时不需要申请写块到文件，只需要在块发生改变时调用块的dirty()方法把它设置成脏的
+ * BufferManager会在脏块被替换出缓存，或自身被销毁之前将它们写回文件。
  */
 
 #ifndef _BUFFER_H_
@@ -46,6 +48,8 @@ struct fileInfo {
 };*/
 
 class BufferManager {
+
+private:
 	// 数据库名
 	string dbName;
 	// 数据库文件名

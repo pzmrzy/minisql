@@ -1,6 +1,11 @@
 /**
- * @file  block.h
- * @brief 缓冲数据块
+ * @file   block.h
+ * @brief  缓冲数据块
+ * @author tgmerge
+ * 
+ * 当收到BufferManager传回的块后，
+ * 使用getContent方法得到内部数据（字符串数组）指针；
+ * 使用getSize方法得到内部数据的有效长度
  */
 
 #ifndef _BLOCK_H_
