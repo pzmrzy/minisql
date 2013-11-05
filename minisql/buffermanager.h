@@ -82,10 +82,9 @@ public:							// RecordManager使用
 	// 返回tableName的所有块
 	static vector<Block> getTableBlocks(string tableName);
 	// 返回tableName的某个块（offset从IndexManager取得？）
-	static Block getTableBlock(string tableName, int offset);
+	// static Block getTableBlock(string tableName, int offset);
 	// 给tableName添加一个新块
 	static Block newBlock(string tableName);
-	// 要求写块到硬盘
 
 public:							// IndexManager使用
 	// 返回indexName的所有块

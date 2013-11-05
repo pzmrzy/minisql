@@ -110,10 +110,14 @@ void BufferManager::writeDbInfo() {
 		infoFile.write((char *)(i->second), sizeof(int));
 	}
 }
-/*
-Block BufferManager::getTableBlock(string tableName, int offset) {
+
+
+vector<Block> BufferManager::getTableBlocks(string tableName) {
 	//转换tableName为char[]
 
-	//从dbName.blk得到的表读
+	//从firstBlock表中查找tableName的第一块地址
+
+	//建立vector，查找各块
+
+	//返回vector
 }
-*/
