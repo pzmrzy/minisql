@@ -2,7 +2,7 @@
  * @file  test_interpreter.cpp
  * @brief ½âÊÍÆ÷µÄ²âÊÔ
  */
-/*
+
 #include "interpreter.h"
 #include "catalog.h"
 #include <iostream>
@@ -78,4 +78,3 @@ void main() {
 	
 	//system("pause");
 }
-*/
