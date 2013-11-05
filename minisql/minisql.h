@@ -23,11 +23,13 @@ using namespace std;
 #define IDXNODE_SIZE_IN_FILE (sizeof(unsigned) + MAX_CHAR_LENGTH * sizeof(char)) /* 一个索引节点在文件中所占的大小 */
 #define ATTR_SIZE_IN_FILE (sizeof(bool)*4 + sizeof(int)*2 + MAX_CHAR_LENGTH * sizeof(char))/* 一个字段在文件中所占的大小 */
 #define TABLEHEAD_SIZE_IN_FILE (sizeof(int))/* 一个表信息头在文件中所占的大小 */
-#define TABLENODE_SIZE_IN_FILE (2 * sizeof(int) + MAX_CHAR_LENGTH * sizeof(char) + MAX_ATTR_NUM * ATTR_SIZE_IN_FILE)/* 一个表信息项在文件中所占的大小 */
+#define TABLENODE_SIZE_IN_FILE (2 * sizeof(int) + MAX_CHAR_LENGTH * sizeof(char)*2 + MAX_ATTR_NUM * ATTR_SIZE_IN_FILE)/* 一个表信息项在文件中所占的大小 */
 //catalog返回的信息
 //属性信息
 class attribute{
 public:
+	attribute():PK(false), UN(false), NN(false), ID(false){
+	}
 	string name;	//名称
 	int datatype;	//数据类型
 	int length;		//数据长度
@@ -49,14 +51,19 @@ class table{
 public:
 	table (const table& T){
 		name = T.name;
+		dbname = T.dbname;
 		attrNum = T.attrNum;
 		recLength = T.recLength;
 		attrList = T.attrList;
+		recNum = T.recNum;
 	}
 	table (){}
 	string name;					//名称
+	string dbname;					//属于哪个数据库
 	int attrNum;					//属性数
 	int recLength;					//记录长度
+	int recNum;						//记录条数
+	int size;						//表长度
 	vector<attribute> attrList;		//属性列表
 };
 class catainfo{
@@ -67,6 +74,7 @@ public:
 		message = mes;
 		T = tab;
 	}
+	catainfo(){}
 	//获取指令是否成功
 	bool getsucc(){
 		return succ;	
@@ -74,6 +82,9 @@ public:
 	//输出错误信息
 	void print(){
 		cout<<message<<endl;
+	}
+	table gettable(){
+		return T;
 	}
 private:
 	bool succ;
@@ -93,5 +104,57 @@ public:
 		num = n;
 	}
 	int num;
+};
+//record返回信息
+//结果信息，由行列组成，每一行由多列vector<string> col组成
+class Row
+{
+public:
+	vector<string> col;//clolumns
+};
+class Results
+{
+public:
+	vector<Row> row;//rows
+};
+//record返回的信息
+class recoinfo
+{
+public:
+	recoinfo(bool f, string mes,Results res,long num ){
+		succ = f;
+		message = mes;
+		results=res;
+		number=num;
+	}
+	recoinfo(){};
+	//is execution succeed
+	bool getsucc(){
+		return succ;
+	}
+	//get the error message
+	string errormes(){
+		return message;
+	}
+	//get the reusult
+	Results resultsmes(){
+		return results;
+
+	}
+	//gei the number info of records
+	long nummes(){
+		return number;
+	}
+	void print (){
+		cout<<message<<endl;
+	}
+private:
+	bool succ;
+	string message;
+	Results results;
+	long number;
+};
+class indexinfo{
+
 };
 #endif

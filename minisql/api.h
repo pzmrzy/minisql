@@ -1,17 +1,32 @@
 #ifndef _API_H_
 #define _API_H_
-#include"sqlcommand.h"
+
+#include "minisql.h"
+#include "sqlcommand.h"
+#include "catalog.h"
+#include <vector>
+using namespace std;
+
 class api
 {
 public:
-	api(void);
-	api(int t, SqlCommand& c):type(t), cmd(c){
+		api();
+        api(int t, SqlCommand& c);
+        virtual ~api(void);
+        catainfo cataInfo;
+        recoinfo recoInfo;
+        indexinfo indexInfo;//???¦Ä§Õ
+        table Table;
+        attribute Attribute;
+        vector<attribute> attrList;
+        vector<string> indexList;
 
-	}
-	virtual ~api(void);
 private:
-	int type;
-	SqlCommand cmd;
+        int type;
+        SqlCommand sql;
 };
 
+
+
 #endif
+

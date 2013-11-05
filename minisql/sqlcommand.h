@@ -65,7 +65,9 @@ public:
 	void setcolName(string& str){
 		colName = str;
 	}
-
+	string getcolName(){
+		return colName;
+	}
 	//push列名(select使用)
 	void pushColNameVector(string& t){
 		colNameVector.push_back(t);
@@ -152,7 +154,7 @@ public:
 
 public:
 	vector<string> colSpecialVector;// create table中各列是否为主键('primary')或unique('unique')
-
+	vector<int> colType;
 };
 
 #endif

@@ -5,7 +5,9 @@
 #include<iostream>
 #include<string>
 using namespace std;
+string Wdbname = "";
 int main () {
+	
 	string input;
 	Interpreter cmd;
 	SqlCommand sql;

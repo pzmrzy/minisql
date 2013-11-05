@@ -31,6 +31,8 @@ public:
 	catainfo use_Database(SqlCommand& sqlcmd);
 	//初始化 第一次建表时调用
 	void init(string& dbname);
+
+	void change_Table(table& t);
 private:
 	//判断数据库是否存在
 	bool exist_Database(string& dbname);
