@@ -1,0 +1,64 @@
+验收流程：
+1.	创建表，例如：
+create table student (
+		sno char(8),
+		sname char(16) unique,
+		sage int,
+		sgender char (1),
+		primary key ( sno )
+);
+
+2.	插入数据，例如：
+insert into student values ('12345678','wy',22,'M');
+insert student values ('12345678','wy',22,'M');(错误提示)
+
+3.	执行SQL脚本
+execfile 文件名 ;
+脚本文件中包含多条插入数据的sql语句，例如：
+insert into student values ('00000001','ab',20,'M');
+insert into student values ('00000002','bc',21,'F');
+insert into student values ('00000003','cd',22,'M');
+……
+insert into student values ('00000100','yz',22,'F');
+
+4.	选择语句，例如：
+select * from student;
+select * from class;（错误提示）
+select * from student where sno = '12345678';（注意查询时间）
+select * from student where sno <> '12345678';
+select * from student where sname = 'wy';（注意查询时间）
+select * from student where sage > 20 and sgender = 'F';
+
+5.	创建索引，例如：
+create index stunameidx on student ( sname );
+select * from student where sname = 'wy';（注意查询时间）
+
+insert into student values ('00000101','aa',22,'F');
+select * from student where sname = 'aa';（索引插入）
+
+delete from student where sname = 'aa';
+select * from student where sname = 'aa';（索引删除）
+
+6.	删除索引，例如：
+drop index stunameidx;
+select * from student where sname = 'wy';（注意查询时间）
+
+7.	删除语句，例如：
+delete from student where sno = '12345678';
+select * from student where sno = '12345678';（查询结果）
+
+delete from student;
+select * from student;（查询结果）
+
+8.	删除表，例如：
+drop table student;
+select * from student;（报错信息）
+
+9.	退出:
+quit;
+
+10.	回答以下几个问题：
+Buffer大小？替换算法？数据块何时标记脏？数据块何时写入文件？
+数据文件、索引文件、catalog文件何时创建、大致结构、记载内容？
+其他问题
+
