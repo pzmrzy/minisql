@@ -70,7 +70,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="record.cpp" />
     <ClCompile Include="sqlcommand.cpp" />
-    <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="api.h" />

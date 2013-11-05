@@ -9,7 +9,7 @@
 #ifndef _INTERPRETER_H_
 #define _INTERPRETER_H_
 
-#include "sqlcommand.h"
+#include <sqlcommand.h>
 
 #include <string>
 #include <iostream>

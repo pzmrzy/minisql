@@ -6,11 +6,13 @@
 
 #ifndef _SQLCOMMAND_H_
 #define _SQLCOMMAND_H_
+
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <ctime>
+
 using namespace std;
 
 

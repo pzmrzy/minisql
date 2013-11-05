@@ -13,22 +13,9 @@
    
  */
 #include "interpreter.h"
-#include <cstring>
 #include <vector>
 
 using namespace std;
-
-string delFirstWord(string& str, string split) {
-	int start   = str.find_first_not_of(split);
-	    start   = str.find_first_of(split, start);
-		start   = str.find_first_not_of(split, start);
-	return str.substr(start);
-}
-string firstWord(string& str, string split) {
-	int start   = str.find_first_not_of(split);
-	int end     = str.find_first_of(split, start);
-	return str.substr(start, end-start);
-}
 
 /**
  * @brief  取字符串的第一个单词
