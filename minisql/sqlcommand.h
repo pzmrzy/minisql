@@ -6,12 +6,13 @@
 
 #ifndef _SQLCOMMAND_H_
 #define _SQLCOMMAND_H_
-
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
-
+#include <ctime>
 using namespace std;
+
 
 #define SQL_CREATE_DATABASE 10
 #define SQL_CREATE_TABLE    11
@@ -135,6 +136,59 @@ public:
 		for (int i=0; i<condRightVector.size(); i++)
 			cout<<condRightVector[i]<<" ";
 		cout<<endl;
+	}
+	//写日志
+	void writelog(){
+		std::ofstream fout("db.log", ios::ate);
+		time_t ltime;
+		time(&ltime);
+		fout << ctime(&ltime);
+		if (databaseName!="")
+			fout<<" "<<databaseName;
+		else
+			fout<<" -";
+		if (tableName!="")
+			fout<<" "<<tableName;
+		else
+			fout<<" -";
+		if (databaseName!="")
+			fout<<" "<<indexName;
+		else
+			fout<<" -";
+		if (databaseName!="")
+			fout<<" "<<colName;
+		else
+			fout<<" -";
+		fout<<" "<<type;
+
+		fout<<" "<<colNameVector.size();
+		for (int i=0; i<colNameVector.size(); i++)
+			fout<<" "<<colNameVector[i];
+
+		fout<<" "<<colValueVector.size();
+		for (int i=0; i<colValueVector.size(); i++)
+			fout<<" "<<colValueVector[i];
+
+		fout<<" "<<condLeftVector.size();
+		for (int i=0; i<condLeftVector.size(); i++)
+			fout<<" "<<condLeftVector[i];
+
+		fout<<" "<<condOpVector.size();
+		for (int i=0; i<condOpVector.size(); i++)
+			fout<<" "<<condOpVector[i];
+
+		fout<<" "<<condRightVector.size();
+		for (int i=0; i<condRightVector.size(); i++)
+			fout<<" "<<condRightVector[i];
+
+		fout<<" "<<colSpecialVector.size();
+		for (int i=0; i<colSpecialVector.size(); i++)
+			fout<<" "<<colSpecialVector[i];
+
+		fout<<" "<<colType.size();
+		for (int i=0; i<colType.size(); i++)
+			fout<<" "<<colType[i];
+		fout<<endl;
 	}
 private:
 	// 命令类型

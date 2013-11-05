@@ -1,8 +1,10 @@
+
 #include "buffermanager.h"
 
 /**
  * @brief  用数据库名新建buffer。
  */
+/*
 BufferManager::BufferManager(string name) {
   dbName = name;
   dbFileName = name + ".db";
@@ -13,18 +15,20 @@ BufferManager::BufferManager(string name) {
 	  // TODO: 若不存在则新建文件
   }
 }
-
+*/
 /**
  * @brief  关闭buffer之前，从buffer写回所有脏块
  */
+/*
 BufferManager::~BufferManager() {
 	writeAllBlocks();
 	writeDbInfo();
-}
+}*/
 
 /**
  * @brief  从数据库文件读取一个block，指定偏移量
  */
+/*
 Block BufferManager::readBlock(int offset) {
 	char temp[33];
 	Block block;
@@ -46,7 +50,8 @@ Block BufferManager::readBlock(int offset) {
 
 	return block;
 }
-
+*/
+/*
 void BufferManager::writeBlock(Block &block) {
 	if( !block.isDirty ) {
 		return;
@@ -64,15 +69,16 @@ void BufferManager::writeBlock(Block &block) {
 	dbFile.write(block.content, BLOCK_LEN);
 
 	return;
-}
-
+}*/
+/*
 void BufferManager::writeAllBlocks() {
 	for(list<Block>::iterator i = buffer.begin(); i != buffer.end(); i ++ ) {
 		writeBlock(*i);
 	}
 	return;
 }
-
+*/
+/*
 Block BufferManager::findBlock(int offset) {
 	// 先在缓存中查找，找到则将其挂在缓存最前头
 	for(list<Block>::iterator i = buffer.begin(); i != buffer.end(); i ++ ) {
@@ -88,8 +94,8 @@ Block BufferManager::findBlock(int offset) {
 	}
 	buffer.push_front(readBlock(offset));
 	return *(buffer.begin());
-}
-
+}*/
+/*
 void BufferManager::readDbInfo() {
 	char tableName[MAX_TABLE_NAME];
 	int offset;
@@ -100,7 +106,8 @@ void BufferManager::readDbInfo() {
 		firstBlock.insert(pair<char[MAX_TABLE_NAME], int>(tableName, offset));
 	}
 }
-
+*/
+/*
 void BufferManager::writeDbInfo() {
 	// 清空文件
 	infoFile.close();
@@ -110,9 +117,9 @@ void BufferManager::writeDbInfo() {
 		infoFile.write((char *)(i->second), sizeof(int));
 	}
 }
+*/
 
-
-vector<Block> BufferManager::getTableBlocks(string tableName) {
+//vector<Block> BufferManager::getTableBlocks(string tableName) {
 	//转换tableName为char[]
 
 	//从firstBlock表中查找tableName的第一块地址
@@ -120,4 +127,6 @@ vector<Block> BufferManager::getTableBlocks(string tableName) {
 	//建立vector，查找各块
 
 	//返回vector
-}
+	//vector<Block> a;
+	//return a;
+//}

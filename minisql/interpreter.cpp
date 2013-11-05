@@ -205,7 +205,18 @@ SqlCommand Interpreter::createTable(string& str) {
 		delFirstWord(str, " ");
 		special = firstWord(str, ",");
 		sql.colNameVector.push_back(attr);
-		sql.colValueVector.push_back(type);
+		//sql.colValueVector.push_back(type);
+		int tmp;
+		if (type == "int")
+			tmp = 0;
+		else if (type == "float")
+			tmp = -1;
+		else {
+			type = delFirstWord(type, "( ");
+			temp = firstWord(type, " )");
+			tmp = atof(temp.c_str());
+		}
+		sql.colType.push_back(tmp);
 		sql.colSpecialVector.push_back(special);
 	}
 

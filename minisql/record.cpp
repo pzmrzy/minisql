@@ -1,4 +1,6 @@
+/*
 #include "record.h"
+
 using namespace std;
 
 void record::push(Row& oneTuple,Results& results,vector<int> colNamePosVector){
@@ -185,7 +187,8 @@ recoinfo record::writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& 
 		}
     }
 	blocks.content[j*tupleLen]=Used;
-	blocks.dirty=true;
+	blocks.isDirty=true;
+
 	succ=true;
 	message="Insertion suceeded";
 	num=num+1;
@@ -235,10 +238,11 @@ recoinfo record::Select_Rec(SqlCommand& sql,table &Table)
 	long num=0;//查找到的记录数
 	Row row;//每行
 	Results results;//总结果
-	BufferManager BM;
+	
 	bool succ=false;//查找是否成功
 	string message="";//查找失败的信息
     string databaseName=Table.dbname;
+	BufferManager BM(Table.dbname);
 	string tableName=Table.name;//相关的表名字
 	vector<attribute> attrList=Table.attrList;//表的所有属性列表
 	vector<string> colNameVector=sql.getcolNameVector();//需要查找的属性
@@ -246,7 +250,7 @@ recoinfo record::Select_Rec(SqlCommand& sql,table &Table)
 	vector<string> condLeftVector=sql.getCondLeftVector();//条件左值
 	vector<string> condOpVector=sql.getCondOpVector();//条件操作符
 	vector<string> condRightVector=sql.getCondRightVevtor();//条件右值
-    vector<Block> blockVector=BM.getTableBlocks(tableName);//调用buffer，得到block
+    vector<Block> blockVector=BufferManager::getTableBlocks(tableName);//调用buffer，得到block
     bool whereFlag=false;//判断sql中有木有where
     int blockLen;//当前block中有几条记录
     int tupleLen=Table.recLength+1;//数据中每条rec的长度
@@ -307,6 +311,7 @@ recoinfo record::Delete_Rec(SqlCommand& sql,table &Table)
 	bool succ=false;//查找是否成功
 	string message="";//查找失败的信息
     string databaseName=Table.dbname;
+	BufferManager BM(Table.dbname);
 	string tableName=Table.name;//相关的表名字
 	vector<attribute> attrList=Table.attrList;//表的所有属性列表
 	vector<string> condLeftVector=sql.getCondLeftVector();//条件左值
@@ -330,10 +335,10 @@ recoinfo record::Delete_Rec(SqlCommand& sql,table &Table)
                 //如果有where，则根据条件比较查找
                 //如果木有where，则不用比较
                 if (!whereFlag)
-                    { blocks.content[j*tupleLen]=Unused;num++;blocks.dirty=true; succ=true;}
+                    { blocks.content[j*tupleLen]=Unused;num++;blocks.isDirty=true; succ=true;}
                 else
                     if (checkConstraints(oneTuple,attrList,condLeftVector,condOpVector,condRightVector))
-                        { blocks.content[j*tupleLen]=Unused;num++;blocks.dirty=true; succ=true;}
+                        { blocks.content[j*tupleLen]=Unused;num++;blocks.isDirty=true; succ=true;}
             }
         }
 		blockVector[i]=blocks;
@@ -357,6 +362,7 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table)
 	bool succ=false;//查找是否成功
 	string message="";//查找失败的信息
     string databaseName=Table.dbname;
+	BufferManager BM(Table.dbname);
 	string tableName=Table.name;//相关的表名字
 	vector<attribute> attrList=Table.attrList;//表的所有属性列表
     vector<string> colValueVector=sql.getcolValueVector();//需要插入的rec的值
@@ -408,3 +414,4 @@ if (num==0) {succ=false; message="The results is null.";}
 return recoinfo(succ,message,results,num);
 }
 
+*/

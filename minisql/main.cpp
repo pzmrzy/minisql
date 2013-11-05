@@ -13,9 +13,9 @@ int main () {
 	SqlCommand sql;
 	int type;
 	while (true) {
-		getline(cin, input);
-		if (cin == "Exit")
-			break;
+		//getline(cin, input);
+		//if (cin == "Exit")
+			//break;
 		input = cmd.readInput();
 		sql = cmd.getExpression(input);
 		type = sql.gettype();

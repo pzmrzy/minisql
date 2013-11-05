@@ -58,7 +58,7 @@ public:							// 构造，析构
 	// 用数据库名初始化buffermanager
 	BufferManager(string name);
 	// 写回所有脏块，销毁buffermanager
-	~BufferManager();
+	virtual ~BufferManager();
 
 private:						// 自用方法，读写
 	// 从某文件读一个block

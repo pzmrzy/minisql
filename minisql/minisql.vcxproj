@@ -39,7 +39,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -64,8 +64,11 @@
     <ClCompile Include="block.cpp" />
     <ClCompile Include="buffermanager.cpp" />
     <ClCompile Include="catalog.cpp" />
-    <ClCompile Include="interpreter.cpp" />
+    <ClCompile Include="interpreter.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="record.cpp" />
     <ClCompile Include="sqlcommand.cpp" />
     <ClCompile Include="test_interpreter.cpp" />
   </ItemGroup>
@@ -76,6 +79,7 @@
     <ClInclude Include="catalog.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="minisql.h" />
+    <ClInclude Include="record.h" />
     <ClInclude Include="sqlcommand.h" />
   </ItemGroup>
   <ItemGroup>

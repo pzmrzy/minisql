@@ -17,17 +17,25 @@ api::~api(void)
 api::api(int t, SqlCommand& c){
 	type =t;
 	sql = c;
+	
 	string succ = "Operation Succeeds";
 	extern string Wdbname;
 	if (Wdbname == ""){
-		cout<<"Please Use database"<<endl;
-		return;
-	}
-	sql.setDatabaseName(Wdbname);
+		if (type == SQL_CREATE_DATABASE || type == SQL_USE)
+			Wdbname = c.getDatabaseName();
+		else{
+			cout<<"Please Use database"<<endl;
+			return;
+		}
+	}else
+		sql.setDatabaseName(Wdbname);
+	c.writelog();
 	catalog CL;
 	record RE;
         switch (t){
                 case ( SQL_CREATE_DATABASE ):{
+
+					sql.setDatabaseName(Wdbname);
 					cataInfo = CL.creat_Database(sql);//调用catalog类的creat_Database函数
                         //失败，输出失败原因
                         if (!cataInfo.getsucc()){
@@ -129,7 +137,7 @@ api::api(int t, SqlCommand& c){
                         }
                         break;
                 }
-                case ( SQL_DROP_INDEX      ):{
+               /* case ( SQL_DROP_INDEX      ):{
                         cataInfo=CL.drop_Index(sql);//调用catalog类的drop_Index函数，获得table信息
                         //失败，输出失败原因
                         if (!cataInfo.getsucc()){
@@ -161,8 +169,9 @@ api::api(int t, SqlCommand& c){
                             //}
                         }
                         break;
-                }
-                case ( SQL_SELECT          ):{
+                }*/
+
+                /*case ( SQL_SELECT          ):{
                         //确认table存在吗？确认列名是对的嘛？
                         cataInfo = CL.select_Rec(sql);
                         //失败，输出失败原因
@@ -211,8 +220,8 @@ api::api(int t, SqlCommand& c){
                             }
                         }
                         break;
-                }
-                case ( SQL_INSERT_INTO     ):{
+                }*/
+                /*case ( SQL_INSERT_INTO     ):{
                         //确认table存在吗，值的个数是否是对的
                         cataInfo = CL.insert_Rec(sql);
                         //失败，输出失败原因
@@ -256,8 +265,8 @@ api::api(int t, SqlCommand& c){
                             }
                         }
                         break;
-                }
-                case ( SQL_DELETE          ):{
+                }*/
+               /* case ( SQL_DELETE          ):{
                         //确认table存在吗？确认列名是对的嘛？
                         cataInfo = CL.delete_Rec(sql);
                         //失败，则输出失败原因
@@ -314,7 +323,7 @@ api::api(int t, SqlCommand& c){
                             }
                         }
                         break;
-                }
+                }*/
                 case ( SQL_USE             ):{
 					cataInfo = CL.use_Database(sql);
 					if (!cataInfo.getsucc())
