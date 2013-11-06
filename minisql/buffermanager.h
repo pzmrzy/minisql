@@ -1,20 +1,20 @@
 /**
  * @file  buffermanager.h
- * @brief »º³åÇø¹ÜÀíÍ·ÎÄ¼ş
+ * @brief ç¼“å†²åŒºç®¡ç†å¤´æ–‡ä»¶
  * @author tgmerge
- * »º³åÇø¹ÜÀíÆ÷¡£¼ì²é»º³åÇøÖĞÊÇ·ñÓĞÒªÇóµÄ¿é£¬ÈçÓĞÔò·µ»Ø£¬·ñÔò´Ó´ÅÅÌ¶ÁÈ¡¡£
- * ÎªIndexºÍRecordÌá¹©ËùĞèµÄ¿é
+ * ç¼“å†²åŒºç®¡ç†å™¨ã€‚æ£€æŸ¥ç¼“å†²åŒºä¸­æ˜¯å¦æœ‰è¦æ±‚çš„å—ï¼Œå¦‚æœ‰åˆ™è¿”å›ï¼Œå¦åˆ™ä»ç£ç›˜è¯»å–ã€‚
+ * ä¸ºIndexå’ŒRecordæä¾›æ‰€éœ€çš„å—
  *
- * Ã¿¸öBufferManager¶ÔÏóÖ»´ò¿ªÒ»¸öÊı¾İ¿â£¨ÎÄ¼ş£©£¬ÎÄ¼şÃûÊÇ"Êı¾İ¿âÃû.db"¡£
- * ¹¹Ôì·½·¨ĞèÒª´«ÈëÊı¾İ¿âÃû¡£
- * Ê¹ÓÃBufferManagerÊ±²»ĞèÒªÉêÇëĞ´¿éµ½ÎÄ¼ş£¬Ö»ĞèÒªÔÚ¿é·¢Éú¸Ä±äÊ±µ÷ÓÃ¿éµÄdirty()·½·¨°ÑËüÉèÖÃ³ÉÔàµÄ
- * BufferManager»áÔÚÔà¿é±»Ìæ»»³ö»º´æ£¬»ò×ÔÉí±»Ïú»ÙÖ®Ç°½«ËüÃÇĞ´»ØÎÄ¼ş¡£
+ * æ¯ä¸ªBufferManagerå¯¹è±¡åªæ‰“å¼€ä¸€ä¸ªæ•°æ®åº“ï¼ˆæ–‡ä»¶ï¼‰ï¼Œæ–‡ä»¶åæ˜¯"æ•°æ®åº“å.db"ã€‚
+ * æ„é€ æ–¹æ³•éœ€è¦ä¼ å…¥æ•°æ®åº“åã€‚
+ * ä½¿ç”¨BufferManageræ—¶ä¸éœ€è¦ç”³è¯·å†™å—åˆ°æ–‡ä»¶ï¼Œåªéœ€è¦åœ¨å—å‘ç”Ÿæ”¹å˜æ—¶è°ƒç”¨å—çš„dirty()æ–¹æ³•æŠŠå®ƒè®¾ç½®æˆè„çš„
+ * BufferManagerä¼šåœ¨è„å—è¢«æ›¿æ¢å‡ºç¼“å­˜ï¼Œæˆ–è‡ªèº«è¢«é”€æ¯ä¹‹å‰å°†å®ƒä»¬å†™å›æ–‡ä»¶ã€‚
  */
 
 /**
-±íµÄ¿éË÷ÒıdbName.blk
-¼ÇÂ¼Ã¿¸ötableµÚÒ»¸ö¿éµÄÆ«ÒÆÁ¿
-ÊÇ¶ş½øÖÆÎÄ¼ş
+è¡¨çš„å—ç´¢å¼•dbName.blk
+è®°å½•æ¯ä¸ªtableç¬¬ä¸€ä¸ªå—çš„åç§»é‡
+æ˜¯äºŒè¿›åˆ¶æ–‡ä»¶
 tableName[MAX_TABLE_NAME]  offset[4]
 tableName[MAX_TABLE_NAME]  offset[4]
 ...
@@ -34,7 +34,7 @@ tableName[MAX_TABLE_NAME]  offset[4]
 
 using namespace std;
 
-// »º³åÇøÖĞ×î´ó¿éÊı
+// ç¼“å†²åŒºä¸­æœ€å¤§å—æ•°
 #define MAX_BLOCK_ACTIVE 40
 #define MAX_TABLE_NAME   32
 
@@ -47,48 +47,52 @@ private:
 	fstream dbFile;
 	fstream infoFile;
 private:
-	// ¸÷±íµÚÒ»¿éµÄÆ«ÒÆstring:tableName, int:offset
+	// å„è¡¨ç¬¬ä¸€å—çš„åç§»string:tableName, int:offset
 	hash_map<char[MAX_TABLE_NAME], int> firstBlock;
 
 public:
-	// ÄÚ´æÖĞµÄ»º³åÇø
+	// å†…å­˜ä¸­çš„ç¼“å†²åŒº
 	list<Block> buffer;
 
-public:							// ¹¹Ôì£¬Îö¹¹
-	// ÓÃÊı¾İ¿âÃû³õÊ¼»¯buffermanager
+public:							// æ„é€ ï¼Œææ„
+	// ç”¨æ•°æ®åº“ååˆå§‹åŒ–buffermanager
 	BufferManager(string name);
-	// Ğ´»ØËùÓĞÔà¿é£¬Ïú»Ùbuffermanager
+	// å†™å›æ‰€æœ‰è„å—ï¼Œé”€æ¯buffermanager
 	virtual ~BufferManager();
 
-private:						// ×ÔÓÃ·½·¨£¬¶ÁĞ´
-	// ´ÓÄ³ÎÄ¼ş¶ÁÒ»¸öblock
+private:						// è‡ªç”¨æ–¹æ³•ï¼Œè¯»å†™
+	// ä»æŸæ–‡ä»¶è¯»ä¸€ä¸ªblock
 	Block readBlock(int offset);
-	// ½«blockĞ´µ½ÎÄ¼ş£¨ÈôÊÇ¸É¾»µÄ¾Í²»Ğ´ÁË£©
+	// å°†blockå†™åˆ°æ–‡ä»¶ï¼ˆè‹¥æ˜¯å¹²å‡€çš„å°±ä¸å†™äº†ï¼‰
 	void writeBlock(Block &block);
-	// Ğ´»ØËùÓĞ»º³åÇøÖĞµÄÔàblockµ½ÎÄ¼ş
+	// å†™å›æ‰€æœ‰ç¼“å†²åŒºä¸­çš„è„blockåˆ°æ–‡ä»¶
 	void writeAllBlocks();
 
-private:						// ×ÔÓÃ·½·¨£¬²éÕÒ¿éÏà¹Ø£¬LRU
-	// °´offsetÔÚ»º´æºÍÎÄ¼şÖĞ²éÕÒ¿é£¬²¢´æÈë»º´æ
+private:						// è‡ªç”¨æ–¹æ³•ï¼ŒæŸ¥æ‰¾å—ç›¸å…³ï¼ŒLRU
+	// æŒ‰offsetåœ¨ç¼“å­˜å’Œæ–‡ä»¶ä¸­æŸ¥æ‰¾å—ï¼Œå¹¶å­˜å…¥ç¼“å­˜
 	Block findBlock(int offset);
 
-private:						// ×ÔÓÃ£¬¸üĞÂ±íË÷Òı.blk
-	// ¶ÁÈ¡dbFileµÄ±í¿éË÷ÒıÎÄ¼ş, ÈôÊ§°ÜÔòĞÂ½¨Ò»¸ö
+private:						// è‡ªç”¨ï¼Œæ›´æ–°è¡¨ç´¢å¼•.blk
+	// è¯»å–dbFileçš„è¡¨å—ç´¢å¼•æ–‡ä»¶, è‹¥å¤±è´¥åˆ™æ–°å»ºä¸€ä¸ª
 	void readDbInfo();
-	// Ğ´Ë÷ÒıÎÄ¼ş
+	// å†™ç´¢å¼•æ–‡ä»¶
 	void writeDbInfo();
 
-public:							// RecordManagerÊ¹ÓÃ
-	// ·µ»ØtableNameµÄËùÓĞ¿é
-	static vector<Block> getTableBlocks(string tableName);
-	// ·µ»ØtableNameµÄÄ³¸ö¿é£¨offset´ÓIndexManagerÈ¡µÃ£¿£©
-	// static Block getTableBlock(string tableName, int offset);
-	// ¸øtableNameÌí¼ÓÒ»¸öĞÂ¿é
-	static Block newBlock(string tableName);
+public:							// RecordManagerä½¿ç”¨
+	// è¿”å›tableNameçš„æ‰€æœ‰å—
+	vector<Block> getTableBlocks(string tableName);
+	// ç»™tableNameæ·»åŠ ä¸€ä¸ªæ–°å—
+	Block newBlock(string tableName);
+	// å†™æ•°æ®
+	Block StoreData(string tableName, char[] content);
 
-public:							// IndexManagerÊ¹ÓÃ
-	// ·µ»ØindexNameµÄËùÓĞ¿é
+public:							// IndexManagerä½¿ç”¨
+	// è¿”å›indexNameçš„æ‰€æœ‰å—
 	vector<Block> getIndexBlocks(string IndexName);
+	// ç»™tableNameæ·»åŠ ä¸€ä¸ªæ–°å—
+	Block newIndexBlock(string tableName);
+	// å†™indexæ•°æ®
+	Block StoreIndex(string tableName, char[] content);
 
 };
 
