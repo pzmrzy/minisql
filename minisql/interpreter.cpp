@@ -13,6 +13,7 @@
    
  */
 #include "interpreter.h"
+
 #include <vector>
 
 using namespace std;
@@ -26,7 +27,9 @@ using namespace std;
  */
 string Interpreter::firstWord(string& str, string split) {
 	int start   = str.find_first_not_of(split);
+	if(start<0) return "";
 	int end     = str.find_first_of(split, start);
+	if(end<0) return str.substr(start, split.length());
 	return str.substr(start, end-start);
 }
 
@@ -54,8 +57,6 @@ string Interpreter::readInput() {
 	string temp("");
 	bool fin = false;
 
-	
-
 	while( !fin ) {
 		cin >> temp;
 		sql += temp + " ";
@@ -66,8 +67,36 @@ string Interpreter::readInput() {
 		}
 	}
 
+	sql = preProcess(sql);
+
 	return sql;
 }
+
+string& Interpreter::replaceAll(string& str,const string& old_value,const string& new_value)
+{
+	while(true) {
+		string::size_type pos(0);
+		if( (pos=str.find(old_value))!=string::npos )
+			str.replace(pos,old_value.length(),new_value);
+		else break;
+	}
+	return str;
+}
+
+string Interpreter::preProcess(string &sql) {
+	bool changed = false;
+	sql = replaceAll(sql, "\t", " ");
+	sql = replaceAll(sql, "  ", " ");
+	sql = replaceAll(sql, " (", "(");
+	sql = replaceAll(sql, "( ", "(");
+	sql = replaceAll(sql, " )", ")");
+	sql = replaceAll(sql, ") ", ")");
+	sql = replaceAll(sql, " )", ")");
+	sql = replaceAll(sql, ", ", ",");
+	sql = replaceAll(sql, " ,", ",");
+	return sql;
+}
+
 
 SqlCommand Interpreter::dropDatabase(string& str) {
 	SqlCommand sql;
@@ -177,35 +206,73 @@ SqlCommand Interpreter::createTable(string& str) {
 	str = delFirstWord(str, " ");
 
 	// 取表名
-	name = firstWord(str, " ");
+	name = firstWord(str, " ()");
+	str = delFirstWord(str, " ()");
 
 	sql.setType(SQL_CREATE_TABLE);
 	sql.setTableName(name);
+	
+	string attr, type, temp, spec;
+	int typeint;
 
-	// ---
-
-	string attr, type, temp, special;
-	for( temp=firstWord(str, " (),"); temp == ""; temp=firstWord(str, " (),")) {
-		attr = firstWord(str, " ");
-		delFirstWord(str, " ");
-		type = firstWord(str, " ");
-		delFirstWord(str, " ");
-		special = firstWord(str, ",");
-		sql.colNameVector.push_back(attr);
-		//sql.colValueVector.push_back(type);
-		int tmp;
-		if (type == "int")
-			tmp = 0;
-		else if (type == "float")
-			tmp = -1;
-		else {
-			type = delFirstWord(type, "( ");
-			temp = firstWord(type, " )");
-			tmp = atof(temp.c_str());
+	while(firstWord(str, " ;").length() != 0) {
+		attr = ""; type = ""; temp = ""; spec = ""; typeint = 0;
+		temp = firstWord(str, " ");
+		if( temp == "primary" || temp == "unique" ) {
+			str = delFirstWord(str, " ");
+			str = delFirstWord(str, "(");
+			name = firstWord(str, ")");
+			str = delFirstWord(str, ")");
+			int i;
+			for(i = 0; i < sql.colNameVector.size(); i ++) {
+				if( name == sql.colNameVector[i] ) break;
+			}
+			if( i < sql.colNameVector.size() ) {
+				sql.colSpecialVector[i] = temp;
+			}
+			// find name and add special
 		}
-		sql.colType.push_back(tmp);
-		sql.colSpecialVector.push_back(special);
+		else {
+			name = temp;
+			str = delFirstWord(str, " ");
+			type = firstWord(str, " ,(");
+			if( type == "char" ) {
+				str = delFirstWord(str, "(");
+				typeint = stoi(firstWord(str, ")"));
+				str = delFirstWord(str, "),");
+
+				temp = firstWord(str, ",");
+				if( temp == "primary" || temp == "unique" ) {
+					spec = temp;
+					str = delFirstWord(str, "),");
+				}
+			}
+			else if( type == "int" ) {
+				if( firstWord(str, ",")=="int" ) {
+					str = delFirstWord(str, ",)");
+				} else {
+					str = delFirstWord(str, " ");
+					spec = firstWord(str, ",");
+					str = delFirstWord(str, "),");
+				}
+				typeint = 0;
+			}
+			else if( type == "float" ) {
+				if( firstWord(str, ",")=="float" ) {
+					str = delFirstWord(str, ",)");
+				} else {
+					str = delFirstWord(str, " )");
+					spec = firstWord(str, ",");
+					str = delFirstWord(str, "),");
+				}
+				typeint = -1;
+			}
+			sql.colNameVector.push_back(name);
+			sql.colSpecialVector.push_back(spec);
+			sql.colType.push_back(typeint);
+		}
 	}
+	//
 
 	return sql;
 }

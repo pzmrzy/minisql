@@ -30,6 +30,9 @@ using namespace std;
 #define SQL_QUIT            70
 #define SQL_ERROR           90
 
+#define SQL_TYPE_INT		0
+#define SQL_TYPE_FLOAT		-1
+
 /**
  * class SqlCommand
  * @brief 内部格式sql命令
@@ -203,14 +206,14 @@ private:
 	string colName;
 public:
 	vector<string> colNameVector;	// where/insert/CREATE TABLE条件中的属性名
-	vector<string> colValueVector;  // where/insert条件中的属性值, CREATE TABLE中的各属性数据类型
+	vector<string> colValueVector;  // where/insert条件中的属性值
 	vector<string> condLeftVector;	// where条件中的属性名 e.g. colA
 	vector<string> condOpVector;	// where条件中的符号   e.g. >=
 	vector<string> condRightVector;	// where条件中的值     e.g. 10
 
 public:
 	vector<string> colSpecialVector;// create table中各列是否为主键('primary')或unique('unique')
-	vector<int> colType;
+	vector<int> colType; // 0=整形, -1=浮点, 1-15为char长度
 };
 
 #endif

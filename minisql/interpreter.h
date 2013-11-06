@@ -9,8 +9,7 @@
 #ifndef _INTERPRETER_H_
 #define _INTERPRETER_H_
 
-#include <sqlcommand.h>
-
+#include "sqlcommand.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -30,6 +29,8 @@ public: // 命令处理
 public: // 字符串处理
 	string firstWord(string& str, string split);    // 获取字符串的第一个单词（分隔符自定义）
 	string delFirstWord(string& str, string split); // 删除字符串的第一个单词（分隔符自定义）
+	string preProcess(string& str); // 预处理，去除多余空格等
+	string& Interpreter::replaceAll(string& str,const string& old_value,const string& new_value); // 字符串替换
 
 public: // 检查语句
 	SqlCommand createDatabase(string& str);  // 检查CREATE DATABASE databaseName
