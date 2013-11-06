@@ -1,4 +1,4 @@
-验收流程：
+验收流程： 
 1.	创建表，例如：
 create table student (
 		sno char(8),
