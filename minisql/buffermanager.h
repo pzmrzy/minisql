@@ -13,10 +13,10 @@
 
 /**
 表的块索引dbName.blk
-记录每个table第一个块的偏移量
+记录每个table第一个块和最后一个块的偏移量
 是二进制文件
-tableName[MAX_TABLE_NAME]  offset[4]
-tableName[MAX_TABLE_NAME]  offset[4]
+tableName[MAX_TABLE_NAME]  Firstoffset[4]  Lastoffset[4]
+tableName[MAX_TABLE_NAME]  Firstoffset[4]  Lastoffset[4]
 ...
 */
 
@@ -49,6 +49,8 @@ private:
 private:
 	// 各表第一块的偏移string:tableName, int:offset
 	hash_map<char[MAX_TABLE_NAME], int> firstBlock;
+	// 各表最后一块的偏移string:tableName, int:offset
+	hash_map<char[MAX_TABLE_NAME], int> lastBlock;
 
 public:
 	// 内存中的缓冲区
@@ -90,10 +92,9 @@ public:							// IndexManager使用
 	// 返回indexName的所有块
 	vector<Block> getIndexBlocks(string IndexName);
 	// 给tableName添加一个新块
-	Block newIndexBlock(string tableName);
+	Block newIndexBlock(string IndexName);
 	// 写index数据
-	Block StoreIndex(string tableName, char[] content);
-
+	Block StoreIndex(string IndexName, char[] content);
 };
 
 #endif

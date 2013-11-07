@@ -19,6 +19,7 @@ TABLE_NAME      char*  32    该块的表名
 NEXT_OFFSET     int    4     下一块的偏移量
 CONTENT_SIZE    int    4     块内有效数据的长度
 IS_ALIVE        bool   1     该块是否已被删除
+IS_INDEX        bool   1     是否是index
 
 CONTENT结构
 CONTENT         char*  4096  数据
@@ -47,6 +48,7 @@ public:						// 块头数据
 	int nextOffset;             // 下一块在文件中的偏移量
 	int contentSize;			// 块内有效数据长度
 	bool isAlive;               // 该块是否已被删除
+	bool isIndex;
 public:						// 块数据
 	char content[BLOCK_LEN];	// 数据
 public:						// 其他
@@ -56,8 +58,10 @@ public:						// 其他
 	int value;					// for lru
 
 public:							// 构造，析构
-	// 初始化一个新块
+	// 初始化一个新块，不是索引
 	Block();
+	// 指定是否索引，初始化一个新块
+	Block(bool index);
 	// 如果dirty，先写回文件再销毁
 	~Block();
 
@@ -70,7 +74,6 @@ public:							// 建议用下列方法读写属性
 
 	// 读取这个块内部的数据长度
 	int getSize();
-
 };
 
 #endif

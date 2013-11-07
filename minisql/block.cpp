@@ -9,6 +9,19 @@ Block::Block() {
 	isDirty = true;
 	isActive = true;
     value = 0;
+	isIndex = false;
+}
+
+Block::Block(bool index) {
+	tableName[32];
+	nextOffset = 0;
+	contentSize = 0;
+	isAlive = false;
+	offset = 0;
+	isDirty = true;
+	isActive = true;
+    value = 0;
+	isIndex = index;
 }
 
 void Block::dirty() {
@@ -22,3 +35,4 @@ char* Block::getContent() {
 int Block::getSize() {
 	return contentSize;
 }
+
