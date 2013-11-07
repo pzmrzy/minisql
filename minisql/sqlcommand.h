@@ -55,7 +55,7 @@ public:
 	void setTableName(string& str){
 		tableName = str;
 	}
-	//获取表明
+	//获取表名
 	string getTableName(){
 		return tableName;
 	}

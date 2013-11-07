@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 #include <windows.h>
+#include"sqlcommand.h"
+
 using namespace std;
 
 #define MAX_FILENAME_LENGTH 256     /* 最长文件名长度 */
@@ -154,7 +156,7 @@ private:
 	Results results;
 	long number;
 };
-class indexinfo{
+class indexInfo{
 
 };
 #endif
