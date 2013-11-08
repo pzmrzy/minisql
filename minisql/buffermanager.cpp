@@ -130,6 +130,8 @@ void BufferManager::writeDbInfo() {
 
 vector<int> getTableBlocks(string tableName) {
 	const char* tableChar = tableName.c_str();
+	hash_map<char[MAX_TABLE_NAME], int>::iterator i;
+	
 	//转换tableName为char[]
 
 	//从firstBlock表中查找tableName的第一块地址
