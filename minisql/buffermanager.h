@@ -81,12 +81,12 @@ private:						// 自用，更新表索引.blk
 	void writeDbInfo();
 
 public:							// RecordManager使用
-	// TODO 返回tableName的所有块号
+	// 返回tableName的所有块号
 	vector<int> getTableBlocks(string tableName);
 	// 给tableName添加一个新块,若不在firstLast中也添加至其中
 	Block newBlock(string tableName);
 	// 写数据
-	Block StoreData(string tableName, char[] content);
+	//Block StoreData(string tableName, char[] content);
 
 public:							// IndexManager使用
 	// TODO 返回indexName的所有块偏移量

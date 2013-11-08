@@ -53,8 +53,11 @@ Block BufferManager::readBlock(int offset) {
 
 
 void BufferManager::writeBlock(Block &block) {
+	// 如果脏则洗净，否则不写
 	if( !block.isDirty ) {
 		return;
+	} else {
+		block.isDirty = false;
 	}
 
 	// 写块头
@@ -164,21 +167,40 @@ Block BufferManager::newBlock(string tableName) {
 	//转换tableName为char[]
 	const char *tableChar = tableName.c_str();
 	hash_map<char[MAX_TABLE_NAME], int>::iterator i;
-	int offset;
 
 	//新建空Block，table为tableName, offset为db文件末尾，并直接写到文件末尾
-	Block block();
+	Block block;
+	memcpy(block.tableName, tableChar, MAX_TABLE_NAME);
+	dbFile.seekp(0, ios_base::end);
+	block.offset = dbFile.tellp();
+	writeBlock(block);
 	
-
-
 	//从firstBlock中查找tableName的第一块地址
 	for( i = firstBlock.begin(); i != firstBlock.end(); i ++ ) {
 		if( strcmp(tableChar, i->first) == 0 ) {
-			offset = i->second;
+			break;
 		}
+	}
+	if( i == firstBlock.end() ) {
+		// 没找到，添加一条
+		firstBlock.insert(pair<char[MAX_TABLE_NAME], int>(block.tableName, block.offset));
 	}
 
 	//查找LastOffset，读最后一块，设置它的nextoffset为新块的offset，设置dirty
+	for( i = lastBlock.begin(); i != lastBlock.end(); i ++ ) {
+		if( strcmp(tableChar, i->first) == 0 ) {
+			break;
+		}
+	}
+	if( i == lastBlock.end() ) {
+		// 没找到，添加一条
+		lastBlock.insert(pair<char[MAX_TABLE_NAME], int>(block.tableName, block.offset));
+	} else {
+		Block temp = readBlock(i->second);
+		temp.nextOffset = block.offset;
+		temp.dirty();
+		writeBlock(temp);
+	}
 
-	//返回新块
+	return block;
 }
