@@ -62,8 +62,10 @@
   <ItemGroup>
     <ClCompile Include="api.cpp" />
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="BPTree.cpp" />
     <ClCompile Include="buffermanager.cpp" />
     <ClCompile Include="catalog.cpp" />
+    <ClCompile Include="indexManger.cpp" />
     <ClCompile Include="interpreter.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
@@ -74,8 +76,10 @@
   <ItemGroup>
     <ClInclude Include="api.h" />
     <ClInclude Include="block.h" />
+    <ClInclude Include="BPTree.h" />
     <ClInclude Include="buffermanager.h" />
     <ClInclude Include="catalog.h" />
+    <ClInclude Include="indexManager.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="minisql.h" />
     <ClInclude Include="record.h" />

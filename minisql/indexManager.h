@@ -25,6 +25,10 @@ public:
 	indexInfo insertRec(SqlCommand sql,table tableInstance,vector<string> indexList);
 	//delete rec时调用
 	indexInfo deleteRec(SqlCommand sql,table tableInstance,vector<string> indexList);
+	//插入一个索引
+	bool insert(string key,int blockPtr,int inBlockPtr);
+	bool insert(int key,int blockPtr,int inBlockPtr);
+	bool insert(float key,int blockPtr,int inBlockPtr);
 };
 
 #endif
