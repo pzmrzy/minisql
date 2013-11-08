@@ -81,20 +81,22 @@ private:						// 自用，更新表索引.blk
 	void writeDbInfo();
 
 public:							// RecordManager使用
-	// 返回tableName的所有块
-	vector<Block> getTableBlocks(string tableName);
+	// TODO 返回tableName的所有块号
+	vector<int> getTableBlocks(string tableName);
 	// 给tableName添加一个新块
 	Block newBlock(string tableName);
 	// 写数据
 	Block StoreData(string tableName, char[] content);
 
 public:							// IndexManager使用
-	// 返回indexName的所有块
-	vector<Block> getIndexBlocks(string IndexName);
+	// TODO 返回indexName的所有块偏移量
+	vector<int> getIndexBlocks(string IndexName);
 	// 给tableName添加一个新块
 	Block newIndexBlock(string IndexName);
 	// 写index数据
-	Block StoreIndex(string IndexName, char[] content);
+	Block storeIndex(string IndexName, char[] content);
+	// 传入offset, 读块并返回content
+	char[] readIndexContent( int offset );
 };
 
 #endif

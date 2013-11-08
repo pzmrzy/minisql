@@ -128,7 +128,8 @@ void BufferManager::writeDbInfo() {
 }
 
 
-vector<Block> BufferManager::getTableBlocks(string tableName) {
+vector<int> getTableBlocks(string tableName) {
+	const char* tableChar = tableName.c_str();
 	//转换tableName为char[]
 
 	//从firstBlock表中查找tableName的第一块地址
@@ -140,6 +141,11 @@ vector<Block> BufferManager::getTableBlocks(string tableName) {
 			//return a;
 		//找不到：
 			//返回null
+}
+
+
+Block newBlock(string tableName) {
+
 }
 
 
