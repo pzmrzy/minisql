@@ -128,33 +128,55 @@ void BufferManager::writeDbInfo() {
 }
 
 
-vector<int> getTableBlocks(string tableName) {
-	const char* tableChar = tableName.c_str();
-	hash_map<char[MAX_TABLE_NAME], int>::iterator i;
-	
+vector<int> BufferManager::getTableBlocks(string tableName) {
 	//转换tableName为char[]
+	const char *tableChar = tableName.c_str();
+	hash_map<char[MAX_TABLE_NAME], int>::iterator i;
+	int offset;
 
-	//从firstBlock表中查找tableName的第一块地址
+	//从firstBlock中查找tableName的第一块地址
+	for( i = firstBlock.begin(); i != firstBlock.end(); i ++ ) {
+		if( strcmp(tableChar, i->first) == 0 ) {
+			offset = i->second;
+		}
+	}
+
+	if( i == firstBlock.end() ) {
+		// TODO 未找到错误
+	}
 
 	//建立vector，查找各块中不是index的块
-		//找到：
-			//返回vector
-			//vector<Block> a;
-			//return a;
-		//找不到：
-			//返回null
+	vector<int> result;
+	Block block;
+
+	do {
+		block = findBlock(offset);
+		if( block.isAlive && !(block.isIndex) ) {
+			result.push_back(offset);
+		}
+		offset = block.nextOffset;
+	} while(block.nextOffset == 0);
+	
+	return result;
 }
-
-
-Block newBlock(string tableName) {
-
-}
-
 
 Block BufferManager::newBlock(string tableName) {
 	//转换tableName为char[]
+	const char *tableChar = tableName.c_str();
+	hash_map<char[MAX_TABLE_NAME], int>::iterator i;
+	int offset;
 
 	//新建空Block，table为tableName, offset为db文件末尾，并直接写到文件末尾
+	Block block();
+	
+
+
+	//从firstBlock中查找tableName的第一块地址
+	for( i = firstBlock.begin(); i != firstBlock.end(); i ++ ) {
+		if( strcmp(tableChar, i->first) == 0 ) {
+			offset = i->second;
+		}
+	}
 
 	//查找LastOffset，读最后一块，设置它的nextoffset为新块的offset，设置dirty
 

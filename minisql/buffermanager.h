@@ -83,7 +83,7 @@ private:						// 自用，更新表索引.blk
 public:							// RecordManager使用
 	// TODO 返回tableName的所有块号
 	vector<int> getTableBlocks(string tableName);
-	// 给tableName添加一个新块
+	// 给tableName添加一个新块,若不在firstLast中也添加至其中
 	Block newBlock(string tableName);
 	// 写数据
 	Block StoreData(string tableName, char[] content);
