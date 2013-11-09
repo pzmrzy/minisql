@@ -29,6 +29,7 @@ using namespace std;
 #define SQL_USE             60
 #define SQL_QUIT            70
 #define SQL_ERROR           90
+#define SQL_SHOW_DATABASE   100
 
 #define SQL_TYPE_INT		0
 #define SQL_TYPE_FLOAT		-1

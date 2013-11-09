@@ -33,6 +33,9 @@ public:
 	void init(string& dbname);
 
 	void change_Table(table& t);
+
+	catainfo show_Database(SqlCommand& sqlcmd);
+
 private:
 	//判断数据库是否存在
 	bool exist_Database(string& dbname);

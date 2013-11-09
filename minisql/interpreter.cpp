@@ -120,6 +120,16 @@ SqlCommand Interpreter::dropTable(string& str) {
 	return sql;
 }
 
+SqlCommand Interpreter::showDatabase(string& str) {
+	SqlCommand sql;
+	string name;
+	sql.setType(SQL_SHOW_DATABASE);
+	str = delFirstWord(str, " ");
+	name = firstWord(str, " ;");
+	sql.setDatabaseName(name);
+	return sql;
+}
+
 /**
  * @brief  检验drop index语句合法性
  * @author tgmerge

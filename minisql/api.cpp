@@ -342,5 +342,13 @@ api::api(int t, SqlCommand& c){
 					cout<<"Syntax Error"<<endl;
                         break;
                 }
+				case (SQL_SHOW_DATABASE):{
+					cataInfo = CL.creat_Database(sql);
+                        if (!cataInfo.getsucc()){
+							cataInfo.print();
+                            break;
+                        }
+				}
+
         }
 }

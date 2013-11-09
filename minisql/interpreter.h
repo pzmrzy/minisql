@@ -34,7 +34,7 @@ public: // 字符串处理
 
 public: // 检查语句
 	SqlCommand createDatabase(string& str);  // 检查CREATE DATABASE databaseName
-
+	SqlCommand showDatabase(string& str);
 	// TODO: createTable未完成
 	SqlCommand createTable(string& str);     // 检查CREATE TABLE tableName(colName type, ..., PRIMARY KEY(primarycolName))
 	SqlCommand createIndex(string& str);     // 检查CREATE INDEX indexName ON tableName(colName)

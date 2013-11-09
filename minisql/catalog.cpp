@@ -1,5 +1,6 @@
 #include "catalog.h"
 #include <strstream>
+#include <iomanip>
 using namespace std;
 bool catalog::check(int t, string& str){
 	bool isint = true;
@@ -93,20 +94,11 @@ void catalog::readAttr(fstream& f, attribute& attr){
 
 void catalog::writeAttr(fstream& f, attribute& attr){
 	f.write((char *)attr.name.c_str(), MAX_CHAR_LENGTH);
-	f.flush();
-	//int a = 11;
-	//f.write((char *)&(a), 4);
-	f.flush();
 	f.write((char *)&(attr.datatype), sizeof(int));
-	f.flush();
 	f.write((char *)&(attr.length), sizeof(int));
-	f.flush();
 	f.write((char *)&(attr.PK), sizeof(bool));
-	f.flush();
 	f.write((char *)&(attr.UN), sizeof(bool));
-	f.flush();
 	f.write((char *)&(attr.NN), sizeof(bool));
-	f.flush();
 	f.write((char *)&(attr.ID), sizeof(bool));
 	f.flush();
 }
@@ -249,6 +241,41 @@ catainfo catalog::drop_Database(SqlCommand& cmd){
 	if (!DeleteFile(del.c_str()))
 		return catainfo(false, "Can't Delete File " + dbname + ".list!", tmptable);
 	return catainfo(true, "", tmptable);
+}
+
+catainfo catalog::show_Database(SqlCommand& cmd){
+	string dbname = cmd.getDatabaseName();
+	table tmptable;
+	bool existdb = exist_Database(dbname);
+	if (!existdb)
+		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
+
+	tableNum tnum;
+	fstream f;
+	f.open(dbname + ".list", ios::in | ios::out | ios::binary);
+	//读出表头数据
+	f.seekg(0, ios::beg);
+	readHead(f, tnum);
+	int TN = tnum.num;
+	attribute tmpattr;
+	for (int i = 0; i < TN; i++){
+        readTable(f, tmptable);
+		cout<<tmptable.name<<endl;
+		cout<<setw(33)<<"Name"<<setw(9)<<"Type"<<setw(3)<<"PK";
+		cout<<setw(3)<<"UN"<<setw(9)<<"NN"<<setw(3)<<"ID";
+		cout<<endl;
+		for (int j=0; j<tmptable.attrNum; i++){
+			tmpattr = tmptable.attrList[j];
+			cout<<setw(33)<<tmpattr.name;
+			cout<<setw(9)<<tmpattr.typeName();
+			cout<<setw(3)<<tmpattr.PK;
+			cout<<setw(3)<<tmpattr.UN;
+			cout<<setw(3)<<tmpattr.NN;
+			cout<<setw(3)<<tmpattr.ID;
+			cout<<endl;
+		}
+		cout<<endl;
+    }
 }
 
 catainfo catalog::insert_Rec(SqlCommand& cmd){
@@ -537,3 +564,4 @@ void catalog::change_Table(table& t){
 	writeTable(f, t);
 	f.close();
 }
+
