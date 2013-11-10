@@ -133,7 +133,7 @@ catainfo catalog::creat_Table(SqlCommand& cmd){
 		if (tmpattr.datatype == 0)
 			tmptable.recLength += sizeof(int);
 		if (tmpattr.datatype > 0)
-			tmptable.recLength += sizeof(char)*tmpattr.datatype;
+			tmptable.recLength += sizeof(char)*tmpattr.datatype + 1;
 
 		if (cmd.colSpecialVector[i] == "primary"){
 			tmpattr.PK = true;

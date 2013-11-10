@@ -87,6 +87,8 @@ public:							// RecordManager使用
 	Block newBlock(string tableName);
 	// 写数据
 	//Block StoreData(string tableName, char[] content);
+	Block getBlocks(int offset );
+	void storeBlocks(int offset,Block block);
 
 public:							// IndexManager使用
 	// TODO 返回indexName的所有块偏移量

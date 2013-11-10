@@ -1,4 +1,4 @@
-/*
+
 #include "record.h"
 
 using namespace std;
@@ -36,7 +36,7 @@ bool record::checkConstraints(Row& oneTuple,vector<attribute>& attrList,vector<s
         if (!condOpVector[i].compare("<")) condtype=1;
         if (!condOpVector[i].compare("<=")) condtype=2;
         if (!condOpVector[i].compare("==")) condtype=3;
-        if (!condOpVector[i].compare("!=")) condtype=4;
+        if (!condOpVector[i].compare("<>")) condtype=4;
         if (!condOpVector[i].compare(">=")) condtype=5;
         if (!condOpVector[i].compare(">")) condtype=6;
         switch ( type )
@@ -60,7 +60,7 @@ bool record::checkConstraints(Row& oneTuple,vector<attribute>& attrList,vector<s
                             return false ;
                         break ;
                     case 4:
-                        if ( value1 == value2 ) //!=
+                        if ( value1 == value2 ) //<>
                             return false ;
                         break ;
                     case 5:
@@ -172,23 +172,22 @@ recoinfo record::writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& 
         else {
             str=colValueVector[k];
 			//长度比datatype长，返回错误信息
-			if ((str.length()+1)>attrList[k].datatype){
+			if ((str.length())>attrList[k].datatype){
 				succ=false;
 				message="Insertion failed. Format inconsistency in "+attrList[k].name;
 				return recoinfo(succ,message,results,num);
 			}
 			//长度比datatype短，不定长要补成定长
-			else if ((str.length()+1)<attrList[k].datatype){
+			else if ((str.length())<attrList[k].datatype){
 				int diff=attrList[k].datatype-str.length();
-				for (i=0;i<diff;i++){ str.insert(0," ");}
+				for (i=0;i<diff;i++){ str.insert(0,"\0");}
 			}
-			memcpy(blocks.content+j*tupleLen+p,str.c_str(),attrList[k].datatype);
-			p+=attrList[k].datatype;
+			memcpy(blocks.content+j*tupleLen+p,str.c_str(),attrList[k].datatype+1);
+			p+=attrList[k].datatype+1;
 		}
     }
 	blocks.content[j*tupleLen]=Used;
 	blocks.isDirty=true;
-
 	succ=true;
 	message="Insertion suceeded";
 	num=num+1;
@@ -223,9 +222,14 @@ Row record::getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attr
         }
 		//string
         else {
-			memcpy(ch,blocks.content+j*tupleLen+p,attrList[k].datatype);
-			p+=attrList[k].datatype;
-			str=ch;//???
+			memcpy(ch,blocks.content+j*tupleLen+p,attrList[k].datatype+1);//如果底层strin类型的存储有问题的话，试着改一改datatype+1.把1去掉或怎么的都行
+			p=p+attrList[k].datatype+1;
+			//若是不定长储存，则去掉前面的'\0'
+			str="";
+			for (int ii=0;ii<attrList[k].datatype;ii++){
+				if (ch[ii]!='\0') str=str+ch[ii];
+			}
+			str=str+"\0";
 			oneTuple.col.push_back(str);
 		}
     }
@@ -250,7 +254,7 @@ recoinfo record::Select_Rec(SqlCommand& sql,table &Table)
 	vector<string> condLeftVector=sql.getCondLeftVector();//条件左值
 	vector<string> condOpVector=sql.getCondOpVector();//条件操作符
 	vector<string> condRightVector=sql.getCondRightVevtor();//条件右值
-    vector<Block> blockVector=BufferManager::getTableBlocks(tableName);//调用buffer，得到block
+    vector<int> blockVector=bfm.getTableBlocks(tableName);//调用buffer，得到block
     bool whereFlag=false;//判断sql中有木有where
     int blockLen;//当前block中有几条记录
     int tupleLen=Table.recLength+1;//数据中每条rec的长度
@@ -279,7 +283,7 @@ recoinfo record::Select_Rec(SqlCommand& sql,table &Table)
 
 	if (condLeftVector.size()) whereFlag=true;//判断是不是含where查找
     for (i=0;i<blockVector.size();i++){
-        blocks=blockVector[i];
+        blocks=bfm.readBlocks(i);
         blockLen=blocks.getSize()/tupleLen;
         for (j=0;j<blockLen;j++){
             //不是删除数据，则读出数据并解析
@@ -317,7 +321,7 @@ recoinfo record::Delete_Rec(SqlCommand& sql,table &Table)
 	vector<string> condLeftVector=sql.getCondLeftVector();//条件左值
 	vector<string> condOpVector=sql.getCondOpVector();//条件操作符
 	vector<string> condRightVector=sql.getCondRightVevtor();//条件右值
-    vector<Block> blockVector=BufferManager::getTableBlocks(tableName);//调用buffer，得到block
+    vector<int> blockVector=bfm.getTableBlocks(tableName);//调用buffer，得到block
     bool whereFlag=false;//判断sql中有木有where
     int blockLen;//当前block中有几条记录
     int tupleLen=Table.recLength+1;//数据中每条rec的长度
@@ -326,7 +330,7 @@ recoinfo record::Delete_Rec(SqlCommand& sql,table &Table)
 
 	if (condLeftVector.size()) whereFlag=true;//判断是不是含where查找
     for (i=0;i<blockVector.size();i++){
-        blocks=blockVector[i];
+        blocks=bfm.readBlocks(i);
         blockLen=blocks.getSize()/tupleLen;
         for (j=0;j<blockLen;j++){
             //不是删除数据，则读出数据并解析
@@ -341,7 +345,7 @@ recoinfo record::Delete_Rec(SqlCommand& sql,table &Table)
                         { blocks.content[j*tupleLen]=Unused;num++;blocks.isDirty=true; succ=true;}
             }
         }
-		blockVector[i]=blocks;
+		bfm.storeBlocks(i,blocks);
     }
 
 //返回信息
@@ -352,7 +356,7 @@ return recoinfo(succ,message,results,num);
 }
 
 
-recoinfo record::Insert_Rec(SqlCommand& sql,table &Table)
+recoinfo record::Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &recordID)
 {
 	int i,j,k;
 	long num=0;//查找到的记录数
@@ -366,7 +370,7 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table)
 	string tableName=Table.name;//相关的表名字
 	vector<attribute> attrList=Table.attrList;//表的所有属性列表
     vector<string> colValueVector=sql.getcolValueVector();//需要插入的rec的值
-    vector<Block> blockVector=BufferManager::getTableBlocks(tableName);//调用buffer，得到block
+    vector<int> blockVector=bfm.getTableBlocks(tableName);//调用buffer，得到block
     bool whereFlag=false;//判断sql中有木有where
     int blockLen;//当前block中有几条记录
     int tupleLen=Table.recLength+1;//数据中每条rec的长度
@@ -380,14 +384,14 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table)
     string str;
 
     for (i=0;i<blockVector.size();i++){
-        blocks=blockVector[i];
+		blocks=bfm.readBlocks(i);
         blockLen=blocks.getSize()/tupleLen;
 		p=1;
         for (j=0;j<blockLen;j++){
             //若是删除数据，则将删除数据替换成新数据
             if (blocks.content[j*tupleLen]==Unused){
 				recoInfo=writeblock(blocks,j,tupleLen,attrList,colValueVector);//写入一条记录
-				if (recoInfo.getsucc()) {blockVector[i]=blocks;return recoInfo;}
+				if (recoInfo.getsucc()) {bfm.storeBlocks(i,blocks);blockID=i;recordID=j; return recoInfo;}
 				else  return recoInfo;
 
 			}
@@ -400,13 +404,13 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table)
 		if (blockLen<(BLOCK_LEN/tupleLen)){
 			i=blockVector.size()-1;
 			recoInfo=writeblock(blocks,j,tupleLen,attrList,colValueVector);//写入一条记录
-			if (recoInfo.getsucc()) {blocks.contentSize+=tupleLen; blockVector[i]=blocks; return recoInfo;}
+			if (recoInfo.getsucc()) {blocks.contentSize+=tupleLen;blockID=i;recordID=j; bfm.storeBlocks(i,blocks); return recoInfo;}
 		}
 		//新建立一个block
 		else {
-			blocks=BufferManager::newBlock(tableName);
+			blocks=bfm.newBlock(tableName);
 			recoInfo=writeblock(blocks,0,tupleLen,attrList,colValueVector);//写入一条记录
-			if (recoInfo.getsucc()) {blocks.contentSize+=tupleLen;return recoInfo;}
+			if (recoInfo.getsucc()) {blocks.contentSize+=tupleLen;blockID=i;recordID=0;bfm.storeBlocks(i,blocks);return recoInfo;}
 		}
 	}
 //返回信息
@@ -414,4 +418,3 @@ if (num==0) {succ=false; message="The results is null.";}
 return recoinfo(succ,message,results,num);
 }
 
-*/

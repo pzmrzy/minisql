@@ -28,7 +28,7 @@ public:
 	//删除操作
 	recoinfo Delete_Rec(SqlCommand& sql,table &Table);
 	//插入操作
-	recoinfo Insert_Rec(SqlCommand& sql,table &Table);
+	recoinfo Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &recordID );
 private:
     //解析数据中每条record
     Row parser(istrstream& inp,vector<attribute>& attrList);
@@ -38,6 +38,7 @@ private:
     bool checkConstraints(Row& oneTuple,vector<attribute>& attrList,vector<string>& condLeftVector,vector<string>& condOpVector,vector<string>& condRightVector);
 	recoinfo writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& attrList,vector<string>& colValueVector);//写入一条记录
 	Row getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attrList);
+	buffermanager bfm;
 };
 
 #endif

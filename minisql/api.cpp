@@ -56,7 +56,7 @@ api::api(int t, SqlCommand& c){
                         //成功
                         else{
                             Table=cataInfo.gettable();
-                           // indexInfo=index::create_index(sql,Table);//根据table信息，是否有主键，如果有主键就按create_index_on 主键;
+                           // indexInfo=index::create_index(sql,Table);//根据table信息，是否有主键，如果有主键、unique就按create_index_on 主键;
                             //若建立主键的索引失败
                             //if (!indexInfo.succ) {
                               //  indexInfo.print();//输出失败原因
@@ -237,6 +237,7 @@ api::api(int t, SqlCommand& c){
                             int i;
                             int asize=attrList.size();
                             indexList.clear();
+							int blockID=-1, reocrdID=-1;//用于在调用record的insert函数之后再调用index的insert函数，告诉index那边我现在插在第几块的第几条。若都为-1则表示record没有插过
                             for (i=0;i<asize;i++){
                                 if (attrList.at(i).ID){indexList.push_back(attrList.at(i).name);f=true;}//???
                             }
@@ -252,7 +253,7 @@ api::api(int t, SqlCommand& c){
                             }
                             //无索引
                             else {
-                                recoInfo=RE.Insert_Rec(sql,Table);
+                                recoInfo=RE.Insert_Rec(sql,Table,blockID,recordID);
                                 if (!recoInfo.getsucc()){
 									recoInfo.print();
 									break;
