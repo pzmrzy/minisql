@@ -10,11 +10,15 @@
 #include"BPTree.h"
 
 class IndexManager{
+private:
+	BufferManager buff;
 public:
+	//用数据库名称初始化
+	IndexManager(string DBName);
 	//create table时调用
-	bool createIndex(SqlCommand sql,table tableInstance);
+	bool createIndex(string indexName);
 	//create index on时调用
-	bool createIndexOn(SqlCommand sql,table tableInstance);
+	bool createIndexOn(SqlCommand sql,table tableInstance,string indexName);
 	//drop index时调用
 	bool dropIndex(SqlCommand sql,table tableInstance);
 	//drop table时调用

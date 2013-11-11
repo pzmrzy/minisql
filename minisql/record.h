@@ -30,15 +30,16 @@ public:
 	//插入操作
 	recoinfo Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &recordID );
 private:
-    //解析数据中每条record
+    //解析数据中每条record   已报废
     Row parser(istrstream& inp,vector<attribute>& attrList);
     //按要求的列返回结果
     void push(Row& oneTuple,Results& results,vector<int> colNamePosVector);
     //判断是否满足约束条件
     bool checkConstraints(Row& oneTuple,vector<attribute>& attrList,vector<string>& condLeftVector,vector<string>& condOpVector,vector<string>& condRightVector);
 	recoinfo writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& attrList,vector<string>& colValueVector);//写入一条记录
+	//解析数据中每条record
 	Row getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attrList);
-	buffermanager bfm;
+	BufferManager bfm;
 };
 
 #endif
