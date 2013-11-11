@@ -16,6 +16,7 @@ BLOCK_LEN  4096  CONTENT的长度
 
 HEAD结构
 TABLE_NAME      char*  32    该块的表名
+OFFSET			int    4     偏移量
 NEXT_OFFSET     int    4     下一块的偏移量
 CONTENT_SIZE    int    4     块内有效数据的长度
 IS_ALIVE        bool   1     该块是否已被删除
@@ -54,8 +55,8 @@ public:						// 块数据
 public:						// 其他
 	int offset;					// 该block在文件中的偏移量
 	bool isDirty;				// 是否需要写回文件
-	bool isActive;				// for lru
-	int value;					// for lru
+	//bool isActive;				// for lru
+	//int value;					// for lru
 
 public:							// 构造，析构
 	// 初始化一个新块，不是索引
@@ -63,7 +64,6 @@ public:							// 构造，析构
 	// 指定是否索引，初始化一个新块
 	Block(bool index);
 	// 如果dirty，先写回文件再销毁
-	~Block();
 
 public:							// 建议用下列方法读写属性
 	// 设置这个块是脏的，以便写回文件
@@ -74,6 +74,9 @@ public:							// 建议用下列方法读写属性
 
 	// 读取这个块内部的数据长度
 	int getSize();
+
+	// 测试用
+	void debug(bool withContent = false);
 };
 
 #endif

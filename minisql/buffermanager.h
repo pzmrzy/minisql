@@ -48,47 +48,51 @@ private:
 	fstream infoFile;
 private:
 	// 各表第一块的偏移string:tableName, int:offset
-	hash_map<char[MAX_TABLE_NAME], int> firstBlock;
+	hash_map<string, int> firstBlock;
 	// 各表最后一块的偏移string:tableName, int:offset
-	hash_map<char[MAX_TABLE_NAME], int> lastBlock;
+	hash_map<string, int> lastBlock;
 
 public:
-	// 内存中的缓冲区
+	// ok 内存中的缓冲区
 	list<Block> buffer;
 
 public:							// 构造，析构
-	// 用数据库名初始化buffermanager
+	// ok 用数据库名初始化buffermanager
 	BufferManager(string name);
-	// 写回所有脏块，销毁buffermanager
+	// ok 写回所有脏块，销毁buffermanager
 	virtual ~BufferManager();
 
-private:						// 自用方法，读写
-	// 从某文件读一个block
+public:						// 自用方法，读写
+	// ok 从某文件读一个block,不管缓存
 	Block readBlock(int offset);
-	// 将block写到文件（若是干净的就不写了）
+	// ok 将block写到文件（若是干净的就不写了）
 	void writeBlock(Block &block);
-	// 写回所有缓冲区中的脏block到文件
+	// ok 写回所有缓冲区中的脏block到文件
 	void writeAllBlocks();
+	// ok 输出缓冲区信息
+	void debug(bool isContent);
 
 private:						// 自用方法，查找块相关，LRU
-	// 按offset在缓存和文件中查找块，并存入缓存
-	Block findBlock(int offset);
+	// ok 按offset在缓存和文件中查找块，并存入缓存
+	Block& findBlock(int offset);
 
 private:						// 自用，更新表索引.blk
-	// 读取dbFile的表块索引文件, 若失败则新建一个
+	// ok 读取dbFile的表块索引文件, 若失败则新建一个
 	void readDbInfo();
-	// 写索引文件
+	// ok 写索引文件
 	void writeDbInfo();
 
 public:							// RecordManager使用
-	// 返回tableName的所有块号
+	// ok 返回tableName的所有块号
 	vector<int> getTableBlocks(string tableName);
-	// 给tableName添加一个新块,若不在firstLast中也添加至其中
-	Block newBlock(string tableName);
+	// ok 给tableName添加一个新块,若不在firstLast中也添加至其中
+	Block& newBlock(string tableName);
 	// 写数据
 	//Block StoreData(string tableName, char[] content);
-	Block getBlocks(int offset );
-	void storeBlocks(int offset,Block block);
+/*+*/Block& getBlocks(int offset);
+/*+*/void storeBlocks(int offset, Block& block);
+
+
 
 public:							// IndexManager使用
 	// TODO 返回indexName的所有块偏移量
@@ -96,9 +100,9 @@ public:							// IndexManager使用
 	// 给tableName添加一个新块
 	Block newIndexBlock(string IndexName);
 	// 写index数据
-	Block storeIndex(string IndexName, char[] content);
+	//Block storeIndex(string IndexName, char[] content);
 	// 传入offset, 读块并返回content
-	char[] readIndexContent( int offset );
+	//char[] readIndexContent( int offset );
 };
 
 #endif

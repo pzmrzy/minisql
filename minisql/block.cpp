@@ -1,26 +1,22 @@
 #include "block.h"
 
 Block::Block() {
-	tableName[32];
+	tableName[0] = 0;
 	nextOffset = 0;
 	contentSize = 0;
-	isAlive = false;
+	isAlive = true;
 	offset = 0;
 	isDirty = true;
-	isActive = true;
-    value = 0;
 	isIndex = false;
 }
 
 Block::Block(bool index) {
-	tableName[32];
+	tableName[0] = 0;
 	nextOffset = 0;
 	contentSize = 0;
 	isAlive = false;
 	offset = 0;
 	isDirty = true;
-	isActive = true;
-    value = 0;
 	isIndex = index;
 }
 
@@ -36,3 +32,13 @@ int Block::getSize() {
 	return contentSize;
 }
 
+void Block::debug(bool withContent) {
+	cout << "\n[BLOCK][" << tableName << "][" << offset << "]" << endl;
+	if(!isAlive)cout << "NOT "; cout << "alive" << endl;
+	if(!isIndex)cout << "NOT "; cout << "index" << endl;
+	if(!isDirty)cout << "NOT "; cout << "dirty" << endl;
+	cout << "next=" << nextOffset << endl;
+	cout << "len =" << contentSize << endl;
+	if(withContent) cout << content << endl;
+	return;
+}
