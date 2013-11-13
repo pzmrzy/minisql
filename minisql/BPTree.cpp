@@ -159,11 +159,7 @@ bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
 	indexBuff.storeIndex(indexName);//TODO:把所有还在内存中的index块存入外存就好，因为其他的块已经被写出
 }
 
-
-
-
-
-bool BPTree::loadBPTree(BufferManager indexBuff,string indexName)
+bool BPTree::loadBPTree(string indexName)
 {
 	int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
 	Node rootNode(indexBuff,firstBlock,indexName,tableInstance,n);
@@ -262,12 +258,12 @@ PtrType BPTree::findParentNode(PtrType ptr)
 			return parentMap[i].parentPtr;
 }
 
-void BPTree::insert(Value key,PtrType pointer)
+void BPTree::insert(Value key,PtrType blockPointer,PtrType inBlockPtr)
 {
 	PtrType nodePtr = findLeafNode(key);
 	Node node(indexBuff,nodePtr,indexName,tableInstance,n);
 	if (node.getCount() < (n - 1))
-		insertLeaf(node,key,pointer);
+		insertLeaf(node,key,blockPointer,inBlockPtr);
 	else
 	{
 		//排序
@@ -317,7 +313,7 @@ void BPTree::insert(Value key,PtrType pointer)
 
 
 
-void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
+void BPTree::insertLeaf(Node node,Value key,PtrType blockPointer,PtrType inBlockPtr)
 {
 	vector<Value> keyList = node.getInfo();//只读键值对
 	if (key.getKey() < keyList[0].getKey() )
