@@ -1,13 +1,15 @@
 #include"BPTree.h"
 
-Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
+Node::Node(string dbName,PtrType ptr,string indexName,table tableInstance,int n):indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
 {
+	BufferManager indexBuff(dbName);
 	block = indexBuff.getIndexOneBlock(indexName, ptr);
 	Node::read();
 }
 
-Node::Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n)
+Node::Node(string dbName,string indexName,table tableInstance,int n):indexName(indexName),tableInstance(tableInstance),ptrN(n),dbName(dbName)
 {
+	BufferManager indexBuff(dbName);
 	//创建块，返回offset
 	block = indexBuff.newIndexBlock(indexName);
 	offset = block.offset;
@@ -22,6 +24,7 @@ PtrType Node::getNodePtr()
 Node::~Node()
 {
 	char coutStream[5000];
+	BufferManager indexBuff(dbName);
 	
 	char tempNodeType;
 	if (nodeType == _LEAFNODE)
@@ -135,7 +138,7 @@ void Node::updateCount()
 
 
 
-BPTree::BPTree(BufferManager indexBuff,int type):indexBuff(indexBuff),type(type)
+BPTree::BPTree(string dbName,int type):type(type),dbName(dbName)
 {
 	int freeSpace = 4*1024 - sizeof(PtrType) - 1 - sizeof(int);
 	n  = freeSpace / (sizeof(PtrType) + typeSize(type)) + 1; //除下来应该取整而不是四舍五入
@@ -161,16 +164,18 @@ bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
 	indexBuff.storeIndex(indexName);//TODO:把所有还在内存中的index块存入外存就好，因为其他的块已经被写出
 }*/
 
-bool BPTree::loadBPTree(string indexName)
+void BPTree::loadBPTree(string indexName)
 {
+	BufferManager indexBuff(dbName);
 	int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
-	Node rootNode(indexBuff,firstBlock,indexName,tableInstance,n);
+	Node rootNode(dbName,firstBlock,indexName,tableInstance,n);
 	root = rootNode.getInfo()[0].getIntKey();
 }
 
 PtrType BPTree::find(Value key)
 {
-	Node *node = new Node(indexBuff,root,indexName,tableInstance,n);
+	BufferManager indexBuff(dbName);
+	Node *node = new Node(dbName,root,indexName,tableInstance,n);
 	//in nonLeafNode
 	while (node->getNodeType() != _LEAFNODE)
 	{
@@ -184,12 +189,12 @@ PtrType BPTree::find(Value key)
 		if (i >= temp.size())
 		{
 			delete node;
-			Node *node = new Node(indexBuff,atoi(temp[temp.size() - 1].getKey().c_str()),indexName,tableInstance,n);
+			Node *node = new Node(dbName,atoi(temp[temp.size() - 1].getKey().c_str()),indexName,tableInstance,n);
 		}
 		else
 		{
 			delete node;
-			Node *node = new Node(indexBuff,atoi(temp[i - 1].getKey().c_str()),indexName,tableInstance,n);
+			Node *node = new Node(dbName,atoi(temp[i - 1].getKey().c_str()),indexName,tableInstance,n);
 		}
 	}
 
@@ -210,7 +215,8 @@ PtrType BPTree::find(Value key)
 
 PtrType BPTree::findLeafNode(Value key)
 {
-	Node *node = new Node(indexBuff,root,indexName,tableInstance,n);
+	BufferManager indexBuff(dbName);
+	Node *node = new Node(dbName,root,indexName,tableInstance,n);
 	parentMap.clear();
 	ParentMap *tempMap = new ParentMap();
 	tempMap->nodePtr = root;
@@ -235,7 +241,7 @@ PtrType BPTree::findLeafNode(Value key)
 			tempMap->parentPtr = node->getNodePtr();
 			parentMap.push_back(*tempMap);
 			delete node;
-			Node *node = new Node(indexBuff,atoi(temp[temp.size() - 1].getKey().c_str()),indexName,tableInstance,n);	
+			Node *node = new Node(dbName,atoi(temp[temp.size() - 1].getKey().c_str()),indexName,tableInstance,n);	
 		}
 		else
 		{
@@ -246,7 +252,7 @@ PtrType BPTree::findLeafNode(Value key)
 			parentMap.push_back(*tempMap);
 			delete node;
 			parentMap[j].nodePtr = atoi(temp[temp.size() - 1].getKey().c_str());
-			Node *node = new Node(indexBuff,atoi(temp[i - 1].getKey().c_str()),indexName,tableInstance,n);
+			Node *node = new Node(dbName,atoi(temp[i - 1].getKey().c_str()),indexName,tableInstance,n);
 		}
 	}
 	return node->getNodePtr();
@@ -262,8 +268,9 @@ PtrType BPTree::findParentNode(PtrType ptr)
 
 void BPTree::insert(Value key,PtrType pointer)
 {
+	BufferManager indexBuff(dbName);
 	PtrType nodePtr = findLeafNode(key);
-	Node node(indexBuff,nodePtr,indexName,tableInstance,n);
+	Node node(dbName,nodePtr,indexName,tableInstance,n);
 	if (node.getCount() < (n - 1))
 		insertLeaf(node,key,pointer);
 	else
@@ -291,7 +298,7 @@ void BPTree::insert(Value key,PtrType pointer)
 		}
 		
 		//更新尾指针
-		Node newNode(indexBuff,indexName,tableInstance,n);
+		Node newNode(dbName,indexName,tableInstance,n);
 		PtrType newNodePtr = newNode.getNodePtr();
 		newNode.setLastPtr(node.getLastPtr());
 		node.setLastPtr(newNodePtr);
@@ -346,9 +353,10 @@ void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
 
 void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 {
+	BufferManager indexBuff(dbName);
 	if (node.getNodePtr() == root)
 	{
-		Node newNode(indexBuff,indexName,tableInstance,n);
+		Node newNode(dbName,indexName,tableInstance,n);
 		vector<Value> keyList;
 		Value temp1(_TYPE_INT,node.getNodePtr());
 		Value temp2(_TYPE_INT,pointer);
@@ -359,7 +367,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 		root = newNode.getNodePtr();
 		//把根节点的更改写入磁盘
 		int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
-		Node rootNode(indexBuff,firstBlock,indexName,tableInstance,n);
+		Node rootNode(dbName,firstBlock,indexName,tableInstance,n);
 		Value temp3(_TYPE_INT,root);
 		vector<Value> temp4;
 		temp4.push_back(temp3);
@@ -367,7 +375,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 	}
 	else
 	{
-		Node parentNode(indexBuff,findParentNode(node.getNodePtr()),indexName,tableInstance,n);
+		Node parentNode(dbName,findParentNode(node.getNodePtr()),indexName,tableInstance,n);
 		if (parentNode.getCount() < n)
 		{
 			vector<Value> keyList = parentNode.getInfo();//只读键值对
@@ -438,7 +446,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 			{
 				temp2.push_back(keyList[i]);
 			}
-			Node newNode(indexBuff,indexName,tableInstance,n);
+			Node newNode(dbName,indexName,tableInstance,n);
 			newNode.set(temp2);
 
 			insertNonleaf(parentNode,newK,newNode.getNodePtr());
@@ -459,8 +467,9 @@ string Value::getKey()
 
 PtrType BPTree::deleteNode(Value key)
 {
+	BufferManager indexBuff(dbName);
 	PtrType ptr = find(key);
-	Node node(indexBuff,findLeafNode(key),indexName,tableInstance,n);
+	Node node(dbName,findLeafNode(key),indexName,tableInstance,n);
 
 	vector<Value> temp = node.getInfo();
 	int i = 1;

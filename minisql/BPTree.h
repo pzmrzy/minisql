@@ -68,8 +68,7 @@ private:
 	int attrType;
 	//块号即偏移量
 	int offset;
-	
-	BufferManager indexBuff;
+	string dbName;
 	Block block;
 	table tableInstance;
 	TYPE_SIZE;
@@ -79,9 +78,9 @@ private:
 
 public:
 	//创建一个节点时调用的构造函数
-	Node(BufferManager indexBuff, string indexName, table tableInstance, int n);
+	Node(string dbName, string indexName, table tableInstance, int n);
 	//得到一个节点时调用的构造函数
-	Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n);
+	Node(string dbName,PtrType ptr,string indexName,table tableInstance,int n);
 	//析构函数：讲块的内容写入磁盘，再销毁
 	~Node();
 
@@ -103,20 +102,20 @@ public:
 class BPTree{
 public:
 	//索引树的buff管理器与键值类型
-	BPTree(BufferManager indexBuff,int type);
+	BPTree(string dbName,int type);
 	bool createBPTree(SqlCommand sql,table tableInstance,string indexName);
-	bool loadBPTree(string indexName);//TODO:改成构造函数
+	void loadBPTree(string indexName);//TODO:改成构造函数
 	void insert(Value key,PtrType pointer);
 	PtrType find(Value key);
 	PtrType deleteNode(Value key);
 
 private:
-	BufferManager indexBuff;//怎么初始化它？
 	int n;//节点指针数
 	int type;//键值类型
 	string indexName;
 	table tableInstance;
 	PtrType root;
+	string dbName;
 	class ParentMap
 	{
 	public:

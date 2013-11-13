@@ -1,11 +1,11 @@
 #include"indexManager.h"
 
-IndexManager::IndexManager(string DBName):buff(DBName)
+IndexManager::IndexManager(string DBName):buff(DBName),dbName(DBName)
 {
 }
 
 //create table时调用
-bool IndexManager::createIndex(string indexName)
+void IndexManager::createIndex(string indexName)
 {
 	//buff.storeIndex(indexName,"");??
 }
@@ -29,9 +29,9 @@ bool IndexManager::createIndex(string indexName)
 
 
 
-
+/*
 //drop index时调用
-bool IndexManager::dropIndex(SqlCommand sql,table tableInstance)
+void IndexManager::dropIndex(SqlCommand sql,table tableInstance)
 {
 }
 
@@ -44,7 +44,7 @@ bool IndexManager::dropIndexAll(SqlCommand sql,table tableInstance)
 {
 }
 
-
+*/
 
 
 
@@ -66,7 +66,7 @@ vector<int> IndexManager::selectRec(SqlCommand sql,table tableInstance,vector<st
 				}
 				break;
 			}
-		BPTree tree(buff,attrType);
+		BPTree tree(dbName,attrType);
 		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
 		Value temp(attrType,key);
 		result.push_back(tree.find(temp));
@@ -78,7 +78,7 @@ vector<int> IndexManager::selectRec(SqlCommand sql,table tableInstance,vector<st
 
 
 //insert rec时调用
-vector<int> IndexManager::insertRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key, int blockPtr, int inBlockPtr)
+void IndexManager::insertRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key, int blockPtr, int inBlockPtr)
 {
 	for (int j = 0; j < indexList.size(); j++)//维护每一个索引
 	{
@@ -94,7 +94,7 @@ vector<int> IndexManager::insertRec(SqlCommand sql, table tableInstance, vector<
 				}
 				break;
 			}
-		BPTree tree(buff,attrType);
+		BPTree tree(dbName,attrType);
 		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
 		Value temp(attrType,key);
 		int recordCount = 4096 / (tableInstance.recLength + 1);//满载记录的块的条数
@@ -123,7 +123,7 @@ vector<int> IndexManager::deleteRec(SqlCommand sql, table tableInstance, vector<
 				}
 				break;
 			}
-		BPTree tree(buff,attrType);
+		BPTree tree(dbName,attrType);
 		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
 		Value temp(attrType,key);
 		result.push_back(tree.deleteNode(temp));
