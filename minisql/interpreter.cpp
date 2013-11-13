@@ -390,6 +390,10 @@ SqlCommand Interpreter::getExpression(string input) {
 	else if( firstStr == "insert" ) {
 		sql = insertIntoValues(input);
 	}
+	// 第一个是quit
+	else if( firstStr == "quit" ) {
+		sql = quitClause();
+	}
 	// 无法匹配
 	else {
 		sql.setType(SQL_ERROR);
@@ -524,6 +528,13 @@ SqlCommand Interpreter::insertIntoValues(string& str) {
 
 	sql.setType(SQL_INSERT_INTO);
 	sql.setTableName(tableName);
+
+	return sql;
+}
+
+SqlCommand Interpreter::quitClause() {
+	SqlCommand sql;
+	sql.setType(SQL_QUIT);
 
 	return sql;
 }
