@@ -538,3 +538,21 @@ SqlCommand Interpreter::quitClause() {
 
 	return sql;
 }
+
+SqlCommand Interpreter::showDatabase(string& str) {
+	// 现在的str示例  show database1 ;
+	SqlCommand sql;
+	string name;
+
+	//删除"show"
+	str = delFirstWord(str, " ");
+	
+	//取数据库名称
+	name = firstWord(str, " ");
+
+	// TODO: 检验数据库名称存在性
+	sql.setType(SQL_SHOW_DATABASE);
+	sql.setDatabaseName(name);
+
+	return sql;
+}
