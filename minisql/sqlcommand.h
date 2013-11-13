@@ -84,6 +84,8 @@ public:
 	}
 	//push列值(insert使用)
 	void pushColValueVector(string& str){
+		if(str.at(0)=='\'' && str.at(str.length()-1)=='\'')
+			str = str.substr(1, str.length()-2);
 		colValueVector.push_back(str);
 	}
 	vector<string> getcolValueVector(){
