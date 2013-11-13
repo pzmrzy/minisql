@@ -54,7 +54,7 @@ public: // ºÏ≤È”Ôæ‰
 
 	SqlCommand quitClause();                 // ºÏ≤ÈQUIT
 
-	void execfileClause(string& str);		 // execfile
+	SqlCommand execfileClause(string& str);		 // execfile
 };
 
 #endif

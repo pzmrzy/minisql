@@ -396,7 +396,7 @@ SqlCommand Interpreter::getExpression(string input) {
 		sql = quitClause();
 	}
 	else if( firstStr == "execfile" ) {
-		execfileClause(input);
+		sql = execfileClause(input);
 	}
 	// 无法匹配
 	else {
@@ -565,18 +565,14 @@ SqlCommand Interpreter::showDatabase(string& str) {
 	return sql;
 }
 
-void Interpreter::execfileClause(string& str) {
+SqlCommand Interpreter::execfileClause(string& str) {
 	// 删除execfile
 	str = delFirstWord(str, " ");
-
-	// 打开文件
 	string fileName = firstWord(str, " ;");
-	ifstream file(fileName.c_str());
+	
+	SqlCommand sql;
+	sql.setType(SQL_EXECFILE);
+	sql.setTableName(fileName);
 
-	// 读到每个';'
-	while(!file.eof()) {
-		getline (file, str);
-
-	file.close();
-
+	return sql;
 }
