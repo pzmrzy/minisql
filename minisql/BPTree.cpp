@@ -1,21 +1,46 @@
 #include"BPTree.h"
 
-Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
+Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr),block(indexBuff.getIndexOneBlock(indexName,ptr))
 {
-	Block block = indexBuff.getIndexOneBlock(indexName,ptr);//TODO:新+函数,得到该索引的ptr所指块的内容。
 	read();
 }
 
 Node::Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n)
 {
 	//创建块，返回offset
-	block = indexBuff.getIndexOneBlock(indexName,ptr);//TODO:新+函数,得到该索引的ptr所指块的内容。
+	block = indexBuff.newIndexBlock(indexName);
+	offset = block.offset;
 	read();
 }
 
 PtrType Node::getNodePtr()
 {
 	return offset;
+}
+
+Node::~Node()
+{
+	char coutStream[5000];
+	
+	char tempNodeType;
+	if (nodeType == _LEAFNODE)
+		tempNodeType = '1';
+	else
+		tempNodeType = '0';
+	memcpy(coutStream,&tempNodeType,sizeof(char));
+	memcpy(coutStream + 1,&count,sizeof(int));
+	int j = 0;
+	for (int i = 0; i < info.size(); i++)
+	{
+		switch (info[i].getType())
+		{
+		case _TYPE_INT:int temp = info[i].getIntKey();memcpy(coutStream + 1 + 4 + j,&temp,typeSize(_TYPE_INT));j+=typeSize(_TYPE_INT);break;
+		case _TYPE_FLOAT:float temp = info[i].getFloatKey();memcpy(coutStream + 1 + 4 + j,&temp,typeSize(_TYPE_FLOAT));j+=typeSize(_TYPE_FLOAT);break;
+		case _TYPE_STRING:string temp = info[i].getCharKey();memcpy(coutStream + 1 + 4 + j,&temp,typeSize(_TYPE_STRING));j+=typeSize(_TYPE_STRING);break;//可以这样写吗？
+		}
+	}
+	
+	indexBuff.writeIndexData(indexName, coutStream, j+5);
 }
 
 string Node::read()
@@ -51,19 +76,19 @@ string Node::read()
 		{
 		case _TYPE_FLOAT:
 			{
-				memcpy(&tempFloat,block.content + 5 + i*( typeSize(attrType) + sizeof(int) + sizeof(int)),typeSize(_TYPE_FLOAT));
+				memcpy(&tempFloat,block.content + 5 + i*( typeSize(attrType) + sizeof(int) ) + sizeof(int),typeSize(_TYPE_FLOAT));
 				tempValue.setKey(tempFloat);
 				break;
 			}
 		case _TYPE_INT:
 			{
-				memcpy(&tempInt,block.content + 5 + i*( typeSize(attrType) + sizeof(int) + sizeof(int)),typeSize(_TYPE_INT));
+				memcpy(&tempInt,block.content + 5 + i*( typeSize(attrType) + sizeof(int) ) + sizeof(int),typeSize(_TYPE_INT));
 				tempValue.setKey(tempInt);
 				break;
 			}
 		case _TYPE_STRING:
 			{
-				memcpy(&tempString,block.content + 5 + i*( typeSize(attrType) + sizeof(int) + sizeof(int)),typeSize(_TYPE_STRING));
+				memcpy(&tempString,block.content + 5 + i*( typeSize(attrType) + sizeof(int) ) + sizeof(int),typeSize(_TYPE_STRING));
 				tempValue.setKey(tempString);
 				break;
 			}
@@ -103,6 +128,11 @@ void Node::updateCount()
 
 
 
+
+
+
+
+
 BPTree::BPTree(BufferManager indexBuff,int type):indexBuff(indexBuff),type(type)
 {
 	int freeSpace = 4*1024 - sizeof(PtrType) - 1 - sizeof(int);
@@ -133,9 +163,11 @@ bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
 
 
 
-bool BPTree::loadBPTree(BufferManager buff,string indexName)
+bool BPTree::loadBPTree(BufferManager indexBuff,string indexName)
 {
-	int firstBlock = buff.getIndexBlocks(indexName)[0];//获取开始的块
+	int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
+	Node rootNode(indexBuff,firstBlock,indexName,tableInstance,n);
+	root = rootNode.getInfo()[0].getIntKey();
 }
 
 PtrType BPTree::find(Value key)
@@ -327,6 +359,13 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 		keyList.push_back(temp2);
 		newNode.set(keyList);
 		root = newNode.getNodePtr();
+		//把根节点的更改写入磁盘
+		int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
+		Node rootNode(indexBuff,firstBlock,indexName,tableInstance,n);
+		Value temp3(_TYPE_INT,root);
+		vector<Value> temp4;
+		temp4.push_back(temp3);
+		rootNode.set(temp4);
 	}
 	else
 	{

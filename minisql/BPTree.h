@@ -31,6 +31,10 @@ public:
 	Value(int type,float key):type(type),floatKey(key){}
 	//得到key，统一以字符串返回
 	string getKey();
+	int getType(){return type;}
+	int getIntKey(){return intKey;}
+	float getFloatKey(){return floatKey;}
+	string getCharKey(){return charKey;}
 	void setKey(int key){intKey = key;}
 	void setKey(string key){charKey = key;}
 	void setKey(float key){floatKey = key;}
@@ -101,7 +105,7 @@ public:
 	//索引树的buff管理器与键值类型
 	BPTree(BufferManager indexBuff,int type);
 	bool createBPTree(SqlCommand sql,table tableInstance,string indexName);
-	bool loadBPTree(BufferManager buff,string indexName);//TODO:改成构造函数
+	bool loadBPTree(BufferManager indexBuff,string indexName);//TODO:改成构造函数
 
 private:
 	BufferManager indexBuff;//怎么初始化它？
@@ -128,5 +132,5 @@ private:
 	//求类型大小
 	TYPE_SIZE;
 };
-
+//TODO： 比较函数
 #endif
