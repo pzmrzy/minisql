@@ -91,6 +91,8 @@ public:
 	void updateCount();//更新该节点当前指针数
 	void setLastPtr(Value ptr);
 	void setLastPtr(PtrType ptr);
+	void setType(int type){nodeType = type;}
+	void setCount(int t){count = t;}
 	Value getLastPtr(){return info[info.size() - 1];}
 	vector<Value> getInfo(){return info;}
 	int getCount(){return count;} 
@@ -103,7 +105,7 @@ class BPTree{
 public:
 	//索引树的buff管理器与键值类型
 	BPTree(string dbName,int type);
-	bool createBPTree(SqlCommand sql,table tableInstance,string indexName);
+	void createBPTree(SqlCommand sql,table tableInstance,string indexName,int type);
 	void loadBPTree(string indexName);//TODO:改成构造函数
 	void insert(Value key,PtrType pointer);
 	PtrType find(Value key);

@@ -15,17 +15,29 @@ void IndexManager::createIndex(string indexName)
 
 
 //create index onÊ±µ÷ÓÃ
-/*bool IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string indexName,int type)
+void IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string indexName)
 {
 	if (tableInstance.recNum == 0)
 	{
 		this->createIndex(indexName);
 		return;
 	}
-	BPTree tree(buff,type);
-	tree.createBPTree(sql,tableInstance,indexName);
+	int attrType = 0;
+	for(int i = 0; i < tableInstance.attrList.size(); i++)
+		if (tableInstance.attrList[i].name == indexName)
+		{
+			switch(tableInstance.attrList[i].datatype)
+			{
+			case -1:attrType = _TYPE_FLOAT;break;
+			case 0:attrType = _TYPE_INT;break;
+			case 1:attrType = _TYPE_STRING;break;
+			}
+			break;
+		}
+	BPTree tree(dbName,attrType);
+	tree.createBPTree(sql,tableInstance,sql.getTableName()+"."+indexName,attrType);
 }
-*/
+
 
 
 

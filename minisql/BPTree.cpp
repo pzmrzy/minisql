@@ -41,7 +41,7 @@ Node::~Node()
 		case _TYPE_INT:{int temp = info[i].getIntKey(); memcpy(coutStream + 1 + 4 + j, &temp, typeSize(_TYPE_INT)); j += typeSize(_TYPE_INT); break; }
 		case _TYPE_FLOAT:{float temp = info[i].getFloatKey(); memcpy(coutStream + 1 + 4 + j, &temp, typeSize(_TYPE_FLOAT)); j += typeSize(_TYPE_FLOAT); break; }
 		case _TYPE_STRING:{string temp = info[i].getCharKey(); memcpy(coutStream + 1 + 4 + j, &temp, typeSize(_TYPE_STRING)); j += typeSize(_TYPE_STRING); break;
-		}//可以这样写吗？
+		}//TODO:可以这样写吗？
 		}
 	}
 	
@@ -143,31 +143,56 @@ BPTree::BPTree(string dbName,int type):type(type),dbName(dbName)
 	int freeSpace = 4*1024 - sizeof(PtrType) - 1 - sizeof(int);
 	n  = freeSpace / (sizeof(PtrType) + typeSize(type)) + 1; //除下来应该取整而不是四舍五入
 }
-/*
-bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
+
+void BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName,int type)
 {
+	BufferManager indexBuff(dbName);
 	int recordLength = tableInstance.recLength;
 	BufferManager recordBuff(sql.getDatabaseName());
 	vector<int> blockNum = recordBuff.getTableBlocks(sql.getTableName());
 
-	//构造树
-	for (int i = 0; i < blockNum.size(); i++)
+	Block block = indexBuff.newIndexBlock(indexName);
+	Node node(dbName,0,indexName,tableInstance,n);
+	Node newNode(dbName,indexName,tableInstance,n);
+
+	node.setType(_NONLEAFNODE);
+	node.setCount(1);
+	vector<Value> temp;
+	temp.clear();
+	Value tempValue(_TYPE_INT,newNode.getNodePtr());
+	temp.push_back(tempValue);
+	node.set(temp);
+
+	newNode.setType(_LEAFNODE);
+	newNode.setCount(1);
+	vector<Value> temp2;
+	temp2.clear();
+	Value tempValue2(_TYPE_INT,-1);
+	temp2.push_back(tempValue2);
+	if (type == _TYPE_INT)
 	{
-		//TODO:读块的内容，把这个块的所有记录插入树里
-		for (int j = 0; j < recordLength; j++)
+		Value tempValue2(type,-1);
+		temp2.push_back(tempValue2);
+	}
+	else
+	{
+		if (type == _TYPE_FLOAT)
 		{
-			this->insert(value,pointer);
+			Value tempValue2(type,-1);
+			temp2.push_back(tempValue2);
+		}
+		else
+		{
+			Value tempValue2(type,"*");
+			temp2.push_back(tempValue2);
 		}
 	}
-
-	//存储树
-	indexBuff.storeIndex(indexName);//TODO:把所有还在内存中的index块存入外存就好，因为其他的块已经被写出
-}*/
+}
 
 void BPTree::loadBPTree(string indexName)
 {
 	BufferManager indexBuff(dbName);
-	int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
+	int firstBlock = 0;//获取开始的块
 	Node rootNode(dbName,firstBlock,indexName,tableInstance,n);
 	root = rootNode.getInfo()[0].getIntKey();
 }
