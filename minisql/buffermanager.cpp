@@ -258,3 +258,9 @@ void BufferManager::writeIndexData(string indexName, char *content, int length) 
 		b.dirty();
 	}
 }
+
+void BufferManager::writeIndexData(string indexName, int offset, char* content, int length) {
+	Block b = findBlock(offset);
+	memcpy(b.content, content, length);
+	b.dirty();
+}

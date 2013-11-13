@@ -573,7 +573,10 @@ void Interpreter::execfileClause(string& str) {
 	string fileName = firstWord(str, " ;");
 	ifstream file(fileName.c_str());
 
-	// 读到每个;
+	// 读到每个';'
+	while(!file.eof()) {
+		getline (file, str);
+
 	file.close();
 
 }
