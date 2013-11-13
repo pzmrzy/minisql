@@ -512,6 +512,10 @@ SqlCommand Interpreter::insertIntoValues(string& str) {
 	string temp;
 
 	str = delFirstWord(str, " ");
+	if(!(firstWord(str, " ") == "into")) {
+		sql.setType(SQL_ERROR);
+		return sql;
+	}
 	str = delFirstWord(str, " ");	// 删除"insert into"
 	// TODO: insert后面不是into
 
