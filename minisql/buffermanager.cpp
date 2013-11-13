@@ -156,6 +156,7 @@ vector<int> BufferManager::getTableBlocks(string tableName) {
 	}
 
 	if( i == firstBlock.end() ) {
+		return vector<int>();
 		// TODO Î´ÕÒµ½´íÎó
 	}
 
