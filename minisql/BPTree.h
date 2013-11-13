@@ -9,6 +9,10 @@
 #include "minisql.h"
 #include"buffermanager.h"
 #include"stdio.h";
+
+#define _LEAFNODE 1
+#define _NONLEAFNODE 0
+
 typedef int PtrType;
 
 class Value
@@ -51,7 +55,7 @@ private:
 	int now;
 	string indexName;
 	//当前节点所拥有的指针数
-	int count;//TODO:维护
+	int count;
 	//节点类型，0是非叶节点，1是叶节点
 	int nodeType;
 	//节点应拥有的指针数
@@ -74,16 +78,20 @@ public:
 	Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff){}
 	//得到一个节点时调用的构造函数
 	Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n);
+	//析构函数：讲块的内容写入磁盘，再销毁
+	~Node();
 
 	//得到节点的偏移量
 	PtrType getNodePtr();
 
-	void set(vector<Value> temp){info.clear();info = temp;}
+	void set(vector<Value> temp){info.clear();info = temp;updateCount();}
+	void updateCount();//更新该节点当前指针数
 	void setLastPtr(Value ptr);
 	void setLastPtr(PtrType ptr);
 	Value getLastPtr(){return info[info.size() - 1];}
 	vector<Value> getInfo(){return info;}
 	int getCount(){return count;} 
+	int getNodeType(){return nodeType;}
 
 };
 
@@ -102,11 +110,21 @@ private:
 	string indexName;
 	table tableInstance;
 	PtrType root;
+	class ParentMap
+	{
+	public:
+		PtrType nodePtr;
+		PtrType parentPtr;
+	};
+	vector<ParentMap> parentMap;//父亲列表
 
 	void insert(Value key,PtrType pointer);
 	void insertLeaf(Node node,Value key,PtrType pointer);
 	void insertNonleaf(Node node,Value key,PtrType pointer);
-	PtrType find(Value key);//TODO:维护一个父亲列表
+	//没找到返回-1，找到返回偏移量
+	PtrType find(Value key);
+	PtrType findLeafNode(Value key);
+	PtrType findParentNode(PtrType ptr);//利用parentMap查找ptr节点的父节点
 	//求类型大小
 	TYPE_SIZE;
 };

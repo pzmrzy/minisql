@@ -2,7 +2,7 @@
 
 Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
 {
-	block = indexBuff.getIndexOneBlock(indexName,ptr);//TODO:新+函数,得到该索引的ptr所指块的内容。
+	Block block = indexBuff.getIndexOneBlock(indexName,ptr);//TODO:新+函数,得到该索引的ptr所指块的内容。
 	read();
 }
 
@@ -89,6 +89,20 @@ void Node::setLastPtr(Value ptr)
 	info[info.size() - 1] = ptr;
 }
 
+void Node::updateCount()
+{
+	//(info.size() - 1) / 2;
+	count = 0;
+	for (int i = 0; i < info.size(); i+=2)
+	{
+		count++;
+	}
+}
+
+
+
+
+
 BPTree::BPTree(BufferManager indexBuff,int type):indexBuff(indexBuff),type(type)
 {
 	int freeSpace = 4*1024 - sizeof(PtrType) - 1 - sizeof(int);
@@ -124,12 +138,101 @@ bool BPTree::loadBPTree(BufferManager buff,string indexName)
 	int firstBlock = buff.getIndexBlocks(indexName)[0];//获取开始的块
 }
 
+PtrType BPTree::find(Value key)
+{
+	Node *node = new Node(indexBuff,root,indexName,tableInstance,n);
+	//in nonLeafNode
+	while (node->getNodeType() != _LEAFNODE)
+	{
+		vector<Value> temp = node->getInfo();
+		int i = 1;
+		for(i = 1; i < temp.size(); i+=2)
+		{
+			if (key.getKey() < temp[i].getKey())//只能是小于，因为小于才进前面
+				break;
+		}
+		if (i >= temp.size())
+		{
+			delete node;
+			Node *node = new Node(indexBuff,atoi(temp[temp.size() - 1].getKey().c_str()),indexName,tableInstance,n);
+		}
+		else
+		{
+			delete node;
+			Node *node = new Node(indexBuff,atoi(temp[i - 1].getKey().c_str()),indexName,tableInstance,n);
+		}
+	}
 
+	//in leafNode
+	vector<Value> temp = node->getInfo();
+	int i = 1;
+	for(i = 1; i < temp.size(); i+=2)
+	{
+		if (key.getKey() == temp[i].getKey())
+			break;
+	}
+	if (i >= temp.size() )
+		return -1;
+	else
+		return i;
+	delete node;
+}
 
+PtrType BPTree::findLeafNode(Value key)
+{
+	Node *node = new Node(indexBuff,root,indexName,tableInstance,n);
+	parentMap.clear();
+	ParentMap *tempMap = new ParentMap();
+	tempMap->nodePtr = root;
+	tempMap->parentPtr = -1;
+	parentMap.push_back(*tempMap);
+	int j = 0;
+	//in nonLeafNode
+	while (node->getNodeType() != _LEAFNODE)
+	{
+		vector<Value> temp = node->getInfo();
+		int i = 1;
+		for(i = 1; i < temp.size(); i+=2)
+		{
+			if (key.getKey() < temp[i].getKey())//只能是小于，因为小于才进前面
+				break;
+		}
+		if (i >= temp.size())
+		{
+			delete tempMap;
+			ParentMap *tempMap = new ParentMap();
+			tempMap->nodePtr =  atoi(temp[temp.size() - 1].getKey().c_str());
+			tempMap->parentPtr = node->getNodePtr();
+			parentMap.push_back(*tempMap);
+			delete node;
+			Node *node = new Node(indexBuff,atoi(temp[temp.size() - 1].getKey().c_str()),indexName,tableInstance,n);	
+		}
+		else
+		{
+			delete tempMap;
+			ParentMap *tempMap = new ParentMap();
+			tempMap->nodePtr =  atoi(temp[temp.size() - 1].getKey().c_str());
+			tempMap->parentPtr = node->getNodePtr();
+			parentMap.push_back(*tempMap);
+			delete node;
+			parentMap[j].nodePtr = atoi(temp[temp.size() - 1].getKey().c_str());
+			Node *node = new Node(indexBuff,atoi(temp[i - 1].getKey().c_str()),indexName,tableInstance,n);
+		}
+	}
+	return node->getNodePtr();
+}
+
+PtrType BPTree::findParentNode(PtrType ptr)
+{
+	int i;
+	for (i = 0; i < parentMap.size(); i++)
+		if (parentMap[i].nodePtr == ptr)
+			return parentMap[i].parentPtr;
+}
 
 void BPTree::insert(Value key,PtrType pointer)
 {
-	PtrType nodePtr = find(key);
+	PtrType nodePtr = findLeafNode(key);
 	Node node(indexBuff,nodePtr,indexName,tableInstance,n);
 	if (node.getCount() < (n - 1))
 		insertLeaf(node,key,pointer);
@@ -171,7 +274,7 @@ void BPTree::insert(Value key,PtrType pointer)
 			breakPoint = ((n / 2) + 1)*2;
 		vector<Value> temp(keyList.begin(),keyList.begin() + breakPoint);
 		node.set(temp);//只写键值对
-		vector<Value> temp2(keyList.begin() + breakPoint,keyList.end() + 1);//TODO:左闭右开?
+		vector<Value> temp2(keyList.begin() + breakPoint,keyList.end());//TODO:左闭右开?
 		newNode.set(temp2);
 
 		insertNonleaf(node,temp2[0],newNodePtr);
@@ -227,7 +330,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 	}
 	else
 	{
-		Node parentNode(indexBuff,parentMap[node.getNodePtr()],indexName,tableInstance,n);
+		Node parentNode(indexBuff,findParentNode(node.getNodePtr()),indexName,tableInstance,n);
 		if (parentNode.getCount() < n)
 		{
 			vector<Value> keyList = parentNode.getInfo();//只读键值对
