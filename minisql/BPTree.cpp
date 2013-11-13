@@ -1,0 +1,318 @@
+#include"BPTree.h"
+
+Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
+{
+	block = indexBuff.getIndexOneBlock(indexName,ptr);//TODO:新+函数,得到该索引的ptr所指块的内容。
+	read();
+}
+
+Node::Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n)
+{
+	//创建块，返回offset
+	block = indexBuff.getIndexOneBlock(indexName,ptr);//TODO:新+函数,得到该索引的ptr所指块的内容。
+	read();
+}
+
+PtrType Node::getNodePtr()
+{
+	return offset;
+}
+
+string Node::read()
+{
+	for(int i = 0; i < tableInstance.attrList.size(); i++)
+		if (tableInstance.attrList[i].name == indexName)
+		{
+			switch(tableInstance.attrList[i].datatype)
+			{
+			case -1:attrType = _TYPE_FLOAT;break;
+			case 0:attrType = _TYPE_INT;break;
+			case 1:attrType = _TYPE_STRING;break;
+			}
+			break;
+		}
+	memcpy(&nodeType,block.content,1);
+	memcpy(&count,block.content + 1,sizeof(int));
+	for(int i = 0; i < (ptrN - 1); i++)
+	{
+		float tempFloat = 0;
+		int tempInt = 0;
+		string tempString = "";
+		PtrType tempPtr = 0;
+		Value tempValue(attrType);
+
+		//read ptr//TODO:+5？
+		memcpy(&tempPtr,block.content + 5 + i*( typeSize(attrType) + sizeof(int) ),typeSize(_TYPE_INT));
+		Value ptrTempValue(_TYPE_INT,tempPtr);//TODO:设置ptr类型
+		info.push_back(ptrTempValue);
+
+		//read key
+		switch(attrType)//TODO:+5？
+		{
+		case _TYPE_FLOAT:
+			{
+				memcpy(&tempFloat,block.content + 5 + i*( typeSize(attrType) + sizeof(int) + sizeof(int)),typeSize(_TYPE_FLOAT));
+				tempValue.setKey(tempFloat);
+				break;
+			}
+		case _TYPE_INT:
+			{
+				memcpy(&tempInt,block.content + 5 + i*( typeSize(attrType) + sizeof(int) + sizeof(int)),typeSize(_TYPE_INT));
+				tempValue.setKey(tempInt);
+				break;
+			}
+		case _TYPE_STRING:
+			{
+				memcpy(&tempString,block.content + 5 + i*( typeSize(attrType) + sizeof(int) + sizeof(int)),typeSize(_TYPE_STRING));
+				tempValue.setKey(tempString);
+				break;
+			}
+		}//switch
+		info.push_back(tempValue);
+		
+	}//for
+	PtrType tempPtr = 0;
+	memcpy(&tempPtr,block.content + 5 + (ptrN - 1)*( typeSize(attrType) + sizeof(int) ),typeSize(_TYPE_INT));
+	Value ptrTempValue(_TYPE_INT,tempPtr);//TODO:设置ptr类型
+	info.push_back(ptrTempValue);
+}
+
+
+void Node::setLastPtr(PtrType ptr)
+{
+	Value temp(_TYPE_INT,ptr);
+	info[info.size() - 1] = temp;
+}
+
+void Node::setLastPtr(Value ptr)
+{
+	info[info.size() - 1] = ptr;
+}
+
+BPTree::BPTree(BufferManager indexBuff,int type):indexBuff(indexBuff),type(type)
+{
+	int freeSpace = 4*1024 - sizeof(PtrType) - 1 - sizeof(int);
+	n  = freeSpace / (sizeof(PtrType) + typeSize(type)) + 1; //除下来应该取整而不是四舍五入
+}
+
+bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
+{
+	int recordLength = tableInstance.recLength;
+	BufferManager recordBuff(sql.getDatabaseName());
+	vector<int> blockNum = recordBuff.getTableBlocks(sql.getTableName());
+
+	//构造树
+	for (int i = 0; i < blockNum.size(); i++)
+	{
+		//TODO:读块的内容，把这个块的所有记录插入树里
+		for (int j = 0; j < recordLength; j++)
+		{
+			this->insert(value,pointer);
+		}
+	}
+
+	//存储树
+	indexBuff.storeIndex(indexName);//TODO:把所有还在内存中的index块存入外存就好，因为其他的块已经被写出
+}
+
+
+
+
+
+bool BPTree::loadBPTree(BufferManager buff,string indexName)
+{
+	int firstBlock = buff.getIndexBlocks(indexName)[0];//获取开始的块
+}
+
+
+
+
+void BPTree::insert(Value key,PtrType pointer)
+{
+	PtrType nodePtr = find(key);
+	Node node(indexBuff,nodePtr,indexName,tableInstance,n);
+	if (node.getCount() < (n - 1))
+		insertLeaf(node,key,pointer);
+	else
+	{
+		//排序
+		vector<Value> keyList = node.getInfo();//只读键值对
+		if (key.getKey() < keyList[0].getKey())
+		{
+			keyList.insert(keyList.begin(),key);
+			Value temp(_TYPE_INT,pointer);
+			keyList.insert(keyList.begin(),temp);
+		}
+		else
+		{
+			for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
+			{
+				if (keyList.at(i).getKey() <= key.getKey())
+				{
+					Value tempPtr(_TYPE_INT,pointer);
+					keyList.insert(keyList.begin() + i+1,tempPtr);
+					keyList.insert(keyList.begin() + i+2,key);
+					break;
+				}
+			}
+		}
+		
+		//更新尾指针
+		Node newNode(indexBuff,indexName,tableInstance,n);
+		PtrType newNodePtr = newNode.getNodePtr();
+		newNode.setLastPtr(node.getLastPtr());
+		node.setLastPtr(newNodePtr);
+
+		//赋值元素到该到的地方
+		int breakPoint = 0;
+		if (n % 2 == 0)
+			breakPoint = (n /2)*2;
+		else
+			breakPoint = ((n / 2) + 1)*2;
+		vector<Value> temp(keyList.begin(),keyList.begin() + breakPoint);
+		node.set(temp);//只写键值对
+		vector<Value> temp2(keyList.begin() + breakPoint,keyList.end() + 1);//TODO:左闭右开?
+		newNode.set(temp2);
+
+		insertNonleaf(node,temp2[0],newNodePtr);
+	}
+}
+
+
+
+
+
+void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
+{
+	vector<Value> keyList = node.getInfo();//只读键值对
+	if (key.getKey() < keyList[0].getKey() )
+	{
+		keyList.insert(keyList.begin(),key);
+		Value temp(_TYPE_INT,pointer);
+		keyList.insert(keyList.begin(),temp);
+	}
+	else
+	{
+		for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
+		{
+			if (keyList.at(i).getKey() <= key.getKey())
+			{
+				Value tempPtr(_TYPE_INT,pointer);
+				keyList.insert(keyList.begin() + i+1,tempPtr);
+				keyList.insert(keyList.begin() + i+2,key);
+				break;
+			}
+		}
+	}
+	node.set(keyList);
+}
+
+
+
+
+
+void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
+{
+	if (node.getNodePtr() == root)
+	{
+		Node newNode(indexBuff,indexName,tableInstance,n);
+		vector<Value> keyList;
+		Value temp1(_TYPE_INT,node.getNodePtr());
+		Value temp2(_TYPE_INT,pointer);
+		keyList.push_back(temp1);
+		keyList.push_back(key);
+		keyList.push_back(temp2);
+		newNode.set(keyList);
+		root = newNode.getNodePtr();
+	}
+	else
+	{
+		Node parentNode(indexBuff,parentMap[node.getNodePtr()],indexName,tableInstance,n);
+		if (parentNode.getCount() < n)
+		{
+			vector<Value> keyList = parentNode.getInfo();//只读键值对
+			if (key.getKey() < keyList[0].getKey())
+			{
+				Value tempPtr(_TYPE_INT,pointer);
+				keyList.insert(keyList.begin()+1,tempPtr);
+				keyList.insert(keyList.begin()+1,key);
+			}
+			else
+			{
+				for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
+				{
+					if (keyList.at(i).getKey() <= key.getKey())
+					{
+						Value tempPtr(_TYPE_INT,pointer);
+						keyList.insert(keyList.begin() + i+2,tempPtr);//TODO:最后一个会怎么样?
+						keyList.insert(keyList.begin() + i+2,key);
+						break;
+					}
+				}
+			}
+			parentNode.set(keyList);
+		}
+		else//分裂ParentNode
+		{
+			//排序
+			vector<Value> keyList = parentNode.getInfo();//只读键值对
+			if (key.getKey() < keyList[0].getKey())
+			{
+				Value tempPtr(_TYPE_INT,pointer);
+				keyList.insert(keyList.begin()+1,tempPtr);
+				keyList.insert(keyList.begin()+1,key);
+			}
+			else
+			{
+				for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
+				{
+					if (keyList.at(i).getKey() <= key.getKey())
+					{
+						Value tempPtr(_TYPE_INT,pointer);
+						keyList.insert(keyList.begin() + i+2,tempPtr);//TODO:最后一个会怎么样?
+						keyList.insert(keyList.begin() + i+2,key);
+						break;
+					}
+				}
+			}
+
+			//赋值元素到该到的地方
+			int breakPoint = 0;
+			if (n % 2 == 0)
+				breakPoint = (n /2);
+			else
+				breakPoint = ((n / 2) + 1);
+			vector<Value> temp;
+			temp.push_back(keyList[0]);
+			int j = 1;
+			for (int i = 1; i < breakPoint; i++)
+			{
+				temp.push_back(keyList[j]);
+				temp.push_back(keyList[++j]);
+			}
+			parentNode.set(temp);
+
+			Value newK = keyList[++j];
+			vector<Value> temp2;
+			for (int i = j + 1; i < keyList.size(); i++)
+			{
+				temp2.push_back(keyList[i]);
+			}
+			Node newNode(indexBuff,indexName,tableInstance,n);
+			newNode.set(temp2);
+
+			insertNonleaf(parentNode,newK,newNode.getNodePtr());
+		}
+	}
+}
+
+string Value::getKey()
+{
+	switch (type)
+	{
+		case _TYPE_STRING:return charKey;
+		case _TYPE_INT:char temp[260]; sprintf(temp,"%i",intKey); return temp; break;//或者sprintf_s(temp,sizeof(float)*260...
+		case _TYPE_FLOAT:char temp[260]; sprintf(temp,"%f",floatKey); return temp; break;
+		default:return 0;
+	}
+}

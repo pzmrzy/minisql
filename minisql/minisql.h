@@ -27,9 +27,20 @@ using namespace std;
 #define TABLEHEAD_SIZE_IN_FILE (sizeof(int))/* 一个表信息头在文件中所占的大小 */
 #define TABLENODE_SIZE_IN_FILE (2 * sizeof(int) + MAX_CHAR_LENGTH * sizeof(char)*2 + MAX_ATTR_NUM * ATTR_SIZE_IN_FILE)/* 一个表
 信息项在文件中所占的大小 */
-#define _TYPE_STRING sizeof(char[255])//是255么？
-#define _TYPE_INT sizeof(int)
-#define _TYPE_FLOAT sizeof(float)
+#define _TYPE_STRING 1
+#define _TYPE_INT 0
+#define _TYPE_FLOAT -1
+//求类型大小
+#define TYPE_SIZE \
+int typeSize(int type)\
+{\
+	switch(type) \
+	{\
+	case _TYPE_FLOAT:return sizeof(float);break;\
+	case _TYPE_INT:return sizeof(int);break;\
+	case _TYPE_STRING:return sizeof(char[255]);break;\
+	}\
+}//TODO:是255么？
 
 //catalog返回的信息
 //属性信息

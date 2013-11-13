@@ -21,37 +21,72 @@ private:
 public:
 	//用类型和key初始化这个类
 	//_TYPE_STRING 0; _TYPE_INT 1; _TYPE_FLOAT 2;
+	Value(int type):type(type){}
 	Value(int type,string key):type(type),charKey(key){}
 	Value(int type,int key):type(type),intKey(key){}
 	Value(int type,float key):type(type),floatKey(key){}
 	//得到key，统一以字符串返回
 	string getKey();
+	void setKey(int key){intKey = key;}
+	void setKey(string key){charKey = key;}
+	void setKey(float key){floatKey = key;}
 };
+/*
+class  KeyAndPtr
+{
+private:
+	int type;
+	Value value;
+	PtrType ptr;
 
+public:
+	KeyAndPtr(int type,Value value,PtrType ptr):type(type),value(value),ptr(ptr){}
+};
+*/
 class Node
 {
 private:
-	vector<string> nodeText;
+	vector<Value> info;
 	//当前指向的位置，还未返回
 	int now;
+	string indexName;
+	//当前节点所拥有的指针数
+	int count;//TODO:维护
+	//节点类型，0是非叶节点，1是叶节点
+	int nodeType;
+	//节点应拥有的指针数
+	int ptrN;
+	//indexName 所对应的key类型
+	int attrType;
+	//块号即偏移量
+	int offset;
+	
+	BufferManager indexBuff;
+	Block block;
+	table tableInstance;
+	TYPE_SIZE;
+
+	//把块的内容读出来
+	string read();
+
 public:
-	//得到key
-	int getIntKey();
-	string getCharKey();
-	float getFloatKey();
+	//创建一个节点时调用的构造函数
+	Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff){}
+	//得到一个节点时调用的构造函数
+	Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n);
+
+	//得到节点的偏移量
+	PtrType getNodePtr();
+
+	void set(vector<Value> temp){info.clear();info = temp;}
+	void setLastPtr(Value ptr);
+	void setLastPtr(PtrType ptr);
+	Value getLastPtr(){return info[info.size() - 1];}
+	vector<Value> getInfo(){return info;}
+	int getCount(){return count;} 
+
 };
 
-class LeafNode: public Node
-{
-	int getPtr();
-	int getLastPtr();
-};
-
-class NonleafNode: public Node
-{
-	int getPtr();
-	int getFirstPtr();
-};
 
 class BPTree{
 public:
@@ -64,11 +99,16 @@ private:
 	BufferManager indexBuff;//怎么初始化它？
 	int n;//节点指针数
 	int type;//键值类型
+	string indexName;
+	table tableInstance;
+	PtrType root;
 
 	void insert(Value key,PtrType pointer);
-	void insertLeaf(LeafNode node,Value key,PtrType pointer);
-	void insertNonleaf(NonleafNode node,Value key,PtrType pointer);
-	PtrType find(Value key);
+	void insertLeaf(Node node,Value key,PtrType pointer);
+	void insertNonleaf(Node node,Value key,PtrType pointer);
+	PtrType find(Value key);//TODO:维护一个父亲列表
+	//求类型大小
+	TYPE_SIZE;
 };
 
 #endif
