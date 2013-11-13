@@ -164,7 +164,7 @@ vector<int> BufferManager::getTableBlocks(string tableName) {
 
 	do {
 		Block &block = findBlock(offset);
-		if( block.isAlive && !(block.isIndex) ) {
+		if( block.isAlive ) {
 			result.push_back(offset);
 		}
 		offset = block.nextOffset;
@@ -224,11 +224,27 @@ void BufferManager::debug(bool isContent = false) {
 	cout << "END" << endl;
 }
 
-Block& buffermanager::getBlocks(int offset) {
+/* 以下部分减智商向 */
+
+Block& BufferManager::getBlocks(int offset) {
 	return findBlock(offset);
 }
 
-void buffermanager::storeBlocks(int offset, Block& block) {
+void BufferManager::storeBlocks(int offset, Block& block) {
 	block.offset = offset;
 	writeBlock(block);
+}
+
+vector<int> BufferManager::getIndexBlocks(string indexName) {
+	return getTableBlocks("!"+indexName);
+}
+
+Block& BufferManager::newIndexBlock(string indexName) {
+	Block b = newBlock("!"+indexName);
+	b.isIndex = true;
+	return b;
+}
+
+Block& BufferManager::getIndexOneBlock(string indexName, int offset) {
+	return getBlocks(offset);
 }
