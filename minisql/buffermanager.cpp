@@ -248,3 +248,11 @@ Block& BufferManager::newIndexBlock(string indexName) {
 Block& BufferManager::getIndexOneBlock(string indexName, int offset) {
 	return getBlocks(offset);
 }
+
+void BufferManager::writeIndexData(string indexName, char *content, int length) {
+	for(int i = 0, j = 0; i < length; i += j) {
+		j = (i>BLOCK_LEN) ? BLOCK_LEN : i;
+		Block b = newIndexBlock(indexName);
+		memcpy(b.content, content+i, j);
+	}
+}

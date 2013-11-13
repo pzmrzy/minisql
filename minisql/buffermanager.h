@@ -101,6 +101,8 @@ public:						// IndexManager使用
 	Block& newIndexBlock(string indexName);
 	// TODO
 /*+*/Block& getIndexOneBlock(string indexName, int offset);
+	// 
+/*+*/void writeIndexData(string indexName, char* content, int length);
 };
 
 #endif
