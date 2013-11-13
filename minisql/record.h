@@ -18,10 +18,11 @@ using namespace std;
 #define Used 0x01
 #define Unused 0x00
 ///////////////////////////////////////////////////
+extern string Wdbname ;
 class record
 {
 public:
-	record(void){}
+	record(void):bfm(Wdbname){}
 	virtual ~record(void){}
 	//²éÕÒ²Ù×÷
 	recoinfo Select_Rec(SqlCommand& sql,table &Table, bool indexflag, vector<int> offset);

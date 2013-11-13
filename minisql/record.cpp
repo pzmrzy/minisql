@@ -235,7 +235,7 @@ Row record::getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attr
     }
 	return oneTuple;
 }
-
+/*
 recoinfo record::Index_Delete_Rec(SqlCommand& sql,table &Table,vector<int> offset){
 	int i,j;
 	long num=0;//查找到的记录数
@@ -277,7 +277,7 @@ recoinfo record::Index_Delete_Rec(SqlCommand& sql,table &Table,vector<int> offse
 	}
 
 }
-
+*/
 recoinfo record::Select_Rec(SqlCommand& sql,table &Table, bool indexflag, vector<int> offset )
 {
 	int i,j;

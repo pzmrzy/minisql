@@ -119,7 +119,7 @@ SqlCommand Interpreter::dropTable(string& str) {
 	sql.setTableName(name);
 	return sql;
 }
-
+/*
 SqlCommand Interpreter::showDatabase(string& str) {
 	SqlCommand sql;
 	string name;
@@ -129,6 +129,7 @@ SqlCommand Interpreter::showDatabase(string& str) {
 	sql.setDatabaseName(name);
 	return sql;
 }
+*/
 
 /**
  * @brief  检验drop index语句合法性

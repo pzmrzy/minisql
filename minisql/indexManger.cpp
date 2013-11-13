@@ -15,7 +15,7 @@ bool IndexManager::createIndex(string indexName)
 
 
 //create index onÊ±µ÷ÓÃ
-bool IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string indexName)
+bool IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string indexName,int type)
 {
 	if (tableInstance.recNum == 0)
 	{
@@ -126,6 +126,6 @@ indexInfo IndexManager::deleteRec(SqlCommand sql,table tableInstance,vector<stri
 		BPTree tree(buff,attrType);
 		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
 		Value temp(attrType,key);
-		result.push_back(tree.deleteNode(key));
+		result.push_back(tree.deleteNode(temp));
 	}
 }

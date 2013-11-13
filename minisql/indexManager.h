@@ -18,7 +18,7 @@ public:
 	//create table时调用
 	bool createIndex(string indexName);
 	//create index on时调用
-	bool createIndexOn(SqlCommand sql,table tableInstance,string indexName);
+	bool createIndexOn(SqlCommand sql,table tableInstance,string indexName,int type);
 	//drop index时调用
 	bool dropIndex(SqlCommand sql,table tableInstance);
 	//drop table时调用
@@ -28,7 +28,7 @@ public:
 	//insert rec时调用
 	indexInfo insertRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key,int blockPtr,int inBlockPtr);
 	//delete rec时调用
-	indexInfo deleteRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key)
+	indexInfo deleteRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key);
 };
 
 #endif
