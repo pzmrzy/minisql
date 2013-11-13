@@ -258,12 +258,12 @@ PtrType BPTree::findParentNode(PtrType ptr)
 			return parentMap[i].parentPtr;
 }
 
-void BPTree::insert(Value key,PtrType blockPointer,PtrType inBlockPtr)
+void BPTree::insert(Value key,PtrType pointer)
 {
 	PtrType nodePtr = findLeafNode(key);
 	Node node(indexBuff,nodePtr,indexName,tableInstance,n);
 	if (node.getCount() < (n - 1))
-		insertLeaf(node,key,blockPointer,inBlockPtr);
+		insertLeaf(node,key,pointer);
 	else
 	{
 		//ÅÅÐò
@@ -313,7 +313,7 @@ void BPTree::insert(Value key,PtrType blockPointer,PtrType inBlockPtr)
 
 
 
-void BPTree::insertLeaf(Node node,Value key,PtrType blockPointer,PtrType inBlockPtr)
+void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
 {
 	vector<Value> keyList = node.getInfo();//Ö»¶Á¼üÖµ¶Ô
 	if (key.getKey() < keyList[0].getKey() )

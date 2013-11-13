@@ -26,7 +26,7 @@ public:
 	//select rec时调用
 	indexInfo selectRec(SqlCommand sql,table tableInstance,vector<string> indexList);
 	//insert rec时调用
-	indexInfo insertRec(SqlCommand sql,table tableInstance,vector<string> indexList);
+	indexInfo insertRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key,int blockPtr,int inBlockPtr);
 	//delete rec时调用
 	indexInfo deleteRec(SqlCommand sql,table tableInstance,vector<string> indexList);
 };

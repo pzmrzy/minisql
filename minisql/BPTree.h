@@ -106,6 +106,7 @@ public:
 	BPTree(BufferManager indexBuff,int type);
 	bool createBPTree(SqlCommand sql,table tableInstance,string indexName);
 	bool loadBPTree(string indexName);//TODO:改成构造函数
+	void insert(Value key,PtrType pointer);
 
 private:
 	BufferManager indexBuff;//怎么初始化它？
@@ -122,7 +123,7 @@ private:
 	};
 	vector<ParentMap> parentMap;//父亲列表
 
-	void insert(Value key,PtrType blockPointer,PtrType inBlockPtr);
+	
 	void insertLeaf(Node node,Value key,PtrType pointer);
 	void insertNonleaf(Node node,Value key,PtrType pointer);
 	//没找到返回-1，找到返回偏移量

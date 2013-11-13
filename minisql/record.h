@@ -24,9 +24,9 @@ public:
 	record(void){}
 	virtual ~record(void){}
 	//查找操作
-	recoinfo Select_Rec(SqlCommand& sql,table &Table);
+	recoinfo Select_Rec(SqlCommand& sql,table &Table, bool indexflag, vector<int> offset);
 	//删除操作
-	recoinfo Delete_Rec(SqlCommand& sql,table &Table);
+	recoinfo Delete_Rec(SqlCommand& sql,table &Table, bool indexflag, vector<int>);
 	//插入操作
 	recoinfo Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &recordID );
 private:

@@ -76,7 +76,8 @@ indexInfo IndexManager::insertRec(SqlCommand sql,table tableInstance,vector<stri
 		BPTree tree(buff,attrType);
 		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
 		Value temp(attrType,key);
-		tree.insert(temp,blockPtr,inBlockPtr);
+		int recordCount = 4096 / (tableInstance.recLength + 1);//满载记录的块的条数
+		tree.insert(temp,blockPtr*recordCount + inBlockPtr);
 	}
 }
 
