@@ -395,6 +395,9 @@ SqlCommand Interpreter::getExpression(string input) {
 	else if( firstStr == "quit" ) {
 		sql = quitClause();
 	}
+	else if( firstStr == "execfile" ) {
+		execfileClause(input);
+	}
 	// 无法匹配
 	else {
 		sql.setType(SQL_ERROR);
@@ -560,4 +563,8 @@ SqlCommand Interpreter::showDatabase(string& str) {
 	sql.setDatabaseName(name);
 
 	return sql;
+}
+
+void Interpreter::execfileClause(string& str) {
+
 }

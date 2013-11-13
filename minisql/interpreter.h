@@ -52,6 +52,8 @@ public: // ºÏ≤È”Ôæ‰
 	SqlCommand useClause(string& str);       // ºÏ≤ÈUSE databaseName
 
 	SqlCommand quitClause();                 // ºÏ≤ÈQUIT
+
+	void execfileClause(string& str);				 // execfile
 };
 
 #endif
