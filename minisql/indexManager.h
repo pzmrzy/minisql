@@ -19,7 +19,7 @@ public:
 	//create table时调用
 	void createIndex(string indexName);
 	//create index on时调用
-	bool createIndexOn(SqlCommand sql,table tableInstance,string indexName,int type);
+	void createIndexOn(SqlCommand sql,table tableInstance,string indexName);
 	//drop index时调用
 	bool dropIndex(SqlCommand sql,table tableInstance);
 	//drop table时调用
