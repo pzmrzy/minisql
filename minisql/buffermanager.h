@@ -87,22 +87,22 @@ public:							// RecordManager使用
 	vector<int> getTableBlocks(string tableName);
 	// ok 给tableName添加一个新块,若不在firstLast中也添加至其中
 	Block& newBlock(string tableName);
-	// 写数据
-	//Block StoreData(string tableName, char[] content);
+	// ok
 /*+*/Block& getBlocks(int offset);
+	// ok
 /*+*/void storeBlocks(int offset, Block& block);
 
 
 
-public:							// IndexManager使用
+public:						// IndexManager使用
 	// TODO 返回indexName的所有块偏移量
-	vector<int> getIndexBlocks(string IndexName);
+	vector<int> getIndexBlocks(string indexName);
 	// 给tableName添加一个新块
-	Block newIndexBlock(string IndexName);
-	// 写index数据
-	//Block storeIndex(string IndexName, char[] content);
-	// 传入offset, 读块并返回content
-	//char[] readIndexContent( int offset );
+	Block& newIndexBlock(string indexName);
+	// TODO
+/*+*/Block& getIndexOneBlock(string indexName, int offset);
+	// TODO
+/*+*/Block& newIndexBlock();
 };
 
 #endif
