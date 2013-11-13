@@ -15,7 +15,7 @@ bool IndexManager::createIndex(string indexName)
 
 
 //create index on时调用
-bool IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string indexName,int type)
+/*bool IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string indexName,int type)
 {
 	if (tableInstance.recNum == 0)
 	{
@@ -25,7 +25,7 @@ bool IndexManager::createIndexOn(SqlCommand sql,table tableInstance,string index
 	BPTree tree(buff,type);
 	tree.createBPTree(sql,tableInstance,indexName);
 }
-
+*/
 
 
 
@@ -70,15 +70,15 @@ vector<int> IndexManager::selectRec(SqlCommand sql,table tableInstance,vector<st
 		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
 		Value temp(attrType,key);
 		result.push_back(tree.find(temp));
-		return result;
 	}
+	return result;
 }
 
 
 
 
 //insert rec时调用
-indexInfo IndexManager::insertRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key,int blockPtr,int inBlockPtr)
+vector<int> IndexManager::insertRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key, int blockPtr, int inBlockPtr)
 {
 	for (int j = 0; j < indexList.size(); j++)//维护每一个索引
 	{
@@ -106,7 +106,7 @@ indexInfo IndexManager::insertRec(SqlCommand sql,table tableInstance,vector<stri
 
 
 //delete rec时调用
-indexInfo IndexManager::deleteRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key)
+vector<int> IndexManager::deleteRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key)
 {
 	vector<int> result;
 	for (int j = 0; j < indexList.size(); j++)//维护每一个索引
@@ -128,4 +128,5 @@ indexInfo IndexManager::deleteRec(SqlCommand sql,table tableInstance,vector<stri
 		Value temp(attrType,key);
 		result.push_back(tree.deleteNode(temp));
 	}
+	return result;
 }

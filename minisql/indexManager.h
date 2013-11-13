@@ -24,11 +24,11 @@ public:
 	//drop table时调用
 	bool dropIndexAll(SqlCommand sql,table tableInstance);
 	//select rec时调用
-	vector<int> IndexManager::selectRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key);
+	vector<int> selectRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key);
 	//insert rec时调用
-	indexInfo insertRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key,int blockPtr,int inBlockPtr);
+	vector<int> insertRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key, int blockPtr, int inBlockPtr);
 	//delete rec时调用
-	indexInfo deleteRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key);
+	vector<int> deleteRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key);
 };
 
 #endif

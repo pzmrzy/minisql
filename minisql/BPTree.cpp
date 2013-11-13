@@ -1,8 +1,9 @@
 #include"BPTree.h"
 
-Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr),block(indexBuff.getIndexOneBlock(indexName,ptr))
+Node::Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
 {
-	read();
+	block = indexBuff.getIndexOneBlock(indexName, ptr);
+	Node::read();
 }
 
 Node::Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff),indexName(indexName),tableInstance(tableInstance),ptrN(n)
@@ -10,7 +11,7 @@ Node::Node(BufferManager indexBuff,string indexName,table tableInstance,int n):i
 	//创建块，返回offset
 	block = indexBuff.newIndexBlock(indexName);
 	offset = block.offset;
-	read();
+	Node::read();
 }
 
 PtrType Node::getNodePtr()
@@ -34,16 +35,17 @@ Node::~Node()
 	{
 		switch (info[i].getType())
 		{
-		case _TYPE_INT:int temp = info[i].getIntKey();memcpy(coutStream + 1 + 4 + j,&temp,typeSize(_TYPE_INT));j+=typeSize(_TYPE_INT);break;
-		case _TYPE_FLOAT:float temp = info[i].getFloatKey();memcpy(coutStream + 1 + 4 + j,&temp,typeSize(_TYPE_FLOAT));j+=typeSize(_TYPE_FLOAT);break;
-		case _TYPE_STRING:string temp = info[i].getCharKey();memcpy(coutStream + 1 + 4 + j,&temp,typeSize(_TYPE_STRING));j+=typeSize(_TYPE_STRING);break;//可以这样写吗？
+		case _TYPE_INT:{int temp = info[i].getIntKey(); memcpy(coutStream + 1 + 4 + j, &temp, typeSize(_TYPE_INT)); j += typeSize(_TYPE_INT); break; }
+		case _TYPE_FLOAT:{float temp = info[i].getFloatKey(); memcpy(coutStream + 1 + 4 + j, &temp, typeSize(_TYPE_FLOAT)); j += typeSize(_TYPE_FLOAT); break; }
+		case _TYPE_STRING:{string temp = info[i].getCharKey(); memcpy(coutStream + 1 + 4 + j, &temp, typeSize(_TYPE_STRING)); j += typeSize(_TYPE_STRING); break;
+		}//可以这样写吗？
 		}
 	}
 	
 	indexBuff.writeIndexData(indexName, coutStream, j+5);
 }
 
-string Node::read()
+void Node::read()
 {
 	for(int i = 0; i < tableInstance.attrList.size(); i++)
 		if (tableInstance.attrList[i].name == indexName)
@@ -138,7 +140,7 @@ BPTree::BPTree(BufferManager indexBuff,int type):indexBuff(indexBuff),type(type)
 	int freeSpace = 4*1024 - sizeof(PtrType) - 1 - sizeof(int);
 	n  = freeSpace / (sizeof(PtrType) + typeSize(type)) + 1; //除下来应该取整而不是四舍五入
 }
-
+/*
 bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
 {
 	int recordLength = tableInstance.recLength;
@@ -157,7 +159,7 @@ bool BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName)
 
 	//存储树
 	indexBuff.storeIndex(indexName);//TODO:把所有还在内存中的index块存入外存就好，因为其他的块已经被写出
-}
+}*/
 
 bool BPTree::loadBPTree(string indexName)
 {
@@ -448,9 +450,9 @@ string Value::getKey()
 {
 	switch (type)
 	{
-		case _TYPE_STRING:return charKey;
-		case _TYPE_INT:char temp[260]; sprintf(temp,"%i",intKey); return temp; break;//或者sprintf_s(temp,sizeof(float)*260...
-		case _TYPE_FLOAT:char temp[260]; sprintf(temp,"%f",floatKey); return temp; break;
+	case _TYPE_STRING:return charKey;
+	case _TYPE_INT:{char temp[260]; sprintf(temp, "%i", intKey); return temp; break; }//或者sprintf_s(temp,sizeof(float)*260...
+	case _TYPE_FLOAT:{char temp[260]; sprintf(temp, "%f", floatKey); return temp; break; }
 		default:return 0;
 	}
 }
@@ -468,7 +470,7 @@ PtrType BPTree::deleteNode(Value key)
 			break;
 	}
 	if (i >= temp.size() )
-		return;
+		return -1;
 	else
 	{
 		PtrType reTemp = temp[i-1].getIntKey();

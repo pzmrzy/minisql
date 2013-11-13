@@ -75,11 +75,11 @@ private:
 	TYPE_SIZE;
 
 	//把块的内容读出来
-	string read();
+	void read();
 
 public:
 	//创建一个节点时调用的构造函数
-	Node(BufferManager indexBuff,string indexName,table tableInstance,int n):indexBuff(indexBuff){}
+	Node(BufferManager indexBuff, string indexName, table tableInstance, int n);
 	//得到一个节点时调用的构造函数
 	Node(BufferManager indexBuff,PtrType ptr,string indexName,table tableInstance,int n);
 	//析构函数：讲块的内容写入磁盘，再销毁
