@@ -3,9 +3,10 @@
 using namespace std;
 #include "catalog.h"
 #include "interpreter.h"
+//#include "indexManager.h"
 #include "minisql.h"
 #include "sqlcommand.h"
-#include "record.h"
+//#include "record.h"
 api::api(void)
 {
 }
@@ -31,7 +32,8 @@ api::api(int t, SqlCommand& c){
 		sql.setDatabaseName(Wdbname);
 	c.writelog();
 	catalog CL;
-	record RE;
+//	record RE;
+	//IndexManager ID(Wdbname);
         switch (t){
                 case ( SQL_CREATE_DATABASE ):{
 
@@ -55,22 +57,25 @@ api::api(int t, SqlCommand& c){
                         }
                         //成功
                         else{
+							CL.show_Database(sql);
                             Table=cataInfo.gettable();
-                           // indexInfo=index::create_index(sql,Table);//根据table信息，是否有主键，如果有主键、unique就按create_index_on 主键;
+                            //indexInfo=ID.createIndex(sql.getIndexName());//根据table信息，是否有主键，如果有主键、unique就按create_index_on 主键;
                             //若建立主键的索引失败
                             //if (!indexInfo.succ) {
-                              //  indexInfo.print();//输出失败原因
+                                //indexInfo.print();//输出失败原因
                                 //SqlCommand sql1;//构造新指令，用于撤销刚刚建立的table
-                                //sql1.type=SQL_DROP_TABLE;
-                                //sql1.tableName=sql.getTableName();
-                                //sql1.databaseName=sql.getDatabaseName();
-                                cataInfo = CL.drop_Table(sql);//rollback，撤销table
-                               // break;
+								//sql1.setType(SQL_DROP_TABLE);
+								//sql1.setTableName(sql.getTableName());
+                                //sql1.setDatabaseName(sql.getDatabaseName());
+                                //cataInfo = CL.drop_Table(sql);//rollback，撤销table
+                                //break;
                             //}
-                            //else cout<<succ<<endl;//成功，提示成功信息
+                            //else 
+								cout<<succ<<endl;//成功，提示成功信息
                         }
                         break;
                 }
+			/*
                 case ( SQL_CREATE_INDEX    ):{//???有什么区别吗？
                         break;
                 }
@@ -108,7 +113,7 @@ api::api(int t, SqlCommand& c){
                             //}
                         }
                         break;
-                }
+                }*/
                 case ( SQL_DROP_DATABASE   ):{
                         cataInfo = CL.drop_Database(sql);//调用catalog类的drop_Database函数
                         //失败，输出失败原因
@@ -133,7 +138,8 @@ api::api(int t, SqlCommand& c){
                             //    break;
                             //}
                             //删除成功，输出成功提示
-                            //else cout<<succ<<endl;
+                            //else
+							cout<<succ<<endl;
                         }
                         break;
                 }
@@ -344,11 +350,7 @@ api::api(int t, SqlCommand& c){
                         break;
                 }
 				case (SQL_SHOW_DATABASE):{
-					cataInfo = CL.creat_Database(sql);
-                        if (!cataInfo.getsucc()){
-							cataInfo.print();
-                            break;
-                        }
+					CL.show_Database(sql);
 				}
 
         }

@@ -15,7 +15,7 @@ public:
         virtual ~api(void);
         catainfo cataInfo;
         recoinfo recoInfo;
-        indexinfo indexInfo;//???¦Ä§Õ
+        indexinfo indexInfo;
         table Table;
         attribute Attribute;
         vector<attribute> attrList;

@@ -7,7 +7,7 @@ bool catalog::check(int t, string& str){
 	bool isfloat = true;
 	if (!(str.find('.') < str.length() && str.find_first_of('.') == str.find_last_of('.')))
 		isfloat = false;
-	for (int i=0; i<str.length(); i++)
+	for (unsigned int i = 0; i<str.length(); i++)
 		if (str[i] < '0' || str[i] > '9'){
 			isint = false;
 			if (str[i] != '.')
@@ -262,9 +262,9 @@ catainfo catalog::show_Database(SqlCommand& cmd){
         readTable(f, tmptable);
 		cout<<tmptable.name<<endl;
 		cout<<setw(33)<<"Name"<<setw(9)<<"Type"<<setw(3)<<"PK";
-		cout<<setw(3)<<"UN"<<setw(9)<<"NN"<<setw(3)<<"ID";
+		cout<<setw(3)<<"UN"<<setw(3)<<"NN"<<setw(3)<<"ID";
 		cout<<endl;
-		for (int j=0; j<tmptable.attrNum; i++){
+		for (int j=0; j<tmptable.attrNum; j++){
 			tmpattr = tmptable.attrList[j];
 			cout<<setw(33)<<tmpattr.name;
 			cout<<setw(9)<<tmpattr.typeName();
@@ -276,6 +276,7 @@ catainfo catalog::show_Database(SqlCommand& cmd){
 		}
 		cout<<endl;
     }
+	return catainfo(true, "", tmptable);
 }
 
 catainfo catalog::insert_Rec(SqlCommand& cmd){
@@ -346,7 +347,7 @@ catainfo catalog::select_Rec(SqlCommand& cmd){
 	vector<string> CRV = cmd.getCondRightVevtor();
 
 	bool flag;
-	for (int j=0; j<CLV.size(); j++){
+	for (unsigned int j = 0; j<CLV.size(); j++){
 		flag = false;
 		for(int i=0; i<tmptable.attrNum; i++){
 			if (tmptable.attrList[i].name == CLV[j]){
@@ -392,7 +393,7 @@ catainfo catalog::delete_Rec(SqlCommand& cmd){
 	vector<string> CRV = cmd.getCondRightVevtor();
 
 	bool flag;
-	for (int j=0; j<CLV.size(); j++){
+	for (unsigned int j = 0; j<CLV.size(); j++){
 		flag = false;
 		for(int i=0; i<tmptable.attrNum; i++){
 			if (tmptable.attrList[i].name == CLV[j]){
@@ -411,6 +412,7 @@ catainfo catalog::delete_Rec(SqlCommand& cmd){
 catainfo catalog::creat_Index(SqlCommand& cmd){
 	table tmptable;
 	string dbname = cmd.getDatabaseName();
+	string idname = cmd.getIndexName();
 	bool existdb = exist_Database(dbname);
 	if (!existdb)
 		return catainfo(false, "Database " + dbname + " Do Not Exist!", tmptable);
@@ -433,7 +435,7 @@ catainfo catalog::creat_Index(SqlCommand& cmd){
     }
 	bool flag = false;
 	string colname = cmd.getcolName();
-	for (int i = 0; i<tmptable.attrList.size(); i++){
+	for (unsigned int i = 0; i<tmptable.attrList.size(); i++){
 		if (tmptable.attrList[i].name == colname){
 			flag = true;
 			if (tmptable.attrList[i].ID)
@@ -448,7 +450,7 @@ catainfo catalog::creat_Index(SqlCommand& cmd){
 	}
 	//f.seekp(pos);
 	//writeTable(f, tmptable);
-	change_Table(tmptable);
+	//change_Table(tmptable);
 	return catainfo(true, "", tmptable);
 }
 
@@ -477,7 +479,7 @@ catainfo catalog::drop_Index(SqlCommand& cmd){
     }
 	bool flag = false;
 	string colname = cmd.getcolName();
-	for (int i = 0; i<tmptable.attrList.size(); i++){
+	for (unsigned int i = 0; i<tmptable.attrList.size(); i++){
 		if (tmptable.attrList[i].name == colname){
 			flag = true;
 			if (!tmptable.attrList[i].ID)
