@@ -3,10 +3,10 @@
 using namespace std;
 #include "catalog.h"
 #include "interpreter.h"
-//#include "indexManager.h"
+#include "indexManager.h"
 #include "minisql.h"
 #include "sqlcommand.h"
-//#include "record.h"
+#include "record.h"
 api::api(void)
 {
 }
@@ -22,17 +22,19 @@ api::api(int t, SqlCommand& c){
 	string succ = "Operation Succeeds";
 	extern string Wdbname;
 	if (Wdbname == ""){
-		if (type == SQL_CREATE_DATABASE || type == SQL_USE)
+		if (type == SQL_CREATE_DATABASE)
 			Wdbname = c.getDatabaseName();
 		else{
-			cout<<"Please Use database"<<endl;
-			return;
+			if (type != SQL_USE){
+				cout << "Please Use database" << endl;
+				return;
+			}
 		}
 	}else
 		sql.setDatabaseName(Wdbname);
 	c.writelog();
 	catalog CL;
-//	record RE;
+	record RE;
 	//IndexManager ID(Wdbname);
         switch (t){
                 case ( SQL_CREATE_DATABASE ):{
@@ -57,7 +59,6 @@ api::api(int t, SqlCommand& c){
                         }
                         //成功
                         else{
-							CL.show_Database(sql);
                             Table=cataInfo.gettable();
                             //indexInfo=ID.createIndex(sql.getIndexName());//根据table信息，是否有主键，如果有主键、unique就按create_index_on 主键;
                             //若建立主键的索引失败
@@ -177,7 +178,7 @@ api::api(int t, SqlCommand& c){
                         break;
                 }*/
 
-                /*case ( SQL_SELECT          ):{
+                case ( SQL_SELECT          ):{
                         //确认table存在吗？确认列名是对的嘛？
                         cataInfo = CL.select_Rec(sql);
                         //失败，输出失败原因
@@ -187,7 +188,30 @@ api::api(int t, SqlCommand& c){
                         }
                         //成功，根据有无索引有无where调用不同类的selec_Rec函数
                         else{
-                            Table=cataInfo.gettable();
+							Table = cataInfo.gettable();
+							bool f = false;
+							attrList = Table.attrList;
+							int i;
+							int asize = attrList.size();
+							indexList.clear();
+							vector<int> offset;
+							offset.clear();
+							for (i = 0; i<asize; i++){
+								if (attrList.at(i).ID){ indexList.push_back(attrList.at(i).name); f = true; }//???
+							}
+							if (sql.condLeftVector.size() == 0 || !f){
+								recoInfo = RE.Select_Rec(sql, Table, 0, offset);
+								//失败，则输出失败信息（包括结果为空的信息）
+								if (!recoInfo.getsucc()){
+									recoInfo.print();
+									break;
+								}
+								//else RE.print_results(recoInfo.results,-1);//输出结果
+							}
+							else{
+								break;
+							}
+						/*    Table=cataInfo.gettable();
                             //无where条件
                             if (sql.condLeftVector.size()==0){
                                 recoInfo=RE.Select_Rec(sql,Table);
@@ -224,10 +248,11 @@ api::api(int t, SqlCommand& c){
                                     //else print_results(recoInfo.results,-1);//???
                                 }
                             }
-                        }
+                        */
+						}
                         break;
-                }*/
-                /*case ( SQL_INSERT_INTO     ):{
+                }
+                case ( SQL_INSERT_INTO     ):{
                         //确认table存在吗，值的个数是否是对的
                         cataInfo = CL.insert_Rec(sql);
                         //失败，输出失败原因
@@ -237,7 +262,36 @@ api::api(int t, SqlCommand& c){
                         }
                         //成功，按分类调用不同模块的insert_Rec函数
                         else{
-                            Table=cataInfo.gettable();
+							Table = cataInfo.gettable();
+							bool f = false;
+							attrList = Table.attrList;
+							int i;
+							int asize = attrList.size();
+							indexList.clear();
+							int blockID = -1, recordID = -1;//用于在调用record的insert函数之后再调用index的insert函数，告诉index那边我现在插在第几块的第几条。若都为-1则表示record没有插过
+							for (i = 0; i<asize; i++){
+								if (attrList.at(i).ID){ indexList.push_back(attrList.at(i).name); f = true; }//???
+							}
+							if (!f){
+								recoInfo = RE.Insert_Rec(sql, Table, blockID, recordID);
+								if (!recoInfo.getsucc()){
+									recoInfo.print();
+									break;
+								}
+								else{
+									Table.recNum += recoInfo.nummes();
+									CL.change_Table(Table);
+									recoInfo.print();
+								}
+							
+							}
+							else {
+								//???
+								Table.recNum += recoInfo.nummes();
+								CL.change_Table(Table);
+								recoInfo.print();
+							}
+                            /*Table=cataInfo.gettable();
                             bool f=false;
                             attrList=Table.attrList;
                             int i;
@@ -269,11 +323,11 @@ api::api(int t, SqlCommand& c){
                                     CL.change_Table(Table);
                                     recoInfo.print();
                                 }
-                            }
+                            }*/
                         }
                         break;
-                }*/
-               /* case ( SQL_DELETE          ):{
+                }
+                case ( SQL_DELETE          ):{
                         //确认table存在吗？确认列名是对的嘛？
                         cataInfo = CL.delete_Rec(sql);
                         //失败，则输出失败原因
@@ -283,7 +337,36 @@ api::api(int t, SqlCommand& c){
                         }
                         //成功，按照分类调用不同模块的Delete_Rec函数
                         else{
-                            Table=cataInfo.gettable();
+							Table = cataInfo.gettable();
+							bool f = false;
+							attrList = Table.attrList;
+							int i;
+							int asize = attrList.size();
+							indexList.clear();
+							for (i = 0; i<asize; i++){
+								if (attrList.at(i).ID){ indexList.push_back(attrList.at(i).name); f = true; }
+							}
+							vector <int> offset;
+							offset.clear();
+							//无where条件
+							if (sql.condLeftVector.size() == 0 || !f){
+								recoInfo = RE.Delete_Rec(sql, Table, 0, offset);
+								if (!recoInfo.getsucc()){
+									recoInfo.print();
+									break;
+								}
+								else {
+									Table.attrNum -= recoInfo.nummes();//更改table信息
+									CL.change_Table(Table);//回写
+									recoInfo.print();
+								}
+
+							}
+							else{
+								break;
+							}
+
+                            /*Table=cataInfo.gettable();
                             //无where条件
                             if (sql.condLeftVector.size()==0){
                                 recoInfo=RE.Delete_Rec(sql,Table);
@@ -327,10 +410,10 @@ api::api(int t, SqlCommand& c){
                                         recoInfo.print();
                                     }
                                 }
-                            }
+                            }*/
                         }
                         break;
-                }*/
+                }
                 case ( SQL_USE             ):{
 					cataInfo = CL.use_Database(sql);
 					if (!cataInfo.getsucc())

@@ -470,6 +470,7 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &rec
     float floatNum;
     string str;
 
+
 	blockLen=4096/tupleLen;
     for (i=0;i<blockVector.size();i++){
 		blocks=bfm.getBlocks(i);
@@ -478,7 +479,11 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &rec
             //若是删除数据，则将删除数据替换成新数据
             if (blocks.content[j*tupleLen]==Unused){
 				recoInfo=writeblock(blocks,j,tupleLen,attrList,colValueVector);//写入一条记录
-				if (recoInfo.getsucc()) {blocks.content[j*tupleLen]=Used; blocks.isDirty=true;blocks.contentSize+=tupleLen; bfm.storeBlocks(i,blocks);blockID=i;recordID=j; return recoInfo;}
+				if (recoInfo.getsucc()) {blocks.content[j*tupleLen]=Used; blocks.isDirty=true;blocks.contentSize+=tupleLen;
+				bfm.storeBlocks(i,blocks);
+				blockID=i;
+				recordID=j; 
+				return recoInfo;}
 				else  return recoInfo;
 
 			}
@@ -497,11 +502,17 @@ recoinfo record::Insert_Rec(SqlCommand& sql,table &Table, int &blockID, int &rec
 		{
 			blocks=bfm.newBlock(tableName);
 			recoInfo=writeblock(blocks,0,tupleLen,attrList,colValueVector);//写入一条记录
-			if (recoInfo.getsucc()) {blocks.contentSize+=tupleLen;blocks.content[j*tupleLen]=Used;blocks.isDirty=true;blockID=i;recordID=0;bfm.storeBlocks(i,blocks);return recoInfo;}
+			if (recoInfo.getsucc()) {
+				blocks.contentSize+=tupleLen;
+				blocks.content[0*tupleLen]=Used;blocks.isDirty=true;
+				blockID=i;recordID=0;
+				bfm.storeBlocks(i,blocks);
+
+				return recoInfo;}
 		}
 	}
 //返回信息
-if (num==0) {succ=false; message="The results is null.";}
+if (num==0) {succ=false; message="Insert Unsucceed.";}
 return recoinfo(succ,message,results,num);
 }
 
