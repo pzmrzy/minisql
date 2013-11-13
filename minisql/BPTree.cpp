@@ -202,7 +202,7 @@ PtrType BPTree::find(Value key)
 	if (i >= temp.size() )
 		return -1;
 	else
-		return i;
+		return temp[i-1].getIntKey();
 	delete node;
 }
 
@@ -453,4 +453,28 @@ string Value::getKey()
 		case _TYPE_FLOAT:char temp[260]; sprintf(temp,"%f",floatKey); return temp; break;
 		default:return 0;
 	}
+}
+
+PtrType BPTree::deleteNode(Value key)
+{
+	PtrType ptr = find(key);
+	Node node(indexBuff,findLeafNode(key),indexName,tableInstance,n);
+
+	vector<Value> temp = node.getInfo();
+	int i = 1;
+	for(i = 1; i < temp.size(); i+=2)
+	{
+		if (key.getKey() == temp[i].getKey())
+			break;
+	}
+	if (i >= temp.size() )
+		return;
+	else
+	{
+		PtrType reTemp = temp[i-1].getIntKey();
+		temp[i-1].setKey(-1);
+		node.set(temp);
+		return reTemp;
+	}
+
 }

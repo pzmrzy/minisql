@@ -107,6 +107,8 @@ public:
 	bool createBPTree(SqlCommand sql,table tableInstance,string indexName);
 	bool loadBPTree(string indexName);//TODO:改成构造函数
 	void insert(Value key,PtrType pointer);
+	PtrType find(Value key);
+	PtrType deleteNode(Value key);
 
 private:
 	BufferManager indexBuff;//怎么初始化它？
@@ -127,7 +129,7 @@ private:
 	void insertLeaf(Node node,Value key,PtrType pointer);
 	void insertNonleaf(Node node,Value key,PtrType pointer);
 	//没找到返回-1，找到返回偏移量
-	PtrType find(Value key);
+	
 	PtrType findLeafNode(Value key);
 	PtrType findParentNode(PtrType ptr);//利用parentMap查找ptr节点的父节点
 	//求类型大小

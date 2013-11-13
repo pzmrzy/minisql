@@ -173,6 +173,6 @@ private:
 	long number;
 };
 class indexInfo{
-
+	vector<int> result;
 };
 #endif
