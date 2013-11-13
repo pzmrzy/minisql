@@ -566,5 +566,14 @@ SqlCommand Interpreter::showDatabase(string& str) {
 }
 
 void Interpreter::execfileClause(string& str) {
+	// 删除execfile
+	str = delFirstWord(str, " ");
+
+	// 打开文件
+	string fileName = firstWord(str, " ;");
+	ifstream file(fileName.c_str());
+
+	// 读到每个;
+	file.close();
 
 }

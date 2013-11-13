@@ -13,6 +13,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -53,7 +54,7 @@ public: // ºÏ≤È”Ôæ‰
 
 	SqlCommand quitClause();                 // ºÏ≤ÈQUIT
 
-	void execfileClause(string& str);				 // execfile
+	void execfileClause(string& str);		 // execfile
 };
 
 #endif
