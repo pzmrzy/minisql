@@ -254,5 +254,6 @@ void BufferManager::writeIndexData(string indexName, char *content, int length) 
 		j = (i>BLOCK_LEN) ? BLOCK_LEN : i;
 		Block b = newIndexBlock(indexName);
 		memcpy(b.content, content+i, j);
+		b.dirty();
 	}
 }
