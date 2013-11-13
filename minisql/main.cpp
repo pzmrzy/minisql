@@ -4,6 +4,7 @@
 #include"api.h"
 #include<iostream>
 #include<string>
+#include<fstream>
 using namespace std;
 string Wdbname = "";
 int main () {
@@ -13,13 +14,23 @@ int main () {
 	SqlCommand sql;
 	int type;
 	while (true) {
-		//getline(cin, input);
-		//if (cin == "Exit")
-			//break;
+
 		input = cmd.readInput();
 		sql = cmd.getExpression(input);
 		type = sql.gettype();
-		api(type, sql);
+
+		if( type == SQL_EXECFILE ) {
+			ifstream ef = ifstream(sql.getTableName);
+			string line;
+			while(!ef.eof()) {
+				line = ef.getline();
+				sql = cmd.getExpression(line);
+				type = sql.gettype();
+				api(type, sql);
+			}
+			ef.close();
+		}
+
 	}
 	return 0;
 }
