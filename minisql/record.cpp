@@ -181,7 +181,9 @@ recoinfo record::writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& 
 			//长度比datatype短，不定长要补成定长
 			else if ((str.length())<attrList[k].datatype){
 				int diff=attrList[k].datatype-str.length();
-				for (i=0;i<diff;i++){ str.insert(0,"\0");}
+				for (int i=0;i<diff;i++){ 
+					str.insert(0,"\0");
+				}
 			}
 			memcpy(blocks.content+j*tupleLen+p,str.c_str(),attrList[k].datatype+1);
 			p+=attrList[k].datatype+1;
@@ -195,15 +197,15 @@ recoinfo record::writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& 
 	return recoinfo(succ,message,results,num);
 }
 
-Row record::getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attrList){
+void record::getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attrList, Row & oneTuple){
 	int i,k,p=1;
-	float floatNum;
-	int intNum;
+	float floatNum=0;
+	int intNum=0;
 	string str;
 	char ch[255];
 	bool succ=false;
 	int num=0;
-	Row oneTuple;
+//	Row oneTuple;
 	stringstream ss;
 
 	for (k=0;k<attrList.size();k++){
@@ -227,59 +229,22 @@ Row record::getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attr
 			p=p+attrList[k].datatype+1;
 			//若是不定长储存，则去掉前面的'\0'
 			str="";
-			for (int ii=0;ii<attrList[k].datatype;ii++){
-				if (ch[ii]!='\0') str=str+ch[ii];
+			int ii = 0;
+			while (ch[ii] == '\0'){
+				ii++;
+				if (ii >= attrList[k].datatype) break;
+			}
+			for (int jj=ii;jj<attrList[k].datatype;jj++){
+				str=str+ch[jj];
 			}
 			str=str+"\0";
 			oneTuple.col.push_back(str);
 		}
     }
-	return oneTuple;
+//	return oneTuple;
 }
-/*
-recoinfo record::Index_Delete_Rec(SqlCommand& sql,table &Table,vector<int> offset){
-	int i,j;
-	long num=0;//查找到的记录数
-	Row row;//每行
-	Results results;//总结果
-	bool succ=false;//查找是否成功
-	string message="";//查找失败的信息
-    string databaseName=Table.dbname;
-	BufferManager BM(Table.dbname);
-	string tableName=Table.name;//相关的表名字
-	vector<attribute> attrList=Table.attrList;//表的所有属性列表
-	vector<string> condLeftVector=sql.getCondLeftVector();//条件左值
-	vector<string> condOpVector=sql.getCondOpVector();//条件操作符
-	vector<string> condRightVector=sql.getCondRightVevtor();//条件右值
-    vector<int> blockVector=bfm.getTableBlocks(tableName);//调用buffer，得到block
-    bool whereFlag=false;//判断sql中有木有where
-    int blockLen;//当前block中有几条记录
-    int tupleLen=Table.recLength+1;//数据中每条rec的长度
-    Block blocks;
-    Row oneTuple;
-	int blockID;
-	int recordID;
 
-	blockLen=4096/tupleLen;
-	for(i=0;i<offset.size();i++){
-	recordID = i%blockLen;
-	blockID=i/blockLen;
-	blocks=bfm.getBlocks(blockID);
-	if (blocks.content[recordID*tupleLen]==Used){
-		oneTuple=getOneTuple(blocks,recordID,tupleLen,attrList);
-                //如果有where，则根据条件比较查找
-                //如果木有where，则不用比较
-                if (!whereFlag)
-				{ blocks.content[recordID*tupleLen]=Unused;num++;blocks.isDirty=true; blocks.contentSize-=tupleLen; succ=true;}
-                else
-                    if (checkConstraints(oneTuple,attrList,condLeftVector,condOpVector,condRightVector))
-					{ blocks.content[recordID*tupleLen]=Unused;num++;blocks.isDirty=true; blocks.contentSize-=tupleLen; succ=true;}
-            }
-	}
-
-}
-*/
-recoinfo record::Select_Rec(SqlCommand& sql,table &Table, bool indexflag, vector<int> offset )
+recoinfo record::Select_Rec(SqlCommand& sql,table &Table, bool indexflag, vector<int> offset)
 {
 	int i,j;
 	long num=0;//查找到的记录数
@@ -314,8 +279,8 @@ recoinfo record::Select_Rec(SqlCommand& sql,table &Table, bool indexflag, vector
 	//记录查询的属性在表属性的位置，方便之后的操作。
 	string colName;
 	colNamePosVector.clear();
-	for (i=0;i<condLeftVector.size();i++){
-        colName=condLeftVector[i];
+	for (i=0;i<colNameVector.size();i++){
+        colName=colNameVector[i];
         for (j=0;j<attrList.size();j++){
             if (!colName.compare(attrList[j].name)) colNamePosVector.push_back(j);
         }
@@ -334,7 +299,8 @@ if (indexflag) {
 			blockID=i/blockLen;
 			Block& blocks=bfm->getBlocks(blockID);
 			if (blocks.content[recordID*tupleLen]==Used){
-				oneTuple=getOneTuple(blocks,recordID,tupleLen,attrList);
+				Row oneTuple;
+				getOneTuple(blocks, recordID, tupleLen, attrList,oneTuple);
                 //如果有where，则根据条件比较查找
                 //如果木有where，则不用比较
                 if (!whereFlag)
@@ -353,21 +319,26 @@ else{
         for (j=0;j<blockLen;j++){
             //不是删除数据，则读出数据并解析
             if (blocks.content[j*tupleLen]==Used){
-				oneTuple=getOneTuple(blocks,j,tupleLen,attrList);
+				Row oneTuple;
+				getOneTuple(blocks,j,tupleLen,attrList,oneTuple);
                 //如果有where，则根据条件比较查找
                 //如果木有where，则不用比较
                 if (!whereFlag)
-                    { push(oneTuple,results,colNamePosVector); num++;succ=true;}
+                { 
+					push(oneTuple,results,colNamePosVector); num++;succ=true;
+				}
                 else
                     if (checkConstraints(oneTuple,attrList,condLeftVector,condOpVector,condRightVector))
-                        { push(oneTuple,results,colNamePosVector);num++;succ=true;}
+                     { 
+						push(oneTuple,results,colNamePosVector);num++;succ=true;
+					}
             }
         }
     }
 }
 
+if (num == 0) { succ = false;message= "The results is null.";  }
 //返回信息
-if (num==0) {succ=false; message="The results is null.";}
 return recoinfo(succ,message,results,num);
 }
 
@@ -402,7 +373,8 @@ if (indexflag){
 	blockID=i/blockLen;
 	Block & blocks=bfm->getBlocks(blockID);
 	if (blocks.content[recordID*tupleLen]==Used){
-		oneTuple=getOneTuple(blocks,recordID,tupleLen,attrList);
+		Row oneTuple;
+		getOneTuple(blocks, recordID, tupleLen, attrList, oneTuple);
                 //如果有where，则根据条件比较查找
                 //如果木有where，则不用比较
                 if (!whereFlag)
@@ -422,7 +394,8 @@ else{
         for (j=0;j<blockLen;j++){
             //不是删除数据，则读出数据并解析
             if (blocks.content[j*tupleLen]==Used){
-				oneTuple=getOneTuple(blocks,j,tupleLen,attrList);
+				Row oneTuple;
+				getOneTuple(blocks, j, tupleLen, attrList, oneTuple);
                 //如果有where，则根据条件比较查找
                 //如果木有where，则不用比较
                 if (!whereFlag)

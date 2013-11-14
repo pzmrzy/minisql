@@ -7,6 +7,7 @@ using namespace std;
 #include "minisql.h"
 #include "sqlcommand.h"
 #include "record.h"
+#include <iomanip>
 api::api(void)
 {
 }
@@ -197,7 +198,7 @@ api::api(int t, SqlCommand& c){
                             break;
                         }
                         //成功，根据有无索引有无where调用不同类的selec_Rec函数
-                        else{
+						else{
 							Table = cataInfo.gettable();
 							bool f = false;
 							attrList = Table.attrList;
@@ -206,21 +207,30 @@ api::api(int t, SqlCommand& c){
 							indexList.clear();
 							vector<int> offset;
 							offset.clear();
-							for (i = 0; i<asize; i++){
+							for (i = 0; i < asize; i++){
 								if (attrList.at(i).ID){ indexList.push_back(attrList.at(i).name); f = true; }//???
 							}
 							if (sql.condLeftVector.size() == 0 || !f){
-								recoInfo = RE.Select_Rec(sql, Table, 0, offset);
+ 								recoInfo=RE.Select_Rec(sql, Table, 0, offset);
 								//失败，则输出失败信息（包括结果为空的信息）
 								if (!recoInfo.getsucc()){
 									recoInfo.print();
 									break;
-								}
-								//else RE.print_results(recoInfo.results,-1);//输出结果
+									}
+									else{
+									//Results res=recoInfo.results;
+									for (int i = 0; i < recoInfo.results.row.size(); i++){
+									vector<string> col = recoInfo.results.row[i].col;
+									for (int j = 0; j < col.size(); j++){
+									cout << setw(20) << col[j];
+									}
+									cout << endl;
+									}
 							}
-							else{
+						}
+						else{
 								break;
-							}
+						}
 						/*    Table=cataInfo.gettable();
                             //无where条件
                             if (sql.condLeftVector.size()==0){
@@ -283,7 +293,7 @@ api::api(int t, SqlCommand& c){
 								if (attrList.at(i).ID){ indexList.push_back(attrList.at(i).name); f = true; }//???
 							}
 							if (!f){
-								recoInfo = RE.Insert_Rec(sql, Table, blockID, recordID);
+								recoinfo & recoInfo = RE.Insert_Rec(sql, Table, blockID, recordID);
 								if (!recoInfo.getsucc()){
 									recoInfo.print();
 									break;
@@ -360,13 +370,13 @@ api::api(int t, SqlCommand& c){
 							offset.clear();
 							//无where条件
 							if (sql.condLeftVector.size() == 0 || !f){
-								recoInfo = RE.Delete_Rec(sql, Table, 0, offset);
+								recoinfo & recoInfo = RE.Delete_Rec(sql, Table, 0, offset);
 								if (!recoInfo.getsucc()){
 									recoInfo.print();
 									break;
 								}
 								else {
-									Table.attrNum -= recoInfo.nummes();//更改table信息
+									Table.recNum -= recoInfo.nummes();//更改table信息
 									CL.change_Table(Table);//回写
 									recoInfo.print();
 								}

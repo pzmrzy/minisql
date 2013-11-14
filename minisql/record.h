@@ -12,6 +12,7 @@
 #include <strstream>
 #include <sstream>
 #include "minisql.h"
+#include <iomanip>
 using namespace std;
 
 #define BLOCK_LEN        4096
@@ -39,7 +40,7 @@ private:
     bool checkConstraints(Row& oneTuple,vector<attribute>& attrList,vector<string>& condLeftVector,vector<string>& condOpVector,vector<string>& condRightVector);
 	recoinfo writeblock(Block& blocks,int j,int tupleLen,vector<attribute>& attrList,vector<string>& colValueVector);//写入一条记录
 	//解析数据中每条record
-	Row getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attrList);
+	void getOneTuple(Block& blocks,int j,int tupleLen,vector<attribute>& attrList,Row& oneTuple);
 };
 
 #endif
