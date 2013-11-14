@@ -77,10 +77,6 @@ public:							// 建议用下列方法读写属性
 
 	// 测试用
 	void debug(bool withContent = false);
-	/*
-Block(const Block& T){
-			cout << "copied" << endl;
-	}*/
 };
 
 #endif
