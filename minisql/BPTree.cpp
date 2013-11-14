@@ -208,7 +208,7 @@ PtrType BPTree::find(Value key)
 		int i = 1;
 		for(i = 1; i < temp.size(); i+=2)
 		{
-			if (key.getKey() < temp[i].getKey())//只能是小于，因为小于才进前面
+			if (isLess(key,temp[i]))//只能是小于，因为小于才进前面
 				break;
 		}
 		if (i >= temp.size())
@@ -228,7 +228,7 @@ PtrType BPTree::find(Value key)
 	int i = 1;
 	for(i = 1; i < temp.size(); i+=2)
 	{
-		if (key.getKey() == temp[i].getKey())
+		if (isEqual(key,temp[i]))
 			break;
 	}
 	if (i >= temp.size() )
@@ -255,7 +255,7 @@ PtrType BPTree::findLeafNode(Value key)
 		int i = 1;
 		for(i = 1; i < temp.size(); i+=2)
 		{
-			if (key.getKey() < temp[i].getKey())//只能是小于，因为小于才进前面
+			if (isLess(key,temp[i]))//只能是小于，因为小于才进前面
 				break;
 		}
 		if (i >= temp.size())
@@ -302,7 +302,7 @@ void BPTree::insert(Value key,PtrType pointer)
 	{
 		//排序
 		vector<Value> keyList = node.getInfo();//只读键值对
-		if (key.getKey() < keyList[0].getKey())
+		if (isLess(key,keyList[0]))
 		{
 			keyList.insert(keyList.begin(),key);
 			Value temp(_TYPE_INT,pointer);
@@ -312,7 +312,7 @@ void BPTree::insert(Value key,PtrType pointer)
 		{
 			for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
 			{
-				if (keyList.at(i).getKey() <= key.getKey())
+				if (isLessEqual(keyList.at(i),key))
 				{
 					Value tempPtr(_TYPE_INT,pointer);
 					keyList.insert(keyList.begin() + i+1,tempPtr);
@@ -350,7 +350,7 @@ void BPTree::insert(Value key,PtrType pointer)
 void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
 {
 	vector<Value> keyList = node.getInfo();//只读键值对
-	if (key.getKey() < keyList[0].getKey() )
+	if (isLess(key,keyList[0]))
 	{
 		keyList.insert(keyList.begin(),key);
 		Value temp(_TYPE_INT,pointer);
@@ -360,7 +360,7 @@ void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
 	{
 		for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
 		{
-			if (keyList.at(i).getKey() <= key.getKey())
+			if (isLessEqual(keyList.at(i),key))
 			{
 				Value tempPtr(_TYPE_INT,pointer);
 				keyList.insert(keyList.begin() + i+1,tempPtr);
@@ -404,7 +404,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 		if (parentNode.getCount() < n)
 		{
 			vector<Value> keyList = parentNode.getInfo();//只读键值对
-			if (key.getKey() < keyList[0].getKey())
+			if (isLess(key,keyList[0]))
 			{
 				Value tempPtr(_TYPE_INT,pointer);
 				keyList.insert(keyList.begin()+1,tempPtr);
@@ -414,7 +414,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 			{
 				for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
 				{
-					if (keyList.at(i).getKey() <= key.getKey())
+					if (isLessEqual(keyList.at(i),key))
 					{
 						Value tempPtr(_TYPE_INT,pointer);
 						keyList.insert(keyList.begin() + i+2,tempPtr);//TODO:最后一个会怎么样?
@@ -429,7 +429,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 		{
 			//排序
 			vector<Value> keyList = parentNode.getInfo();//只读键值对
-			if (key.getKey() < keyList[0].getKey())
+			if (isLess(key,keyList[0]))
 			{
 				Value tempPtr(_TYPE_INT,pointer);
 				keyList.insert(keyList.begin()+1,tempPtr);
@@ -439,7 +439,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 			{
 				for (int i = (keyList.size() - 1 - 1); i >= 0; i-=2)
 				{
-					if (keyList.at(i).getKey() <= key.getKey())
+					if (isLessEqual(keyList.at(i),key))
 					{
 						Value tempPtr(_TYPE_INT,pointer);
 						keyList.insert(keyList.begin() + i+2,tempPtr);//TODO:最后一个会怎么样?
@@ -500,7 +500,7 @@ PtrType BPTree::deleteNode(Value key)
 	int i = 1;
 	for(i = 1; i < temp.size(); i+=2)
 	{
-		if (key.getKey() == temp[i].getKey())
+		if (isEqual(key,temp[i]))
 			break;
 	}
 	if (i >= temp.size() )
@@ -514,4 +514,40 @@ PtrType BPTree::deleteNode(Value key)
 	}
 
 
+}
+
+bool BPTree::isLess(Value& key1,Value& key2)
+{
+	switch(key1.getType())
+	{
+	case _TYPE_INT:if (key1.getIntKey() < key2.getIntKey()) return true;else return false;break;
+	case _TYPE_FLOAT:if (key1.getFloatKey() < key2.getFloatKey()) return true;else return false;break;
+	case _TYPE_STRING:if (key1.getCharKey() < key2.getCharKey()) return true;else return false;break;
+	default:
+		return false;
+	}
+}
+
+bool BPTree::isLessEqual(Value& key1,Value& key2)
+{
+	switch(key1.getType())
+	{
+	case _TYPE_INT:if (key1.getIntKey() <= key2.getIntKey()) return true;else return false;break;
+	case _TYPE_FLOAT:if (key1.getFloatKey() <= key2.getFloatKey()) return true;else return false;break;
+	case _TYPE_STRING:if (key1.getCharKey() <= key2.getCharKey()) return true;else return false;break;
+	default:
+		return false;
+	}
+}
+
+bool BPTree::isEqual(Value& key1,Value& key2)
+{
+	switch(key1.getType())
+	{
+	case _TYPE_INT:if (key1.getIntKey() == key2.getIntKey()) return true;else return false;break;
+	case _TYPE_FLOAT:if (key1.getFloatKey() == key2.getFloatKey()) return true;else return false;break;
+	case _TYPE_STRING:if (key1.getCharKey() == key2.getCharKey()) return true;else return false;break;
+	default:
+		return false;
+	}
 }

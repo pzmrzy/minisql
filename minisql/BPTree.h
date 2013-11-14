@@ -123,7 +123,9 @@ private:
 		PtrType parentPtr;
 	};
 	vector<ParentMap> parentMap;//¸¸Ç×ÁÐ±í
-
+	bool isLess(Value& key1,Value& key2);//if key1 < key2 then true
+	bool isLessEqual(Value& key1,Value& key2);//if key1 <= key2 then true
+	bool isEqual(Value& key1,Value& key2);//if key1 == key2 then true
 	
 	void insertLeaf(Node node,Value key,PtrType pointer);
 	void insertNonleaf(Node node,Value key,PtrType pointer);

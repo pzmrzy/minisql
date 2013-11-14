@@ -20,7 +20,7 @@ int main () {
 		type = sql.gettype();
 
 		if( type == SQL_EXECFILE ) {
-			ifstream ef = ifstream(sql.getTableName);
+			ifstream ef = ifstream(sql.getTableName());
 			string line;
 			while(!ef.eof()) {
 				line = ef.getline();
