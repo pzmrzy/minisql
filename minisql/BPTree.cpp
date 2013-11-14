@@ -2,19 +2,24 @@
 
 Node::Node(string dbName,PtrType ptr,string indexName,table tableInstance,int n):indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
 {
-	BufferManager indexBuff(dbName);
-	block = indexBuff.getIndexOneBlock(indexName, ptr);
+	block = bfm->getIndexOneBlock(indexName, ptr);
 	Node::read();
 }
 
 Node::Node(string dbName,string indexName,table tableInstance,int n):indexName(indexName),tableInstance(tableInstance),ptrN(n),dbName(dbName)
 {
-	BufferManager indexBuff(dbName);
+	 
 	//创建块，返回offset
-	block = indexBuff.newIndexBlock(indexName);
+	block = bfm->newIndexBlock(indexName);
 	offset = block.offset;
-	Node::read();
 }
+
+Node::Node(string dbName,PtrType ptr,string indexName,table tableInstance,int n,int tag):indexName(indexName),tableInstance(tableInstance),ptrN(n),offset(ptr)
+{
+	 
+	block = bfm->getIndexOneBlock(indexName, ptr);
+}
+
 
 PtrType Node::getNodePtr()
 {
@@ -24,7 +29,7 @@ PtrType Node::getNodePtr()
 Node::~Node()
 {
 	char coutStream[5000];
-	BufferManager indexBuff(dbName);
+	 
 	
 	char tempNodeType;
 	if (nodeType == _LEAFNODE)
@@ -45,7 +50,7 @@ Node::~Node()
 		}
 	}
 	
-	indexBuff.writeIndexData(indexName, offset,coutStream, j+5);
+	bfm->writeIndexData(indexName, offset,coutStream, j+5);
 }
 
 void Node::read()
@@ -146,13 +151,12 @@ BPTree::BPTree(string dbName,int type):type(type),dbName(dbName)
 
 void BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName,int type)
 {
-	BufferManager indexBuff(dbName);
+	 
 	int recordLength = tableInstance.recLength;
-	BufferManager recordBuff(sql.getDatabaseName());
-	vector<int> blockNum = recordBuff.getTableBlocks(sql.getTableName());
 
-	Block block = indexBuff.newIndexBlock(indexName);
-	Node node(dbName,blockNum[0],indexName,tableInstance,n);
+	Block block = bfm->newIndexBlock(indexName);
+	vector<int> blockNum = bfm->getIndexBlocks(indexName);
+	Node node(dbName,blockNum[0],indexName,tableInstance,n,1);
 	Node newNode(dbName,indexName,tableInstance,n);
 
 	node.setType(_NONLEAFNODE);
@@ -193,7 +197,7 @@ void BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName,in
 
 void BPTree::loadBPTree(string indexName)
 {
-	BufferManager indexBuff(dbName);
+	 
 	int firstBlock = bfm->getIndexBlocks(indexName)[0];//获取开始的块
 	Node rootNode(dbName,firstBlock,indexName,tableInstance,n);
 	root = rootNode.getInfo()[0].getIntKey();
@@ -201,7 +205,7 @@ void BPTree::loadBPTree(string indexName)
 
 PtrType BPTree::find(Value key)
 {
-	BufferManager indexBuff(dbName);
+	 
 	Node *node = new Node(dbName,root,indexName,tableInstance,n);
 	//in nonLeafNode
 	while (node->getNodeType() != _LEAFNODE)
@@ -242,7 +246,7 @@ PtrType BPTree::find(Value key)
 
 PtrType BPTree::findLeafNode(Value key)
 {
-	BufferManager indexBuff(dbName);
+	 
 	Node *node = new Node(dbName,root,indexName,tableInstance,n);
 	parentMap.clear();
 	ParentMap *tempMap = new ParentMap();
@@ -344,7 +348,7 @@ vector<int> BPTree::findToBehindIF(Value key)
 
 void BPTree::insert(Value key,PtrType pointer)
 {
-	BufferManager indexBuff(dbName);
+	 
 	PtrType nodePtr = findLeafNode(key);
 	Node node(dbName,nodePtr,indexName,tableInstance,n);
 	if (node.getCount() < (n - 1))
@@ -429,7 +433,7 @@ void BPTree::insertLeaf(Node node,Value key,PtrType pointer)
 
 void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 {
-	BufferManager indexBuff(dbName);
+	 
 	if (node.getNodePtr() == root)
 	{
 		Node newNode(dbName,indexName,tableInstance,n);
@@ -442,7 +446,7 @@ void BPTree::insertNonleaf(Node node,Value key,PtrType pointer)
 		newNode.set(keyList);
 		root = newNode.getNodePtr();
 		//把根节点的更改写入磁盘
-		int firstBlock = indexBuff.getIndexBlocks(indexName)[0];//获取开始的块
+		int firstBlock = bfm->getIndexBlocks(indexName)[0];//获取开始的块
 		Node rootNode(dbName,firstBlock,indexName,tableInstance,n);
 		Value temp3(_TYPE_INT,root);
 		vector<Value> temp4;
@@ -543,7 +547,7 @@ string Value::getKey()
 
 PtrType BPTree::deleteNode(Value key)
 {
-	BufferManager indexBuff(dbName);
+	 
 	PtrType ptr = find(key);
 	Node node(dbName,findLeafNode(key),indexName,tableInstance,n);
 

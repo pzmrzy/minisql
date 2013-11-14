@@ -106,6 +106,7 @@ public:
 	//得到一个节点时调用的构造函数
 	Node(string dbName,PtrType ptr,string indexName,table tableInstance,int n);
 
+	Node(string dbName,PtrType ptr,string indexName,table tableInstance,int n,int tag);//无read构造函数
 	//析构函数：讲块的内容写入磁盘，再销毁
 	~Node();
 

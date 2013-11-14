@@ -9,9 +9,9 @@
 #include "minisql.h"
 #include"BPTree.h"
 
+extern BufferManager *bfm;
 class IndexManager{
 private:
-	BufferManager buff;
 	string dbName;
 public:
 	//用数据库名称初始化

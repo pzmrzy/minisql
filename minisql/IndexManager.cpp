@@ -1,6 +1,6 @@
 #include"indexManager.h"
 
-IndexManager::IndexManager(string DBName):buff(DBName),dbName(DBName)
+IndexManager::IndexManager(string DBName):dbName(DBName)
 {
 }
 
