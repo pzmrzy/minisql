@@ -14,7 +14,7 @@ api::api(void)
 api::~api(void)
 {
 }
-
+extern BufferManager *bfm;
 api::api(int t, SqlCommand& c){
 	type =t;
 	sql = c;
@@ -22,8 +22,10 @@ api::api(int t, SqlCommand& c){
 	string succ = "Operation Succeeds";
 	extern string Wdbname;
 	if (Wdbname == ""){
-		if (type == SQL_CREATE_DATABASE)
+		if (type == SQL_CREATE_DATABASE){
 			Wdbname = c.getDatabaseName();
+			bfm = new BufferManager(Wdbname);
+		}
 		else{
 			if (type != SQL_USE){
 				cout << "Please Use database" << endl;
@@ -41,13 +43,21 @@ api::api(int t, SqlCommand& c){
 
 					sql.setDatabaseName(Wdbname);
 					cataInfo = CL.creat_Database(sql);//调用catalog类的creat_Database函数
+					
+					
                         //失败，输出失败原因
                         if (!cataInfo.getsucc()){
 							cataInfo.print();
                             break;
                         }
                         //成功，输出成功提示
-                        else cout<<succ<<endl;
+						
+						
+						else {
+							delete bfm;
+							bfm = new BufferManager(Wdbname);
+							cout << succ << endl; 
+						}
                         break;
                 }
                 case ( SQL_CREATE_TABLE    ):{
@@ -419,12 +429,18 @@ api::api(int t, SqlCommand& c){
 					if (!cataInfo.getsucc())
 						cataInfo.print();
 					else{
-						Wdbname = sql.getDatabaseName();
+						if (Wdbname != sql.getDatabaseName()){
+							Wdbname = sql.getDatabaseName();
+							delete bfm;
+							bfm = new BufferManager(Wdbname);
+						}
+
 						cout<<succ<<endl;
 					}
                         break;
                 }
                 case ( SQL_QUIT            ):{
+					delete bfm;
 					exit(0);
                         break;
                 }

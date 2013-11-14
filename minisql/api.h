@@ -15,11 +15,12 @@ public:
         virtual ~api(void);
         catainfo cataInfo;
         recoinfo recoInfo;
-        //indexinfo indexInfo;
+        indexinfo indexInfo;
         table Table;
         attribute Attribute;
         vector<attribute> attrList;
         vector<string> indexList;
+
 
 private:
         int type;

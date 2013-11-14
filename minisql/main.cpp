@@ -1,36 +1,38 @@
 #include"minisql.h"
 #include"sqlcommand.h"
 #include"interpreter.h"
+#include"buffermanager.h"
+#include"block.h"
+#include"record.h"
 #include"api.h"
+#include"catalog.h"
+#include "stdlib.h"
 #include<iostream>
 #include<string>
-#include<fstream>
 using namespace std;
+
 string Wdbname = "";
+BufferManager *bfm;
+
 int main () {
-	
+	system("a.bat");
 	string input;
 	Interpreter cmd;
 	SqlCommand sql;
 	int type;
 	while (true) {
-
+		//getline(cin, input);
+		//if (cin == "Exit")
+			//break;
 		input = cmd.readInput();
 		sql = cmd.getExpression(input);
 		type = sql.gettype();
-
-		if( type == SQL_EXECFILE ) {
-			ifstream ef = ifstream(sql.getTableName());
-			string line;
-			while(!ef.eof()) {
-				line = ef.getline();
-				sql = cmd.getExpression(line);
-				type = sql.gettype();
-				api(type, sql);
-			}
-			ef.close();
-		}
-
+		api(type, sql);
 	}
+
+BufferManager bb("testa");
+Block b;
+b = bb.newBlock("t");
+
 	return 0;
 }

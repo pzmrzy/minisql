@@ -73,7 +73,7 @@ void BufferManager::writeBlock(Block &block) {
 	// Ð´¿é
 	dbFile.seekp(block.offset+HEAD_LEN);
 	dbFile.write(block.content, BLOCK_LEN);
-
+	
 	return;
 }
 
@@ -90,7 +90,7 @@ Block& BufferManager::findBlock(int offset) {
 	for(list<Block>::iterator i = buffer.begin(); i != buffer.end(); i ++ ) {
 		if( i->offset == offset ) {
 			buffer.splice( buffer.begin(), buffer, i, std::next(i) );
-			return *(buffer.begin());
+			return (buffer.front());
 		}
 	}
 	// ÕÒ²»µ½£¿Èô»º´æÂúÐ´²¢É¾³ý»º´æÄ©Î²¿é£¬¶ÁÎÄ¼þ²¢¹ÒÈë»º´æ
@@ -99,7 +99,8 @@ Block& BufferManager::findBlock(int offset) {
 		buffer.pop_back();
 	}
 	buffer.push_front(readBlock(offset));
-	return *(buffer.begin());
+
+	return (buffer.front());
 }
 
 
@@ -152,6 +153,7 @@ vector<int> BufferManager::getTableBlocks(string tableName) {
 	for( i = firstBlock.begin(); i != firstBlock.end(); i ++ ) {
 		if( tableName == i->first ) {
 			offset = i->second;
+			break;
 		}
 	}
 
@@ -212,8 +214,9 @@ Block& BufferManager::newBlock(string tableName) {
 		temp.dirty();
 		writeBlock(temp);
 	}
-
-	return findBlock(block.offset);
+	/*- - -*/
+	int offset = block.offset;
+	return findBlock(offset);
 }
 
 void BufferManager::debug(bool isContent = false) {
@@ -236,12 +239,14 @@ void BufferManager::storeBlocks(int offset, Block& block) {
 	writeBlock(block);
 }
 
+
+
 vector<int> BufferManager::getIndexBlocks(string indexName) {
 	return getTableBlocks("!"+indexName);
 }
 
 Block& BufferManager::newIndexBlock(string indexName) {
-	Block b = newBlock("!"+indexName);
+	Block& b = newBlock("!"+indexName);
 	b.isIndex = true;
 	return b;
 }
@@ -253,14 +258,8 @@ Block& BufferManager::getIndexOneBlock(string indexName, int offset) {
 void BufferManager::writeIndexData(string indexName, char *content, int length) {
 	for(int i = 0, j = 0; i < length; i += j) {
 		j = (i>BLOCK_LEN) ? BLOCK_LEN : i;
-		Block b = newIndexBlock(indexName);
+		Block& b = newIndexBlock(indexName);
 		memcpy(b.content, content+i, j);
 		b.dirty();
 	}
-}
-
-void BufferManager::writeIndexData(string indexName, int offset, char* content, int length) {
-	Block b = findBlock(offset);
-	memcpy(b.content, content, length);
-	b.dirty();
 }

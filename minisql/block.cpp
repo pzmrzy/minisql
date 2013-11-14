@@ -1,5 +1,6 @@
 #include "block.h"
 
+
 Block::Block() {
 	tableName[0] = 0;
 	nextOffset = 0;
@@ -8,6 +9,7 @@ Block::Block() {
 	offset = 0;
 	isDirty = true;
 	isIndex = false;
+	memset(content, 0, sizeof(content));
 }
 
 Block::Block(bool index) {

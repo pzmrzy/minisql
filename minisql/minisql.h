@@ -74,6 +74,7 @@ public:
 		recLength = T.recLength;
 		attrList = T.attrList;
 		recNum = T.recNum;
+		size = T.size;
 	}
 	table (){}
 	string name;					//名称
@@ -91,6 +92,11 @@ public:
 		succ = f;
 		message = mes;
 		T = tab;
+	}
+	catainfo(const catainfo& C){
+		succ = C.succ;
+		message = C.message;
+		T = C.T;
 	}
 	catainfo(){}
 	//获取指令是否成功
@@ -135,7 +141,11 @@ class Results
 public:
 	vector<Row> row;//rows
 };
+class indexinfo{
+
+};
 //record返回的信息
+
 class recoinfo
 {
 public:
@@ -173,6 +183,6 @@ private:
 	long number;
 };
 class indexInfo{
-	vector<int> result;
+
 };
 #endif

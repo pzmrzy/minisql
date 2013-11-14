@@ -4,8 +4,7 @@
  * @author tgmerge
  * 
  * 当收到BufferManager传回的块后，
- * 使用getContent方法得到内部数据（字符串数组）指针
- * ***调用者需要在修改content之后自行设置contentSize属性***
+ * 使用getContent方法得到内部数据（字符串数组）指针；
  * 使用getSize方法得到内部数据的有效长度
  */
 
@@ -78,6 +77,10 @@ public:							// 建议用下列方法读写属性
 
 	// 测试用
 	void debug(bool withContent = false);
+	/*
+Block(const Block& T){
+			cout << "copied" << endl;
+	}*/
 };
 
 #endif

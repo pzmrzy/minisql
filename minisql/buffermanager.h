@@ -103,7 +103,6 @@ public:						// IndexManager使用
 /*+*/Block& getIndexOneBlock(string indexName, int offset);
 	// 
 /*+*/void writeIndexData(string indexName, char* content, int length);
-	 void writeIndexData(string indexName, int offset,char* content, int length);
 };
 
 #endif

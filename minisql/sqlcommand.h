@@ -31,7 +31,6 @@ using namespace std;
 #define SQL_ERROR           90
 #define SQL_SHOW_DATABASE   100
 #define SQL_EXECFILE		110
-
 #define SQL_TYPE_INT		0
 #define SQL_TYPE_FLOAT		-1
 
@@ -85,8 +84,6 @@ public:
 	}
 	//push列值(insert使用)
 	void pushColValueVector(string& str){
-		if(str.at(0)=='\'' && str.at(str.length()-1)=='\'')
-			str = str.substr(1, str.length()-2);
 		colValueVector.push_back(str);
 	}
 	vector<string> getcolValueVector(){
@@ -126,32 +123,35 @@ public:
 		cout<<"colName: "<<colName<<endl;
 
 		cout<<"colNameVector:  ";
-		for (int i=0; i<colNameVector.size(); i++)
+		for (unsigned int i=0; i<colNameVector.size(); i++)
 			cout<<colNameVector[i]<<" ";
 		cout<<endl;
 		cout<<"colValueVector:  ";
-		for (int i=0; i<colValueVector.size(); i++)
+		for (unsigned int i = 0; i<colValueVector.size(); i++)
 			cout<<colValueVector[i]<<" ";
 		cout<<endl;
 		cout<<"condLeftVector: ";
-		for (int i=0; i<condLeftVector.size(); i++)
+		for (unsigned int i = 0; i<condLeftVector.size(); i++)
 			cout<<condLeftVector[i]<<" ";
 		cout<<endl;
 		cout<<"condOpVector: ";
-		for (int i=0; i<condOpVector.size(); i++)
+		for (unsigned int i = 0; i<condOpVector.size(); i++)
 			cout<<condOpVector[i]<<" ";
 		cout<<endl;
 		cout<<"condRightVector: ";
-		for (int i=0; i<condRightVector.size(); i++)
+		for (unsigned int i = 0; i<condRightVector.size(); i++)
 			cout<<condRightVector[i]<<" ";
 		cout<<endl;
 	}
 	//写日志
 	void writelog(){
-		std::ofstream fout("db.log", ios::ate);
+		std::ofstream fout("db.log", ios::app);
+		//fout.seekp(ios::beg);
 		time_t ltime;
+		char buf[26];
 		time(&ltime);
-		fout << ctime(&ltime);
+		ctime_s(buf, 26, &ltime);
+		fout << buf;
 		if (databaseName!="")
 			fout<<" "<<databaseName;
 		else
@@ -171,33 +171,34 @@ public:
 		fout<<" "<<type;
 
 		fout<<" "<<colNameVector.size();
-		for (int i=0; i<colNameVector.size(); i++)
+		for (unsigned int i = 0; i<colNameVector.size(); i++)
 			fout<<" "<<colNameVector[i];
 
 		fout<<" "<<colValueVector.size();
-		for (int i=0; i<colValueVector.size(); i++)
+		for (unsigned int i = 0; i<colValueVector.size(); i++)
 			fout<<" "<<colValueVector[i];
 
 		fout<<" "<<condLeftVector.size();
-		for (int i=0; i<condLeftVector.size(); i++)
+		for (unsigned int i = 0; i<condLeftVector.size(); i++)
 			fout<<" "<<condLeftVector[i];
 
 		fout<<" "<<condOpVector.size();
-		for (int i=0; i<condOpVector.size(); i++)
+		for (unsigned int i = 0; i<condOpVector.size(); i++)
 			fout<<" "<<condOpVector[i];
 
 		fout<<" "<<condRightVector.size();
-		for (int i=0; i<condRightVector.size(); i++)
+		for (unsigned int i = 0; i<condRightVector.size(); i++)
 			fout<<" "<<condRightVector[i];
 
 		fout<<" "<<colSpecialVector.size();
-		for (int i=0; i<colSpecialVector.size(); i++)
+		for (unsigned int i = 0; i<colSpecialVector.size(); i++)
 			fout<<" "<<colSpecialVector[i];
 
 		fout<<" "<<colType.size();
-		for (int i=0; i<colType.size(); i++)
+		for (unsigned int i = 0; i<colType.size(); i++)
 			fout<<" "<<colType[i];
 		fout<<endl;
+		fout.close();
 	}
 private:
 	// 命令类型
