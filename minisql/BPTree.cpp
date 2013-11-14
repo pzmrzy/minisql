@@ -152,7 +152,7 @@ void BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName,in
 	vector<int> blockNum = recordBuff.getTableBlocks(sql.getTableName());
 
 	Block block = indexBuff.newIndexBlock(indexName);
-	Node node(dbName,0,indexName,tableInstance,n);
+	Node node(dbName,blockNum[0],indexName,tableInstance,n);
 	Node newNode(dbName,indexName,tableInstance,n);
 
 	node.setType(_NONLEAFNODE);
@@ -187,12 +187,14 @@ void BPTree::createBPTree(SqlCommand sql,table tableInstance,string indexName,in
 			temp2.push_back(tempValue2);
 		}
 	}
+	newNode.set(temp2);
+	newNode.setLastPtr(-1);
 }
 
 void BPTree::loadBPTree(string indexName)
 {
 	BufferManager indexBuff(dbName);
-	int firstBlock = 0;//获取开始的块
+	int firstBlock = bfm->getIndexBlocks(indexName)[0];//获取开始的块
 	Node rootNode(dbName,firstBlock,indexName,tableInstance,n);
 	root = rootNode.getInfo()[0].getIntKey();
 }
@@ -289,6 +291,55 @@ PtrType BPTree::findParentNode(PtrType ptr)
 	for (i = 0; i < parentMap.size(); i++)
 		if (parentMap[i].nodePtr == ptr)
 			return parentMap[i].parentPtr;
+}
+
+vector<int> BPTree::findToBehind(Value key)
+{
+	vector<int> result;
+	Node *node = new Node(dbName,findLeafNode(key),indexName,tableInstance,n);
+	while (true)
+	{
+		vector<Value> info = node->getInfo();
+		for (int i = 0; i < info.size() - 1; i+=2)
+		{
+			if (isLess(key,info[i+1]))//大于
+				result.push_back(info[i].getIntKey());
+		}
+		if (node->getLastPtr().getIntKey() != -1)
+		{
+			delete node;
+			Node *node = new Node(dbName,node->getLastPtr().getIntKey(),indexName,tableInstance,n);
+		}
+		else
+			break;
+	}
+	return result;
+}
+
+vector<int> BPTree::findToBehindIF(Value key)
+{
+	vector<int> result;
+	int j = -1;
+	Node *node = NULL;
+	while (true)
+	{
+		do 
+		{
+			j++;
+			node = new Node(dbName,bfm->getIndexBlocks(indexName)[j],indexName,tableInstance,n);
+		}while(node->getNodeType() == _NONLEAFNODE);
+		vector<Value> info = node->getInfo();
+		for (int i = 0; i < info.size() - 1; i+=2)
+		{
+			if (isLess(info[i+1],key))
+				result.push_back(info[i].getIntKey());
+		}
+		if (node->getLastPtr().getIntKey() != -1)
+			delete node;
+		else
+			break;
+	}
+	return result;
 }
 
 void BPTree::insert(Value key,PtrType pointer)

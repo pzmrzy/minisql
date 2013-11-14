@@ -61,14 +61,13 @@ bool IndexManager::dropIndexAll(SqlCommand sql,table tableInstance)
 
 
 //select rec时调用
-vector<int> IndexManager::selectRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key)
+vector<int> IndexManager::selectOne(SqlCommand sql,table tableInstance,string indexName,string key)
 {
 	vector<int> result;
-	for (int j = 0; j < indexList.size(); j++)//维护每一个索引
-	{
+	result.clear();
 		int attrType = 0;
 		for(int i = 0; i < tableInstance.attrList.size(); i++)
-			if (tableInstance.attrList[i].name == indexList[j])
+			if (tableInstance.attrList[i].name == indexName)
 			{
 				switch(tableInstance.attrList[i].datatype)
 				{
@@ -79,15 +78,112 @@ vector<int> IndexManager::selectRec(SqlCommand sql,table tableInstance,vector<st
 				break;
 			}
 		BPTree tree(dbName,attrType);
-		tree.loadBPTree(sql.getTableName()+"."+indexList[j]);
+		tree.loadBPTree(sql.getTableName()+"."+ indexName);
 		Value temp(attrType,key);
 		result.push_back(tree.find(temp));
-	}
+	
 	return result;
 }
 
+vector<int> IndexManager::selectMany_d(SqlCommand sql,table tableInstance,string indexName,string key)
+{
+	vector<int> result;
+	result.clear();
+		int attrType = 0;
+		for(int i = 0; i < tableInstance.attrList.size(); i++)
+			if (tableInstance.attrList[i].name == indexName)
+			{
+				switch(tableInstance.attrList[i].datatype)
+				{
+				case -1:attrType = _TYPE_FLOAT;break;
+				case 0:attrType = _TYPE_INT;break;
+				case 1:attrType = _TYPE_STRING;break;
+				}
+				break;
+			}
+		BPTree tree(dbName,attrType);
+		tree.loadBPTree(sql.getTableName()+"."+ indexName);
+		Value temp(attrType,key);
+		return tree.findToBehind(temp);
+}
 
+vector<int> IndexManager::selectMany_x(SqlCommand sql,table tableInstance,string indexName,string key)
+{
+	vector<int> result;
+	result.clear();
+		int attrType = 0;
+		for(int i = 0; i < tableInstance.attrList.size(); i++)
+			if (tableInstance.attrList[i].name == indexName)
+			{
+				switch(tableInstance.attrList[i].datatype)
+				{
+				case -1:attrType = _TYPE_FLOAT;break;
+				case 0:attrType = _TYPE_INT;break;
+				case 1:attrType = _TYPE_STRING;break;
+				}
+				break;
+			}
+		BPTree tree(dbName,attrType);
+		tree.loadBPTree(sql.getTableName()+"."+ indexName);
+		Value temp(attrType,key);
+		return tree.findToBehindIF(temp);
+}
 
+vector<int> IndexManager::selectMany_dd(SqlCommand sql,table tableInstance,string indexName,string key)
+{
+	vector<int> result,tempRe;
+	result.clear();
+		int attrType = 0;
+		for(int i = 0; i < tableInstance.attrList.size(); i++)
+			if (tableInstance.attrList[i].name == indexName)
+			{
+				switch(tableInstance.attrList[i].datatype)
+				{
+				case -1:attrType = _TYPE_FLOAT;break;
+				case 0:attrType = _TYPE_INT;break;
+				case 1:attrType = _TYPE_STRING;break;
+				}
+				break;
+			}
+		BPTree tree(dbName,attrType);
+		tree.loadBPTree(sql.getTableName()+"."+ indexName);
+		Value temp(attrType,key);
+		result.push_back(tree.find(temp));
+		tempRe = tree.findToBehind(temp);
+		for (int i = 0; i < tempRe.size(); i++)
+		{
+			result.push_back(tempRe[i]);
+		}
+		return result;
+}
+
+vector<int> IndexManager::selectMany_xd(SqlCommand sql,table tableInstance,string indexName,string key)
+{
+	vector<int> result,tempRe;
+	result.clear();
+		int attrType = 0;
+		for(int i = 0; i < tableInstance.attrList.size(); i++)
+			if (tableInstance.attrList[i].name == indexName)
+			{
+				switch(tableInstance.attrList[i].datatype)
+				{
+				case -1:attrType = _TYPE_FLOAT;break;
+				case 0:attrType = _TYPE_INT;break;
+				case 1:attrType = _TYPE_STRING;break;
+				}
+				break;
+			}
+		BPTree tree(dbName,attrType);
+		tree.loadBPTree(sql.getTableName()+"."+ indexName);
+		Value temp(attrType,key);
+		tempRe = tree.findToBehindIF(temp);
+		for (int i = 0; i < tempRe.size(); i++)
+		{
+			result.push_back(tempRe[i]);
+		}
+		result.push_back(tree.find(temp));
+		return result;
+}
 
 //insert rec时调用
 void IndexManager::insertRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key, int blockPtr, int inBlockPtr)

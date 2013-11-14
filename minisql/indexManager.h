@@ -25,7 +25,11 @@ public:
 	//drop table时调用
 	bool dropIndexAll(SqlCommand sql,table tableInstance);
 	//select rec时调用
-	vector<int> selectRec(SqlCommand sql,table tableInstance,vector<string> indexList,string key);
+	vector<int> selectOne(SqlCommand sql,table tableInstance,string indexName,string key);
+	vector<int> selectMany_x(SqlCommand sql,table tableInstance,string indexName,string key);//小于
+	vector<int> selectMany_d(SqlCommand sql,table tableInstance,string indexName,string key);//大于
+	vector<int> selectMany_xd(SqlCommand sql,table tableInstance,string indexName,string key);//小于等于
+	vector<int> selectMany_dd(SqlCommand sql,table tableInstance,string indexName,string key);//大于等于
 	//insert rec时调用
 	void insertRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key, int blockPtr, int inBlockPtr);
 	//delete rec时调用

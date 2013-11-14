@@ -13,6 +13,7 @@
 #define _LEAFNODE 1
 #define _NONLEAFNODE 0
 
+extern BufferManager *bfm;
 typedef int PtrType;
 
 class Value
@@ -108,6 +109,8 @@ public:
 	void insert(Value key,PtrType pointer);
 	PtrType find(Value key);
 	PtrType deleteNode(Value key);
+	vector<int> findToBehind(Value key);//从开始点直到最后去取值，用于大于等于
+	vector<int> findToBehindIF(Value key);//从开始点直到不满足条件去取值，用于小于等于
 
 private:
 	int n;//节点指针数
