@@ -45,7 +45,7 @@ Node::~Node()
 		}
 	}
 	
-	indexBuff.writeIndexData(indexName, coutStream, j+5);
+	indexBuff.writeIndexData(indexName, offset,coutStream, j+5);
 }
 
 void Node::read()

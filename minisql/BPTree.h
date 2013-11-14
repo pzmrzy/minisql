@@ -55,8 +55,6 @@ class Node
 {
 private:
 	vector<Value> info;
-	//当前指向的位置，还未返回
-	int now;
 	string indexName;
 	//当前节点所拥有的指针数
 	int count;
