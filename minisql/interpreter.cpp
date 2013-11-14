@@ -30,7 +30,11 @@ string Interpreter::firstWord(string& str, string split) {
 	if(start<0) return "";
 	int end     = str.find_first_of(split, start);
 	if(end<0) return str.substr(start, split.length());
-	return str.substr(start, end-start);
+	string temp = str.substr(start, end-start);
+	string lower = "";
+	for (string::size_type i=0; i<temp.length(); ++i)
+		lower += tolower(temp[i]);
+	return lower;
 }
 
 /**
