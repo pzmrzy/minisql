@@ -39,10 +39,10 @@
     <ClCompile Include="record.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="indexManger.cpp">
+    <ClCompile Include="BPTree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="BPTree.cpp">
+    <ClCompile Include="IndexManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,10 +71,10 @@
     <ClInclude Include="record.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="indexManager.h">
+    <ClInclude Include="BPTree.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="BPTree.h">
+    <ClInclude Include="IndexManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

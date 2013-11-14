@@ -1,4 +1,3 @@
-
 #include "buffermanager.h"
 
 /**
@@ -268,3 +267,4 @@ void BufferManager::writeIndexData(string indexName, int offset, char* content, 
 	Block b = findBlock(offset);
 	memcpy(b.content, content, length);
 	b.dirty();
+}
