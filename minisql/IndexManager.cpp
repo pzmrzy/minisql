@@ -238,3 +238,4 @@ vector<int> IndexManager::deleteRec(SqlCommand sql, table tableInstance, vector<
 	}
 	return result;
 }
+

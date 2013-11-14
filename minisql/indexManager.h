@@ -43,4 +43,5 @@ public:
 	vector<int> deleteRec(SqlCommand sql, table tableInstance, vector<string> indexList, string key);
 };
 
+
 #endif
