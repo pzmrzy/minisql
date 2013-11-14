@@ -224,4 +224,5 @@ private:
 	//求类型大小
 	TYPE_SIZE;
 };
+
 #endif
